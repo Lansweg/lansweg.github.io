@@ -1,4 +1,4 @@
-:root {
+>:root {
   --default-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Ubuntu, "Helvetica Neue", Helvetica, Arial, "PingFang SC",
     "Hiragino Sans GB", "Microsoft Yahei UI", "Microsoft Yahei",
@@ -26,7 +26,7 @@ button {
   width: 1920px;
   height: 1090px;
   margin: 0 auto;
-  background: url(./assets/img/bg.gif)
+  background: url(https://lh3.googleusercontent.com/drive-viewer/AKGpihbNeVg9tWjA5nqyNNpQvLjozPokLhEwsK6sZGNUY8Jb6L91oilewC8poZjVxT_b-45Ny9j5MJVhqhySk5fJauzx5N-Q7Q=s1600-v0)
     no-repeat center;
   background-size: cover;
   backdrop-filter: blur(51.65px);
