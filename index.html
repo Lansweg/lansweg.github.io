@@ -1,104 +1,927 @@
-<!DOCTYPE html>
-<html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Titre de la page -->
-    <title>Portfolio Lans's Dev</title>
-    <!-- Lien avec le CSS -->
-    <link rel="stylesheet" href="style.css" />
-    <!-- Lien avec le favicon -->
-    <link rel="shortcut icon" href="./assets/img/ellipse-2.svg" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@700&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap" />
-        <link rel="stylesheet" href="index.css" />
-      </head>
-      <body>
-        <div class="main-container">
-          <div class="frame">
-            <div class="clip-path-group">
-              <div class="group"><div class="vector"></div></div>
-              <div class="vector-1"></div>
-            </div>
-            <div class="frame-2">
-              <span class="home">HOME</span><span class="project">PROJECT</span
-              ><span class="contact">CONTACT</span>
-            </div>
-          </div>
-          <div class="frame-3">
-            <div class="rectangle"></div>
-            <div class="frame-4">
-              <div class="group-5">
-                <div class="wave"></div>
-                <div class="group-6">
-                  <span class="hi-lansweg">Hi ! I’m Lansweg.</span>
-                </div>
-              </div>
-              <span class="passionate-web-dev"
-                >My name is Rémy Cornuel, I am 24 years old, and I am passionate<br />about
-                web development. Currently, I am undergoing training<br />with AFCI
-                Dunkirk to learn HTML, CSS, and JavaScript.<br />My goal is to make
-                development my profession.</span
-              >
-            </div>
-            <button class="frame-7">
-              <a href="./assets/download/Rose bleu blanc géométrique forme flat audacieux développeur web CV-1.pdf" download="CV" class="download-cv">Télécharger CV</a>
+import React, { useState, useEffect } from ‘react’;
+import { Calendar, Plus, CheckCircle, TrendingUp, Droplets, Dumbbell, User, LogOut, Clock, BarChart3, Trash2, Edit, Save, X } from ‘lucide-react’;
+
+const CompleteWorkoutTracker = () => {
+const [isLoggedIn, setIsLoggedIn] = useState(false);
+const [currentUser, setCurrentUser] = useState(null);
+const [showLogin, setShowLogin] = useState(true);
+const [username, setUsername] = useState(’’);
+const [password, setPassword] = useState(’’);
+
+const [currentWeek, setCurrentWeek] = useState(1);
+const [totalWeeks, setTotalWeeks] = useState(4);
+const [workouts, setWorkouts] = useState([]);
+const [exerciseLibrary, setExerciseLibrary] = useState([]);
+const [showAddWorkout, setShowAddWorkout] = useState(false);
+const [showExerciseSelector, setShowExerciseSelector] = useState(false);
+const [currentWorkoutData, setCurrentWorkoutData] = useState(null);
+const [selectedExercises, setSelectedExercises] = useState([]);
+const [activeTimer, setActiveTimer] = useState(null);
+const [timerSeconds, setTimerSeconds] = useState(0);
+const [view, setView] = useState(‘workouts’); // workouts, calendar, stats, nutrition
+
+// Exercise library with categories
+const defaultExercises = {
+chest: [
+{ id: ‘bench-press’, name: ‘Développé couché’, muscle: ‘Pectoraux’ },
+{ id: ‘incline-press’, name: ‘Développé incliné’, muscle: ‘Pectoraux haut’ },
+{ id: ‘dips’, name: ‘Dips’, muscle: ‘Pectoraux/Triceps’ },
+{ id: ‘push-ups’, name: ‘Pompes’, muscle: ‘Pectoraux’ }
+],
+back: [
+{ id: ‘rowing’, name: ‘Rowing barre’, muscle: ‘Dos’ },
+{ id: ‘pull-ups’, name: ‘Tractions’, muscle: ‘Dos’ },
+{ id: ‘lat-pulldown’, name: ‘Tirage vertical’, muscle: ‘Dorsaux’ },
+{ id: ‘deadlift’, name: ‘Soulevé de terre’, muscle: ‘Dos/Lombaires’ }
+],
+shoulders: [
+{ id: ‘military-press’, name: ‘Développé militaire’, muscle: ‘Épaules’ },
+{ id: ‘lateral-raises’, name: ‘Élévations latérales’, muscle: ‘Épaules’ },
+{ id: ‘front-raises’, name: ‘Élévations frontales’, muscle: ‘Épaules avant’ }
+],
+arms: [
+{ id: ‘bicep-curl’, name: ‘Curl biceps’, muscle: ‘Biceps’ },
+{ id: ‘hammer-curl’, name: ‘Curl marteau’, muscle: ‘Biceps’ },
+{ id: ‘tricep-extension’, name: ‘Extensions triceps’, muscle: ‘Triceps’ },
+{ id: ‘close-grip-bench’, name: ‘Développé prise serrée’, muscle: ‘Triceps’ }
+],
+legs: [
+{ id: ‘squat’, name: ‘Squat’, muscle: ‘Quadriceps’ },
+{ id: ‘leg-press’, name: ‘Presse à cuisses’, muscle: ‘Quadriceps’ },
+{ id: ‘lunges’, name: ‘Fentes’, muscle: ‘Quadriceps/Fessiers’ },
+{ id: ‘leg-curl’, name: ‘Leg curl’, muscle: ‘Ischios’ },
+{ id: ‘calf-raises’, name: ‘Mollets debout’, muscle: ‘Mollets’ }
+],
+core: [
+{ id: ‘plank’, name: ‘Gainage’, muscle: ‘Abdos’ },
+{ id: ‘crunches’, name: ‘Crunch’, muscle: ‘Abdos’ },
+{ id: ‘leg-raises’, name: ‘Levée de jambes’, muscle: ‘Abdos bas’ }
+]
+};
+
+// Load data from persistent storage
+useEffect(() => {
+loadUserData();
+}, [currentUser]);
+
+useEffect(() => {
+let interval;
+if (activeTimer !== null && timerSeconds > 0) {
+interval = setInterval(() => {
+setTimerSeconds(prev => {
+if (prev <= 1) {
+setActiveTimer(null);
+playSound();
+return 0;
+}
+return prev - 1;
+});
+}, 1000);
+}
+return () => clearInterval(interval);
+}, [activeTimer, timerSeconds]);
+
+const playSound = () => {
+// Simple beep sound notification
+const audio = new Audio(‘data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBjmO1fPTgjMGHm7A7+OZURE’);
+audio.play().catch(() => {});
+};
+
+const loadUserData = async () => {
+if (!currentUser) return;
+
+```
+try {
+  const workoutsData = await window.storage.get(`workouts_${currentUser}`);
+  if (workoutsData) {
+    setWorkouts(JSON.parse(workoutsData.value));
+  }
+  
+  const weeksData = await window.storage.get(`weeks_${currentUser}`);
+  if (weeksData) {
+    setTotalWeeks(parseInt(weeksData.value));
+  }
+} catch (error) {
+  console.log('No saved data yet');
+}
+```
+
+};
+
+const saveUserData = async () => {
+if (!currentUser) return;
+
+```
+try {
+  await window.storage.set(`workouts_${currentUser}`, JSON.stringify(workouts));
+  await window.storage.set(`weeks_${currentUser}`, totalWeeks.toString());
+} catch (error) {
+  console.error('Error saving data:', error);
+}
+```
+
+};
+
+useEffect(() => {
+if (currentUser) {
+saveUserData();
+}
+}, [workouts, totalWeeks, currentUser]);
+
+const handleLogin = async () => {
+if (!username || !password) return;
+
+```
+try {
+  const userData = await window.storage.get(`user_${username}`);
+  
+  if (userData) {
+    const user = JSON.parse(userData.value);
+    if (user.password === password) {
+      setCurrentUser(username);
+      setIsLoggedIn(true);
+    } else {
+      alert('Mot de passe incorrect');
+    }
+  } else {
+    alert('Utilisateur non trouvé');
+  }
+} catch (error) {
+  alert('Erreur de connexion');
+}
+```
+
+};
+
+const handleRegister = async () => {
+if (!username || !password) return;
+
+```
+try {
+  const exists = await window.storage.get(`user_${username}`);
+  if (exists) {
+    alert('Cet utilisateur existe déjà');
+    return;
+  }
+  
+  await window.storage.set(`user_${username}`, JSON.stringify({
+    username,
+    password,
+    createdAt: new Date().toISOString()
+  }));
+  
+  setCurrentUser(username);
+  setIsLoggedIn(true);
+} catch (error) {
+  alert('Erreur lors de l\'inscription');
+}
+```
+
+};
+
+const handleLogout = () => {
+setIsLoggedIn(false);
+setCurrentUser(null);
+setUsername(’’);
+setPassword(’’);
+setWorkouts([]);
+};
+
+const startWorkout = (type) => {
+setCurrentWorkoutData({
+type,
+date: new Date().toISOString(),
+week: currentWeek,
+exercises: [],
+notes: ‘’,
+duration: 0
+});
+setSelectedExercises([]);
+setShowAddWorkout(false);
+setShowExerciseSelector(true);
+};
+
+const addExerciseToWorkout = (exercise) => {
+const newExercise = {
+…exercise,
+sets: [{ reps: 10, weight: 0, completed: false }]
+};
+setSelectedExercises([…selectedExercises, newExercise]);
+};
+
+const addSetToExercise = (exerciseIndex) => {
+const updated = […selectedExercises];
+updated[exerciseIndex].sets.push({ reps: 10, weight: 0, completed: false });
+setSelectedExercises(updated);
+};
+
+const updateSet = (exerciseIndex, setIndex, field, value) => {
+const updated = […selectedExercises];
+updated[exerciseIndex].sets[setIndex][field] = value;
+setSelectedExercises(updated);
+};
+
+const toggleSetComplete = (exerciseIndex, setIndex) => {
+const updated = […selectedExercises];
+updated[exerciseIndex].sets[setIndex].completed = !updated[exerciseIndex].sets[setIndex].completed;
+setSelectedExercises(updated);
+};
+
+const saveWorkout = () => {
+const workout = {
+…currentWorkoutData,
+exercises: selectedExercises,
+id: Date.now()
+};
+setWorkouts([workout, …workouts]);
+setShowExerciseSelector(false);
+setCurrentWorkoutData(null);
+setSelectedExercises([]);
+};
+
+const deleteWorkout = (id) => {
+if (confirm(‘Supprimer cette séance ?’)) {
+setWorkouts(workouts.filter(w => w.id !== id));
+}
+};
+
+const startRestTimer = (seconds) => {
+setTimerSeconds(seconds);
+setActiveTimer(Date.now());
+};
+
+const addWeek = () => {
+setTotalWeeks(totalWeeks + 1);
+setCurrentWeek(totalWeeks + 1);
+};
+
+const getWorkoutStats = () => {
+const weekWorkouts = workouts.filter(w => w.week === currentWeek);
+const totalWorkouts = weekWorkouts.length;
+const totalExercises = weekWorkouts.reduce((acc, w) => acc + w.exercises.length, 0);
+const totalSets = weekWorkouts.reduce((acc, w) =>
+acc + w.exercises.reduce((sum, e) => sum + e.sets.length, 0), 0
+);
+return { totalWorkouts, totalExercises, totalSets };
+};
+
+const stats = getWorkoutStats();
+
+// Login/Register Screen
+if (!isLoggedIn) {
+return (
+<div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 flex items-center justify-center p-4">
+<div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+<div className="text-center mb-8">
+<div className="text-6xl mb-4">🏋️‍♂️</div>
+<h1 className="text-3xl font-bold text-gray-800 mb-2">Workout Tracker Pro</h1>
+<p className="text-gray-600">Programme Rémy - Recomposition</p>
+</div>
+
+```
+      <div className="mb-6">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Nom d'utilisateur</label>
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+          placeholder="remy"
+        />
+      </div>
+
+      <div className="mb-6">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Mot de passe</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none"
+          placeholder="••••••••"
+        />
+      </div>
+
+      <div className="flex gap-3">
+        <button
+          onClick={handleLogin}
+          className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+        >
+          Connexion
+        </button>
+        <button
+          onClick={handleRegister}
+          className="flex-1 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+        >
+          Inscription
+        </button>
+      </div>
+
+      <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+        <p className="text-sm text-blue-800">
+          <strong>💡 Astuce :</strong> Créez votre compte pour sauvegarder automatiquement toutes vos données !
+        </p>
+      </div>
+    </div>
+  </div>
+);
+```
+
+}
+
+// Main App
+return (
+<div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 p-4">
+<div className="max-w-6xl mx-auto">
+{/* Header */}
+<div className="bg-white rounded-2xl shadow-2xl p-6 mb-6">
+<div className="flex items-center justify-between mb-4">
+<div>
+<h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+<Dumbbell className="text-orange-500" />
+Workout Tracker Pro
+</h1>
+<p className="text-gray-600 mt-1">Bienvenue, <strong>{currentUser}</strong> 👋</p>
+</div>
+<button
+onClick={handleLogout}
+className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all"
+>
+<LogOut size={18} />
+Déconnexion
+</button>
+</div>
+
+```
+      {/* Navigation */}
+      <div className="flex gap-2 overflow-x-auto pb-2">
+        <button
+          onClick={() => setView('workouts')}
+          className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-all ${
+            view === 'workouts' ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white' : 'bg-gray-100 text-gray-600'
+          }`}
+        >
+          🏋️ Séances
+        </button>
+        <button
+          onClick={() => setView('calendar')}
+          className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-all ${
+            view === 'calendar' ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white' : 'bg-gray-100 text-gray-600'
+          }`}
+        >
+          📅 Calendrier
+        </button>
+        <button
+          onClick={() => setView('stats')}
+          className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-all ${
+            view === 'stats' ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white' : 'bg-gray-100 text-gray-600'
+          }`}
+        >
+          📊 Statistiques
+        </button>
+        <button
+          onClick={() => setView('nutrition')}
+          className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-all ${
+            view === 'nutrition' ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white' : 'bg-gray-100 text-gray-600'
+          }`}
+        >
+          🍽️ Nutrition
+        </button>
+      </div>
+    </div>
+
+    {/* Timer Widget */}
+    {activeTimer && (
+      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-2xl shadow-2xl p-6 mb-6 text-center">
+        <Clock size={40} className="mx-auto mb-2" />
+        <div className="text-5xl font-bold mb-2">
+          {Math.floor(timerSeconds / 60)}:{(timerSeconds % 60).toString().padStart(2, '0')}
+        </div>
+        <p className="text-lg">Temps de repos</p>
+        <button
+          onClick={() => setActiveTimer(null)}
+          className="mt-4 px-6 py-2 bg-white text-orange-500 rounded-lg font-semibold hover:bg-gray-100"
+        >
+          Arrêter
+        </button>
+      </div>
+    )}
+
+    {/* Workouts View */}
+    {view === 'workouts' && (
+      <>
+        <div className="bg-white rounded-2xl shadow-2xl p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-gray-800">Semaine {currentWeek}</h2>
+            <button
+              onClick={() => setShowAddWorkout(true)}
+              className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:shadow-lg transition-all"
+            >
+              <Plus size={20} />
+              Nouvelle séance
             </button>
           </div>
-          <span class="copiright">Copiright 2024 - Tout droits réserver.</span>
-          <div class="frame-8">
-            <span class="article-recent">Article récents</span>
-            <div class="frame-9">
-              <div class="group-a">
-                <div class="frame-b">
-                  <div class="button">
-                    <span class="recent">RECENT 3</span>
-                    <div class="frame-c"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="group-d">
-                <div class="frame-e">
-                  <div class="group-button">
-                    <span class="recent-span">RECENT 3</span>
-                    <div class="frame-div"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="group-div">
-                <div class="frame-div-f">
-                  <div class="group-button-10">
-                    <span class="recent-span-11">RECENT 3</span>
-                    <div class="frame-div-12"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="group-div-13">
-                <div class="frame-div-14">
-                  <div class="group-button-15">
-                    <span class="recent-3">RECENT 3</span>
-                    <div class="frame-16"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+
+          {/* Week Selector */}
+          <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
+            {[...Array(totalWeeks)].map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentWeek(i + 1)}
+                className={`px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition-all ${
+                  currentWeek === i + 1
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                S{i + 1}
+              </button>
+            ))}
+            <button
+              onClick={addWeek}
+              className="px-4 py-2 rounded-lg font-semibold whitespace-nowrap bg-green-100 text-green-600 hover:bg-green-200 transition-all"
+            >
+              + Ajouter
+            </button>
           </div>
-          <div class="frame-17">
-            <span class="competence">Compétence</span>
-            <div class="frame-18">
-              <div class="group-19"><div class="rectangle-1a"></div></div>
-              <div class="group-1b"><div class="rectangle-1c"></div></div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl">
+              <div className="text-blue-700 text-sm font-medium mb-1">Séances</div>
+              <div className="text-3xl font-bold text-blue-900">{stats.totalWorkouts}</div>
+            </div>
+            <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl">
+              <div className="text-green-700 text-sm font-medium mb-1">Exercices</div>
+              <div className="text-3xl font-bold text-green-900">{stats.totalExercises}</div>
+            </div>
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl">
+              <div className="text-purple-700 text-sm font-medium mb-1">Séries</div>
+              <div className="text-3xl font-bold text-purple-900">{stats.totalSets}</div>
             </div>
           </div>
         </div>
-        <!-- Generated by Codia AI - https://codia.ai/ -->
-      </body>
-    </html>
-<!-- telecharger un fichier -->
-<!-- <a href="./fichier.pdf" download="CV">Télécharger le cv</a> -->
 
-<!-- envoyer un mail direct -->
-<!-- <a href="mailto:ton-mail@mail.fr">Me contacter !</a> -->
+        {/* Workouts List */}
+        <div className="space-y-4">
+          {workouts.filter(w => w.week === currentWeek).map(workout => (
+            <div key={workout.id} className="bg-white rounded-xl shadow-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800">{workout.type}</h3>
+                  <p className="text-sm text-gray-500">{new Date(workout.date).toLocaleDateString('fr-FR')}</p>
+                </div>
+                <button
+                  onClick={() => deleteWorkout(workout.id)}
+                  className="text-red-500 hover:text-red-700 transition-colors"
+                >
+                  <Trash2 size={20} />
+                </button>
+              </div>
+
+              {workout.exercises.map((exercise, idx) => (
+                <div key={idx} className="mb-4 p-4 bg-gray-50 rounded-lg">
+                  <div className="font-semibold text-gray-800 mb-2">{exercise.name}</div>
+                  <div className="grid grid-cols-4 gap-2 text-sm">
+                    {exercise.sets.map((set, setIdx) => (
+                      <div
+                        key={setIdx}
+                        className={`p-2 rounded ${
+                          set.completed ? 'bg-green-100 text-green-800' : 'bg-white text-gray-600'
+                        }`}
+                      >
+                        S{setIdx + 1}: {set.weight}kg × {set.reps}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {workout.notes && (
+                <div className="mt-4 p-3 bg-yellow-50 rounded-lg text-sm text-gray-700">
+                  📝 {workout.notes}
+                </div>
+              )}
+            </div>
+          ))}
+
+          {workouts.filter(w => w.week === currentWeek).length === 0 && (
+            <div className="bg-white rounded-xl shadow-lg p-12 text-center">
+              <div className="text-6xl mb-4">🏋️‍♂️</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Aucune séance cette semaine</h3>
+              <p className="text-gray-600">Clique sur "Nouvelle séance" pour commencer !</p>
+            </div>
+          )}
+        </div>
+      </>
+    )}
+
+    {/* Calendar View */}
+    {view === 'calendar' && (
+      <div className="bg-white rounded-2xl shadow-2xl p-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Calendrier des entraînements</h2>
+        <div className="grid grid-cols-7 gap-2">
+          {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
+            <div key={day} className="text-center font-semibold text-gray-600 py-2">
+              {day}
+            </div>
+          ))}
+          {[...Array(35)].map((_, i) => {
+            const dayWorkouts = workouts.filter(w => {
+              const workoutDate = new Date(w.date);
+              return workoutDate.getDate() === (i % 30) + 1;
+            });
+            return (
+              <div
+                key={i}
+                className={`aspect-square p-2 rounded-lg border-2 ${
+                  dayWorkouts.length > 0
+                    ? 'bg-green-50 border-green-500'
+                    : 'bg-gray-50 border-gray-200'
+                }`}
+              >
+                <div className="text-sm font-semibold text-gray-700">{(i % 30) + 1}</div>
+                {dayWorkouts.length > 0 && (
+                  <div className="text-xs text-green-600 mt-1">
+                    {dayWorkouts.length} séance{dayWorkouts.length > 1 ? 's' : ''}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    )}
+
+    {/* Stats View */}
+    {view === 'stats' && (
+      <div className="bg-white rounded-2xl shadow-2xl p-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Statistiques globales</h2>
+        
+        <div className="grid grid-cols-2 gap-6 mb-8">
+          <div className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
+            <div className="text-purple-700 font-semibold mb-2">Total séances</div>
+            <div className="text-4xl font-bold text-purple-900">{workouts.length}</div>
+          </div>
+          <div className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+            <div className="text-blue-700 font-semibold mb-2">Total exercices</div>
+            <div className="text-4xl font-bold text-blue-900">
+              {workouts.reduce((acc, w) => acc + w.exercises.length, 0)}
+            </div>
+          </div>
+          <div className="p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+            <div className="text-green-700 font-semibold mb-2">Total séries</div>
+            <div className="text-4xl font-bold text-green-900">
+              {workouts.reduce((acc, w) => 
+                acc + w.exercises.reduce((sum, e) => sum + e.sets.length, 0), 0
+              )}
+            </div>
+          </div>
+          <div className="p-6 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl">
+            <div className="text-orange-700 font-semibold mb-2">Semaines actives</div>
+            <div className="text-4xl font-bold text-orange-900">{totalWeeks}</div>
+          </div>
+        </div>
+
+        <div className="border-t pt-6">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Progression par semaine</h3>
+          {[...Array(totalWeeks)].map((_, i) => {
+            const weekNum = i + 1;
+            const weekWorkouts = workouts.filter(w => w.week === weekNum).length;
+            return (
+              <div key={weekNum} className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-semibold text-gray-700">Semaine {weekNum}</span>
+                  <span className="text-sm text-gray-600">{weekWorkouts} séances</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 h-3 rounded-full transition-all"
+                    style={{ width: `${(weekWorkouts / 7) * 100}%` }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    )}
+
+    {/* Nutrition View */}
+    {view === 'nutrition' && (
+      <div className="bg-white rounded-2xl shadow-2xl p-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Plan Nutritionnel</h2>
+        
+        <div className="grid gap-6">
+          <div className="p-6 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl">
+            <h3 className="text-xl font-bold text-orange-800 mb-4">🌅 Petit-Déjeuner</h3>
+            <ul className="space-y-2 text-gray-700">
+              <li>• 60g flocons d'avoine</li>
+              <li>• 250ml lait</li>
+              <li>• 1 banane</li>
+              <li>• 30g whey</li>
+              <li>• 1 c.à.s beurre de cacahuète</li>
+            </ul>
+          </div>
+
+          <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
+            <h3 className="text-xl font-bold text-green-800 mb-4">🍛 Déjeuner</h3>
+            <ul className="space-y-2 text-gray-700">
+              <li>• 150g poulet ou bœuf maigre</li>
+              <li>• 120g riz complet ou quinoa</li>
+              <li>• Légumes vapeur (brocolis, courgettes)</li>
+              <li>• ½ avocat ou 1 c.à.s huile d'olive</li>
+            </ul>
+          </div>
+
+          <div className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl">
+            <h3 className="text-xl font-bold text-blue-800 mb-4">🌙 Dîner</h3>
+            <ul className="space-y-2 text-gray-700">
+              <li>• 2 œufs + 1 blanc</li>
+              <li>• 100g riz ou quinoa</li>
+              <li>• Légumes (épinards, poivrons)</li>
+              <li>• 1 yaourt nature</li>
+            </ul>
+          </div>
+
+          <div className="p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
+            <h3 className="text-xl font-bold text-purple-800 mb-4">🥤 Collations</h3>
+            <div className="space-y-3 text-gray-700">
+              <div>
+                <strong>Pré-Training:</strong>
+                <p className="ml-4">• 1 banane + 1 yaourt grec + 10g amandes</p>
+              </div>
+              <div>
+                <strong>Post-Training:</strong>
+                <p className="ml-4">• 30g whey + 1 fruit</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 bg-gradient-to-br from-red-50 to-orange-50 rounded-xl">
+            <h3 className="text-xl font-bold text-red-800 mb-4">📊 Macros Quotidiens (~120kg)</h3>
+            <div className="grid grid-cols-3 gap-4 mt-4">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-red-600">~240g</div>
+                <div className="text-sm text-gray-600">Protéines</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-600">~270g</div>
+                <div className="text-sm text-gray-600">Glucides</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-yellow-600">~75g</div>
+                <div className="text-sm text-gray-600">Lipides</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Add Workout Modal */}
+    {showAddWorkout && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Type de séance</h2>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => startWorkout('Haut du corps')}
+              className="p-4 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all"
+            >
+              <div className="text-3xl mb-2">💪</div>
+              <div className="text-sm font-semibold">Haut du corps</div>
+            </button>
+            
+            <button
+              onClick={() => startWorkout('Bas du corps')}
+              className="p-4 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all"
+            >
+              <div className="text-3xl mb-2">🦵</div>
+              <div className="text-sm font-semibold">Bas du corps</div>
+            </button>
+            
+            <button
+              onClick={() => startWorkout('Full Body A')}
+              className="p-4 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all"
+            >
+              <div className="text-3xl mb-2">🔵</div>
+              <div className="text-sm font-semibold">Full Body A</div>
+            </button>
+            
+            <button
+              onClick={() => startWorkout('Full Body B')}
+              className="p-4 border-2 border-gray-200 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition-all"
+            >
+              <div className="text-3xl mb-2">🟢</div>
+              <div className="text-sm font-semibold">Full Body B</div>
+            </button>
+            
+            <button
+              onClick={() => startWorkout('Piscine')}
+              className="p-4 border-2 border-gray-200 rounded-xl hover:border-cyan-500 hover:bg-cyan-50 transition-all"
+            >
+              <div className="text-3xl mb-2">🏊‍♂️</div>
+              <div className="text-sm font-semibold">Piscine</div>
+            </button>
+            
+            <button
+              onClick={() => startWorkout('Repos')}
+              className="p-4 border-2 border-gray-200 rounded-xl hover:border-gray-400 hover:bg-gray-50 transition-all"
+            >
+              <div className="text-3xl mb-2">😌</div>
+              <div className="text-sm font-semibold">Repos</div>
+            </button>
+          </div>
+
+          <button
+            onClick={() => setShowAddWorkout(false)}
+            className="w-full mt-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-all"
+          >
+            Annuler
+          </button>
+        </div>
+      </div>
+    )}
+
+    {/* Exercise Selector Modal */}
+    {showExerciseSelector && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-6 my-8 max-h-[90vh] overflow-y-auto">
+          <div className="flex items-center justify-between mb-6 sticky top-0 bg-white pb-4 border-b">
+            <h2 className="text-2xl font-bold text-gray-800">{currentWorkoutData?.type}</h2>
+            <button
+              onClick={() => {
+                setShowExerciseSelector(false);
+                setCurrentWorkoutData(null);
+                setSelectedExercises([]);
+              }}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <X size={24} />
+            </button>
+          </div>
+
+          {/* Selected Exercises */}
+          {selectedExercises.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-gray-800 mb-3">Exercices sélectionnés</h3>
+              {selectedExercises.map((exercise, exerciseIdx) => (
+                <div key={exerciseIdx} className="mb-4 p-4 bg-gray-50 rounded-xl">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h4 className="font-bold text-gray-800">{exercise.name}</h4>
+                      <p className="text-sm text-gray-600">{exercise.muscle}</p>
+                    </div>
+                    <button
+                      onClick={() => setSelectedExercises(selectedExercises.filter((_, i) => i !== exerciseIdx))}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+
+                  {/* Sets */}
+                  <div className="space-y-2">
+                    {exercise.sets.map((set, setIdx) => (
+                      <div key={setIdx} className="flex items-center gap-2">
+                        <button
+                          onClick={() => toggleSetComplete(exerciseIdx, setIdx)}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                            set.completed ? 'bg-green-500 text-white' : 'bg-white border-2 border-gray-300'
+                          }`}
+                        >
+                          {set.completed && <CheckCircle size={16} />}
+                        </button>
+                        
+                        <span className="text-sm font-semibold text-gray-600 w-16">Série {setIdx + 1}</span>
+                        
+                        <input
+                          type="number"
+                          value={set.weight}
+                          onChange={(e) => updateSet(exerciseIdx, setIdx, 'weight', parseFloat(e.target.value) || 0)}
+                          className="w-20 px-2 py-1 border-2 border-gray-200 rounded-lg text-center focus:border-blue-500 focus:outline-none"
+                          placeholder="kg"
+                        />
+                        <span className="text-sm text-gray-600">kg ×</span>
+                        
+                        <input
+                          type="number"
+                          value={set.reps}
+                          onChange={(e) => updateSet(exerciseIdx, setIdx, 'reps', parseInt(e.target.value) || 0)}
+                          className="w-20 px-2 py-1 border-2 border-gray-200 rounded-lg text-center focus:border-blue-500 focus:outline-none"
+                          placeholder="reps"
+                        />
+                        <span className="text-sm text-gray-600">reps</span>
+                        
+                        <button
+                          onClick={() => {
+                            const updated = [...selectedExercises];
+                            updated[exerciseIdx].sets.splice(setIdx, 1);
+                            setSelectedExercises(updated);
+                          }}
+                          className="ml-auto text-red-400 hover:text-red-600"
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-2 mt-3">
+                    <button
+                      onClick={() => addSetToExercise(exerciseIdx)}
+                      className="flex-1 px-3 py-2 bg-blue-100 text-blue-600 rounded-lg text-sm font-semibold hover:bg-blue-200 transition-all"
+                    >
+                      + Série
+                    </button>
+                    <button
+                      onClick={() => startRestTimer(60)}
+                      className="px-3 py-2 bg-orange-100 text-orange-600 rounded-lg text-sm font-semibold hover:bg-orange-200 transition-all"
+                    >
+                      ⏱️ 1 min
+                    </button>
+                    <button
+                      onClick={() => startRestTimer(90)}
+                      className="px-3 py-2 bg-orange-100 text-orange-600 rounded-lg text-sm font-semibold hover:bg-orange-200 transition-all"
+                    >
+                      ⏱️ 1:30
+                    </button>
+                    <button
+                      onClick={() => startRestTimer(120)}
+                      className="px-3 py-2 bg-orange-100 text-orange-600 rounded-lg text-sm font-semibold hover:bg-orange-200 transition-all"
+                    >
+                      ⏱️ 2 min
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Notes de séance</label>
+                <textarea
+                  value={currentWorkoutData?.notes || ''}
+                  onChange={(e) => setCurrentWorkoutData({...currentWorkoutData, notes: e.target.value})}
+                  placeholder="Ex: Bonne forme sur le squat, augmenter charge la prochaine fois..."
+                  rows="3"
+                  className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
+                />
+              </div>
+
+              <button
+                onClick={saveWorkout}
+                className="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-bold text-lg hover:shadow-lg transition-all"
+              >
+                ✅ Terminer la séance
+              </button>
+            </div>
+          )}
+
+          {/* Exercise Library */}
+          <div>
+            <h3 className="text-lg font-bold text-gray-800 mb-3">Bibliothèque d'exercices</h3>
+            
+            {Object.entries(defaultExercises).map(([category, exercises]) => (
+              <div key={category} className="mb-4">
+                <h4 className="text-md font-bold text-gray-700 mb-2 capitalize">
+                  {category === 'chest' && '💪 Pectoraux'}
+                  {category === 'back' && '🔙 Dos'}
+                  {category === 'shoulders' && '🏔️ Épaules'}
+                  {category === 'arms' && '💪 Bras'}
+                  {category === 'legs' && '🦵 Jambes'}
+                  {category === 'core' && '🎯 Abdos'}
+                </h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {exercises.map(exercise => (
+                    <button
+                      key={exercise.id}
+                      onClick={() => addExerciseToWorkout(exercise)}
+                      disabled={selectedExercises.some(e => e.id === exercise.id)}
+                      className={`p-3 rounded-lg text-left transition-all ${
+                        selectedExercises.some(e => e.id === exercise.id)
+                          ? 'bg-green-100 border-2 border-green-500 cursor-not-allowed'
+                          : 'bg-white border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50'
+                      }`}
+                    >
+                      <div className="font-semibold text-sm text-gray-800">{exercise.name}</div>
+                      <div className="text-xs text-gray-600">{exercise.muscle}</div>
+                      {selectedExercises.some(e => e.id === exercise.id) && (
+                        <div className="text-xs text-green-600 mt-1">✓ Ajouté</div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
+```
+
+);
+};
+
+export default CompleteWorkoutTracker;
