@@ -819,7 +819,7 @@ async function createAsso() {
 
   toast(name + ' créée !', '✅', 'success');
 
-  currentAsso = data;
+  currentAsso = data[0];
 
   document.getElementById('sw-name').textContent = data.name;
 
