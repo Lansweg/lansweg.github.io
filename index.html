@@ -792,22 +792,47 @@ async function selectAsso(id, name) {
 
 async function createAsso() {
   const name = v('na-name');
-  if (!name) { toast('Le nom est obligatoire', '⚠️'); return; }
-  const { data, error } = await sb.from('associations').insert({
-    owner_id: currentUser.id,
-    name, city: v('na-city'),
-    president: v('na-pres'),
-    cotisation_amount: parseFloat(v('na-cotis')) || 25
-  }).select().single();
-  if (error) { toast('Erreur: ' + error.message, '❌', 'error'); return; }
+
+  if (!name) {
+    toast('Le nom est obligatoire', '⚠️');
+    return;
+  }
+
+  const { data, error } = await sb
+    .from('associations')
+    .insert({
+      name,
+      city: v('na-city'),
+      president: v('na-pres'),
+      cotisation_amount: parseFloat(v('na-cotis')) || 25
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error(error);
+    toast('Erreur: ' + error.message, '❌', 'error');
+    return;
+  }
+
   closeModal('modal-new-asso');
+
   toast(name + ' créée !', '✅', 'success');
+
   currentAsso = data;
+
   document.getElementById('sw-name').textContent = data.name;
-  hide('picker-screen'); show('app');
+
+  hide('picker-screen');
+  show('app');
+
   fillSettings();
+
   await loadDashboard();
-  ['na-name','na-city','na-pres'].forEach(id => document.getElementById(id).value = '');
+
+  ['na-name','na-city','na-pres'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
 }
 
 // ════════════════════════════════════════
