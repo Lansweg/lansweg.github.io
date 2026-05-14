@@ -2,612 +2,1239 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AssoPilot — La gestion d'association, enfin simple</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AssoPilot</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://js.stripe.com/v3/"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root{
+  --ink:#0F1117;--ink2:#1E2230;--sage:#2D6A4F;--sage2:#40916C;--sage3:#74C69D;
+  --cream:#F8F5F0;--cream2:#EDE8E0;--warm:#E76F51;--warm2:#F4A261;
+  --blue:#3A70C4;--red:#D64045;--yellow:#F4B942;
+  --white:#FFFFFF;--text:#2C2C2C;--muted:#7A7A7A;--border:#E8E4DC;
+  --sidebar:225px;--r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
 
-:root {
-  --ink: #0F1117;
-  --ink2: #1E2230;
-  --sage: #2D6A4F;
-  --sage2: #40916C;
-  --sage3: #74C69D;
-  --lime: #B7E4C7;
-  --cream: #F8F5F0;
-  --cream2: #EDE8E0;
-  --warm: #E76F51;
-  --warm2: #F4A261;
-  --text: #2C2C2C;
-  --muted: #7A7A7A;
-  --white: #FFFFFF;
-  --r: 14px;
+/* ── AUTH SCREENS ── */
+.auth-screen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:var(--ink);padding:20px;
 }
+.auth-box{
+  background:var(--white);border-radius:20px;padding:40px;
+  width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,0.4);
+}
+.auth-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;text-align:center;margin-bottom:8px;}
+.auth-logo span{color:var(--sage2);}
+.auth-sub{text-align:center;color:var(--muted);font-size:14px;margin-bottom:32px;}
+.auth-tabs{display:flex;background:var(--cream);border-radius:10px;padding:4px;margin-bottom:28px;gap:4px;}
+.auth-tab{
+  flex:1;padding:9px;border-radius:7px;border:none;font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;color:var(--muted);
+}
+.auth-tab.active{background:var(--white);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.form-group{margin-bottom:16px;}
+.form-label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:block;}
+.form-input{
+  width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:9px;
+  font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border .2s;
+  background:var(--white);color:var(--text);
+}
+.form-input:focus{border-color:var(--sage2);}
+.btn-full{
+  width:100%;padding:13px;border-radius:50px;border:none;
+  font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;
+  transition:all .2s;margin-top:4px;
+}
+.btn-full.primary{background:var(--ink);color:var(--white);}
+.btn-full.primary:hover{background:var(--sage2);}
+.btn-full.sage{background:var(--sage2);color:var(--white);}
+.btn-full.sage:hover{background:var(--sage);}
+.auth-err{background:rgba(214,64,69,0.1);color:var(--red);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;}
+.auth-ok{background:rgba(64,145,108,0.1);color:var(--sage2);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;}
 
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+/* ── ASSO PICKER ── */
+.picker-screen{
+  min-height:100vh;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;
+}
+.picker-box{background:var(--white);border-radius:20px;padding:36px;width:100%;max-width:560px;box-shadow:0 8px 40px rgba(0,0,0,0.08);}
+.picker-title{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;margin-bottom:6px;}
+.picker-sub{color:var(--muted);font-size:14px;margin-bottom:28px;}
+.asso-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.asso-item{
+  display:flex;align-items:center;gap:14px;padding:16px 18px;
+  border:1.5px solid var(--border);border-radius:12px;cursor:pointer;
+  transition:all .2s;background:var(--white);
+}
+.asso-item:hover{border-color:var(--sage2);background:rgba(64,145,108,0.04);}
+.asso-item.selected{border-color:var(--sage2);background:rgba(64,145,108,0.08);}
+.asso-avatar{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,var(--sage2),var(--sage3));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:18px;color:var(--white);flex-shrink:0;
+}
+.asso-info{flex:1;}
+.asso-name{font-weight:700;font-size:15px;}
+.asso-role{font-size:12px;color:var(--muted);margin-top:2px;}
+.asso-plan{font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:rgba(64,145,108,0.1);color:var(--sage2);}
+.divider{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px;margin:16px 0;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
 
-html { scroll-behavior: smooth; }
+/* ── APP LAYOUT ── */
+#app{display:none;height:100vh;overflow:hidden;}
+.layout{display:flex;height:100%;}
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--cream);
-  color: var(--text);
-  overflow-x: hidden;
+/* SIDEBAR */
+.sidebar{
+  width:var(--sidebar);flex-shrink:0;background:var(--ink);color:var(--white);
+  display:flex;flex-direction:column;height:100vh;overflow-y:auto;transition:left .25s;
 }
+.sidebar-logo{
+  padding:22px 18px 18px;font-family:'Syne',sans-serif;font-weight:800;font-size:20px;
+  border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:8px;
+}
+.sidebar-logo span{color:var(--sage3);}
+.logo-dot{width:7px;height:7px;background:var(--warm);border-radius:50%;}
+.asso-switcher{
+  padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.07);cursor:pointer;
+  transition:background .2s;
+}
+.asso-switcher:hover{background:rgba(255,255,255,0.05);}
+.asso-switcher-name{font-weight:600;font-size:13px;display:flex;justify-content:space-between;align-items:center;}
+.asso-switcher-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.sidebar-nav{flex:1;padding:10px 0;}
+.nav-section{margin-bottom:4px;}
+.nav-section-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25);padding:10px 18px 5px;}
+.nav-item{
+  display:flex;align-items:center;gap:11px;padding:9px 18px;cursor:pointer;
+  font-size:13px;font-weight:500;color:rgba(255,255,255,0.6);
+  transition:all .15s;border-left:3px solid transparent;user-select:none;
+}
+.nav-item:hover{color:var(--white);background:rgba(255,255,255,0.05);}
+.nav-item.active{color:var(--white);background:rgba(116,198,157,0.12);border-left-color:var(--sage3);}
+.nav-item .ni{font-size:16px;width:20px;text-align:center;}
+.sidebar-bottom{padding:14px 16px;border-top:1px solid rgba(255,255,255,0.07);}
+.user-row{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.user-av{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--sage2),var(--sage3));
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;
+}
+.user-name-s{font-size:13px;font-weight:600;flex:1;}
+.user-plan-s{font-size:10px;color:rgba(255,255,255,0.35);}
+.logout-btn{
+  background:rgba(255,255,255,0.07);border:none;color:rgba(255,255,255,0.5);
+  font-size:16px;cursor:pointer;padding:5px 7px;border-radius:7px;transition:all .2s;
+}
+.logout-btn:hover{background:rgba(214,64,69,0.2);color:var(--red);}
 
-/* ── NAV ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  padding: 0 5%;
-  display: flex; align-items: center; justify-content: space-between;
-  height: 68px;
-  background: rgba(248,245,240,0.88);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{
+  height:60px;background:var(--white);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0;
 }
-.nav-logo {
-  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px;
-  color: var(--ink);
-  display: flex; align-items: center; gap: 8px;
+.topbar-title{font-family:'Syne',sans-serif;font-weight:800;font-size:19px;flex:1;}
+.btn{
+  padding:8px 16px;border-radius:50px;font-size:13px;font-weight:600;
+  cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px;
+  font-family:'DM Sans',sans-serif;white-space:nowrap;
 }
-.nav-logo span { color: var(--sage2); }
-.nav-logo .dot { width: 8px; height: 8px; background: var(--warm); border-radius: 50%; display: inline-block; margin-left: 2px; }
-.nav-links { display: flex; gap: 32px; list-style: none; }
-.nav-links a { font-size: 15px; color: var(--muted); text-decoration: none; font-weight: 500; transition: color .2s; }
-.nav-links a:hover { color: var(--ink); }
-.nav-cta {
-  background: var(--ink); color: var(--white);
-  padding: 10px 22px; border-radius: 50px; font-size: 14px; font-weight: 600;
-  text-decoration: none; transition: all .2s; white-space: nowrap;
+.btn.primary{background:var(--ink);color:var(--white);}
+.btn.primary:hover{background:var(--sage2);}
+.btn.secondary{background:var(--cream);color:var(--text);border:1px solid var(--border);}
+.btn.secondary:hover{background:var(--cream2);}
+.btn.sage{background:var(--sage2);color:var(--white);}
+.btn.danger{background:rgba(214,64,69,0.1);color:var(--red);border:1px solid rgba(214,64,69,0.2);}
+.btn.sm{padding:6px 12px;font-size:12px;}
+.btn-icon{
+  width:34px;height:34px;border-radius:8px;background:var(--cream);
+  border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;
+  justify-content:center;font-size:15px;transition:all .15s;
 }
-.nav-cta:hover { background: var(--sage2); transform: translateY(-1px); }
+.btn-icon:hover{background:var(--cream2);}
+.content{flex:1;overflow-y:auto;padding:24px;}
+.page{display:none;}
+.page.active{display:block;}
 
-/* ── HERO ── */
-.hero {
-  min-height: 100vh;
-  display: flex; flex-direction: column; justify-content: center;
-  padding: 120px 5% 80px;
-  position: relative; overflow: hidden;
-}
-.hero-bg {
-  position: absolute; inset: 0; z-index: 0;
-  background:
-    radial-gradient(ellipse 70% 60% at 80% 20%, rgba(45,106,79,0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 50% at 20% 80%, rgba(231,111,81,0.07) 0%, transparent 50%);
-}
-.hero-grid {
-  position: absolute; inset: 0; z-index: 0; opacity: .035;
-  background-image: linear-gradient(var(--ink) 1px, transparent 1px), linear-gradient(90deg, var(--ink) 1px, transparent 1px);
-  background-size: 48px 48px;
-}
-.hero-content { position: relative; z-index: 1; max-width: 780px; }
-.hero-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--white); border: 1px solid var(--cream2);
-  border-radius: 50px; padding: 7px 16px; margin-bottom: 32px;
-  font-size: 13px; font-weight: 500; color: var(--sage2);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  animation: fadeUp .6s ease both;
-}
-.hero-badge::before { content: ''; width: 8px; height: 8px; background: var(--sage3); border-radius: 50%; }
-h1 {
-  font-family: 'Syne', sans-serif; font-weight: 800;
-  font-size: clamp(42px, 6.5vw, 82px);
-  line-height: 1.05; letter-spacing: -2px;
-  color: var(--ink);
-  animation: fadeUp .6s .1s ease both;
-}
-h1 em { font-style: normal; color: var(--sage2); }
-h1 .strike {
-  position: relative; color: var(--muted);
-  text-decoration: line-through; text-decoration-color: var(--warm);
-}
-.hero-sub {
-  margin-top: 24px; font-size: clamp(17px, 2vw, 20px);
-  color: var(--muted); line-height: 1.65; max-width: 560px;
-  font-weight: 300;
-  animation: fadeUp .6s .2s ease both;
-}
-.hero-actions {
-  margin-top: 40px; display: flex; gap: 14px; flex-wrap: wrap;
-  animation: fadeUp .6s .3s ease both;
-}
-.btn-primary {
-  background: var(--ink); color: var(--white);
-  padding: 16px 32px; border-radius: 50px; font-size: 16px; font-weight: 600;
-  text-decoration: none; transition: all .2s; display: inline-flex; align-items: center; gap: 10px;
-  box-shadow: 0 4px 24px rgba(15,17,23,0.25);
-}
-.btn-primary:hover { background: var(--sage2); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(45,106,79,0.3); }
-.btn-secondary {
-  background: transparent; color: var(--ink);
-  padding: 16px 28px; border-radius: 50px; font-size: 16px; font-weight: 500;
-  text-decoration: none; border: 1.5px solid var(--cream2); transition: all .2s;
-  display: inline-flex; align-items: center; gap: 8px;
-}
-.btn-secondary:hover { border-color: var(--ink); background: var(--white); }
-.hero-stats {
-  margin-top: 60px; display: flex; gap: 40px; flex-wrap: wrap;
-  animation: fadeUp .6s .4s ease both;
-}
-.stat { }
-.stat-n { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 32px; color: var(--ink); }
-.stat-l { font-size: 13px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+/* ── KPI / CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px;}
+.kpi{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden;}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kpi.green::after{background:linear-gradient(90deg,var(--sage2),var(--sage3));}
+.kpi.warm::after{background:linear-gradient(90deg,var(--warm),var(--warm2));}
+.kpi.blue::after{background:linear-gradient(90deg,var(--blue),#5B8FE0);}
+.kpi.yellow::after{background:linear-gradient(90deg,var(--yellow),#FBBF24);}
+.kpi-label{font-size:11px;color:var(--muted);font-weight:500;margin-bottom:6px;}
+.kpi-num{font-family:'Syne',sans-serif;font-weight:800;font-size:30px;line-height:1;margin-bottom:4px;}
+.kpi-sub{font-size:11px;color:var(--muted);}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:20px;}
+.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
 
-/* ── PAIN SECTION ── */
-.pain {
-  padding: 100px 5%;
-  background: var(--ink);
-  color: var(--white);
-}
-.section-label {
-  font-size: 12px; letter-spacing: 3px; text-transform: uppercase; font-weight: 600;
-  color: var(--sage3); margin-bottom: 16px;
-}
-.pain h2 {
-  font-family: 'Syne', sans-serif; font-weight: 800;
-  font-size: clamp(30px, 4vw, 52px); line-height: 1.1; letter-spacing: -1px;
-  max-width: 700px; margin-bottom: 60px;
-}
-.pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
-.pain-card {
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: var(--r); padding: 28px;
-  transition: all .25s;
-}
-.pain-card:hover { background: rgba(255,255,255,0.07); transform: translateY(-3px); }
-.pain-icon { font-size: 28px; margin-bottom: 14px; }
-.pain-card h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; margin-bottom: 8px; }
-.pain-card p { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.6; font-weight: 300; }
+/* TABLE */
+.table-wrap{overflow-x:auto;}
+.table{width:100%;border-collapse:collapse;background:var(--white);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;}
+.table th{text-align:left;padding:11px 14px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--cream);border-bottom:1px solid var(--border);}
+.table td{padding:12px 14px;font-size:13px;border-bottom:1px solid var(--border);}
+.table tr:last-child td{border-bottom:none;}
+.table tr:hover td{background:var(--cream);}
+.av-sm{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:var(--white);flex-shrink:0;}
+.badge-status{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-status.actif{background:rgba(64,145,108,0.1);color:var(--sage2);}
+.badge-status.retard{background:rgba(244,185,66,0.15);color:#B45309;}
+.badge-status.inactif{background:rgba(122,122,122,0.1);color:var(--muted);}
 
-/* ── FEATURES ── */
-.features { padding: 100px 5%; }
-.section-title {
-  font-family: 'Syne', sans-serif; font-weight: 800;
-  font-size: clamp(28px, 4vw, 48px); line-height: 1.1; letter-spacing: -1px;
-  margin-bottom: 12px;
+/* FILTERS */
+.search-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.search-input{
+  flex:1;min-width:180px;padding:9px 16px;border:1px solid var(--border);
+  border-radius:50px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;
+  background:var(--white);
 }
-.section-sub { font-size: 18px; color: var(--muted); font-weight: 300; max-width: 500px; margin-bottom: 64px; }
-.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
-.feat-card {
-  background: var(--white); border: 1px solid var(--cream2);
-  border-radius: var(--r); padding: 32px;
-  transition: all .25s; position: relative; overflow: hidden;
-}
-.feat-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: linear-gradient(90deg, var(--sage2), var(--sage3));
-  transform: scaleX(0); transform-origin: left; transition: transform .3s;
-}
-.feat-card:hover::before { transform: scaleX(1); }
-.feat-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.08); transform: translateY(-4px); }
-.feat-icon {
-  width: 52px; height: 52px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px; margin-bottom: 20px;
-}
-.feat-icon.green { background: rgba(45,106,79,0.1); }
-.feat-icon.warm { background: rgba(231,111,81,0.1); }
-.feat-icon.blue { background: rgba(58,112,196,0.1); }
-.feat-icon.yellow { background: rgba(244,162,97,0.12); }
-.feat-card h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; margin-bottom: 10px; }
-.feat-card p { font-size: 14px; color: var(--muted); line-height: 1.65; }
-.feat-list { margin-top: 14px; list-style: none; display: flex; flex-direction: column; gap: 6px; }
-.feat-list li { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
-.feat-list li::before { content: '✓'; color: var(--sage2); font-weight: 700; flex-shrink: 0; }
+.search-input:focus{border-color:var(--sage2);}
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.chip{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--muted);transition:all .15s;}
+.chip.active{background:var(--ink);color:var(--white);border-color:var(--ink);}
 
-/* ── PRICING ── */
-.pricing {
-  padding: 100px 5%;
-  background: var(--cream2);
-}
-.pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 1000px; }
-.price-card {
-  background: var(--white); border: 1px solid var(--cream2);
-  border-radius: var(--r); padding: 36px; position: relative;
-  transition: all .25s;
-}
-.price-card:hover { box-shadow: 0 16px 48px rgba(0,0,0,0.1); transform: translateY(-4px); }
-.price-card.featured {
-  background: var(--ink); color: var(--white);
-  border-color: var(--ink); transform: scale(1.03);
-}
-.price-card.featured:hover { transform: scale(1.03) translateY(-4px); }
-.price-badge {
-  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-  background: var(--warm); color: var(--white);
-  font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  padding: 4px 14px; border-radius: 50px;
-}
-.price-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; margin-bottom: 8px; }
-.price-desc { font-size: 13px; color: var(--muted); margin-bottom: 28px; line-height: 1.5; }
-.price-card.featured .price-desc { color: rgba(255,255,255,0.55); }
-.price-amount { display: flex; align-items: baseline; gap: 4px; margin-bottom: 8px; }
-.price-amount .eur { font-size: 22px; font-weight: 600; }
-.price-amount .num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 52px; line-height: 1; }
-.price-amount .per { font-size: 15px; color: var(--muted); }
-.price-card.featured .price-amount .per { color: rgba(255,255,255,0.5); }
-.price-note { font-size: 12px; color: var(--muted); margin-bottom: 32px; }
-.price-card.featured .price-note { color: rgba(255,255,255,0.4); }
-.price-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
-.price-features li { font-size: 14px; display: flex; align-items: flex-start; gap: 10px; line-height: 1.4; }
-.price-features li::before { content: '✓'; color: var(--sage2); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
-.price-card.featured .price-features li::before { color: var(--sage3); }
-.price-features li.muted { opacity: .4; }
-.price-features li.muted::before { content: '—'; }
-.btn-price {
-  width: 100%; padding: 14px; border-radius: 50px; font-size: 15px; font-weight: 600;
-  text-align: center; text-decoration: none; display: block; transition: all .2s; border: none; cursor: pointer;
-}
-.btn-price.dark { background: var(--ink); color: var(--white); }
-.btn-price.dark:hover { background: var(--sage2); }
-.btn-price.light { background: var(--white); color: var(--ink); }
-.btn-price.light:hover { background: var(--cream); }
-.btn-price.outline { background: transparent; color: var(--ink); border: 1.5px solid var(--cream2); }
-.btn-price.outline:hover { border-color: var(--ink); }
+/* DOCS */
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;}
+.doc-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:22px;text-align:center;cursor:pointer;transition:all .2s;}
+.doc-card:hover{box-shadow:0 8px 30px rgba(0,0,0,0.08);transform:translateY(-3px);border-color:var(--sage3);}
+.doc-icon{font-size:34px;margin-bottom:12px;}
+.doc-name{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:5px;}
+.doc-desc{font-size:12px;color:var(--muted);line-height:1.4;}
+.doc-badge{display:inline-block;margin-top:10px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:20px;}
+.doc-badge.auto{background:rgba(64,145,108,0.1);color:var(--sage2);}
+.doc-preview{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:28px;max-width:660px;margin:0 auto;font-size:13px;line-height:1.7;}
+.doc-preview h3{font-family:'Syne',sans-serif;font-weight:800;text-align:center;margin-bottom:6px;font-size:17px;}
+.doc-center{text-align:center;color:var(--muted);margin-bottom:20px;font-size:12px;}
+.doc-section{margin-bottom:14px;}
+.doc-hr{border:none;border-top:1px solid var(--border);margin:14px 0;}
 
-/* ── TESTIMONIALS ── */
-.testimonials { padding: 100px 5%; }
-.testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-.testi-card {
-  background: var(--white); border: 1px solid var(--cream2);
-  border-radius: var(--r); padding: 28px; position: relative;
-}
-.testi-quote { font-size: 40px; color: var(--cream2); font-family: Georgia, serif; line-height: 1; margin-bottom: 4px; }
-.testi-text { font-size: 15px; line-height: 1.65; color: var(--text); margin-bottom: 20px; font-style: italic; font-weight: 300; }
-.testi-author { display: flex; align-items: center; gap: 12px; }
-.testi-avatar {
-  width: 42px; height: 42px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; font-weight: 700; color: var(--white); flex-shrink: 0;
-}
-.testi-avatar.g { background: var(--sage2); }
-.testi-avatar.o { background: var(--warm); }
-.testi-avatar.b { background: #3A70C4; }
-.testi-name { font-weight: 600; font-size: 14px; }
-.testi-role { font-size: 12px; color: var(--muted); }
-.stars { color: #F4A261; font-size: 14px; margin-bottom: 12px; }
+/* COMPTA */
+.compta-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+@media(max-width:600px){.compta-kpi{grid-template-columns:1fr;}}
+.ckpi{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px;text-align:center;}
+.ckpi-label{font-size:11px;color:var(--muted);margin-bottom:5px;}
+.ckpi-num{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;}
+.ckpi-num.pos{color:var(--sage2);}
+.ckpi-num.neg{color:var(--red);}
+.ckpi-num.neu{color:var(--blue);}
+.trans-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--white);border:1px solid var(--border);border-radius:9px;transition:all .15s;margin-bottom:6px;}
+.trans-item:hover{background:var(--cream);}
+.trans-cat{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.trans-info{flex:1;}
+.trans-label{font-size:13px;font-weight:500;}
+.trans-date{font-size:11px;color:var(--muted);}
+.trans-amount{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;}
+.trans-amount.inc{color:var(--sage2);}
+.trans-amount.exp{color:var(--red);}
 
-/* ── FAQ ── */
-.faq { padding: 80px 5%; background: var(--cream2); }
-.faq-list { max-width: 720px; display: flex; flex-direction: column; gap: 12px; }
-.faq-item {
-  background: var(--white); border: 1px solid var(--cream2); border-radius: var(--r);
-  overflow: hidden;
-}
-.faq-q {
-  padding: 20px 24px; font-weight: 600; font-size: 15px; cursor: pointer;
-  display: flex; justify-content: space-between; align-items: center;
-  user-select: none;
-}
-.faq-q .arrow { transition: transform .3s; font-size: 18px; color: var(--muted); }
-.faq-item.open .faq-q .arrow { transform: rotate(180deg); }
-.faq-a { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
-.faq-a-inner { padding: 0 24px 20px; font-size: 14px; color: var(--muted); line-height: 1.7; }
-.faq-item.open .faq-a { max-height: 200px; }
+/* EVENTS */
+.ev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.ev-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:all .2s;}
+.ev-card:hover{box-shadow:0 8px 30px rgba(0,0,0,0.08);transform:translateY(-2px);}
+.ev-band{height:4px;}
+.ev-body{padding:18px;}
+.ev-date{font-size:11px;color:var(--muted);margin-bottom:6px;}
+.ev-name{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:6px;}
+.ev-desc{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.4;}
+.ev-stats{display:flex;gap:14px;margin-bottom:10px;}
+.ev-stat{font-size:11px;color:var(--muted);}
+.ev-stat strong{color:var(--text);}
+.progress-bar{background:var(--cream2);border-radius:4px;height:5px;margin-bottom:12px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:4px;}
 
-/* ── CTA FINAL ── */
-.cta-final {
-  padding: 100px 5%; background: var(--ink); text-align: center; color: var(--white);
-}
-.cta-final h2 {
-  font-family: 'Syne', sans-serif; font-weight: 800;
-  font-size: clamp(30px, 5vw, 60px); line-height: 1.1; letter-spacing: -1.5px;
-  max-width: 700px; margin: 0 auto 24px;
-}
-.cta-final p { font-size: 18px; color: rgba(255,255,255,0.55); margin-bottom: 44px; font-weight: 300; }
-.cta-final .btn-primary { font-size: 17px; padding: 18px 40px; }
+/* SETTINGS */
+.settings-wrap{max-width:560px;}
+.settings-section{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px;}
+.settings-title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:500px){.form-row{grid-template-columns:1fr;}}
 
-/* ── FOOTER ── */
-footer {
-  background: var(--ink2); color: rgba(255,255,255,0.4);
-  padding: 40px 5%; display: flex; justify-content: space-between; align-items: center; flex-wrap: gap;
-  font-size: 13px;
+/* PLAN / UPGRADE */
+.plan-box{background:var(--ink);color:var(--white);border-radius:16px;padding:24px;margin-bottom:16px;}
+.plan-title{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:4px;}
+.plan-desc{font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:18px;}
+.plan-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.plan-opt{
+  background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.15);
+  border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;
 }
-.footer-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: var(--white); }
+.plan-opt:hover,.plan-opt.selected{background:rgba(116,198,157,0.15);border-color:var(--sage3);}
+.plan-opt-name{font-weight:700;font-size:14px;margin-bottom:4px;}
+.plan-opt-price{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--sage3);}
+.plan-opt-per{font-size:11px;color:rgba(255,255,255,0.4);}
+.plan-opt-note{font-size:11px;color:var(--warm2);margin-top:4px;}
 
-/* ── ANIMATIONS ── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);}
+.modal-bg.open{display:flex;}
+.modal{background:var(--white);border-radius:16px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.2);animation:mIn .25s cubic-bezier(.34,1.56,.64,1);}
+@keyframes mIn{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:scale(1)}}
+.modal-header{padding:22px 22px 0;display:flex;justify-content:space-between;align-items:center;}
+.modal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;}
+.modal-close{background:var(--cream);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;}
+.modal-body{padding:18px 22px 22px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;}
+
+/* TOAST */
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:500;display:flex;flex-direction:column;gap:8px;}
+.toast-n{
+  background:var(--ink);color:var(--white);padding:11px 16px;
+  border-radius:10px;font-size:13px;font-weight:500;
+  box-shadow:0 8px 30px rgba(0,0,0,0.2);display:flex;align-items:center;gap:9px;
+  animation:tIn .3s cubic-bezier(.34,1.56,.64,1);max-width:300px;
 }
-.reveal { opacity: 0; transform: translateY(30px); transition: all .6s ease; }
-.reveal.visible { opacity: 1; transform: translateY(0); }
+.toast-n.success{border-left:3px solid var(--sage3);}
+.toast-n.error{border-left:3px solid var(--red);}
+@keyframes tIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 
-/* ── MOBILE ── */
-@media(max-width: 768px) {
-  .nav-links { display: none; }
-  .pricing-grid { grid-template-columns: 1fr; }
-  .price-card.featured { transform: scale(1); }
-  .hero-stats { gap: 24px; }
-  footer { flex-direction: column; gap: 12px; text-align: center; }
+/* LOADER */
+.loader{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--muted);font-size:14px;gap:10px;}
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--sage2);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:48px 20px;color:var(--muted);}
+.empty-icon{font-size:44px;margin-bottom:10px;}
+.empty h3{font-family:'Syne',sans-serif;font-size:17px;color:var(--text);margin-bottom:5px;}
+.empty p{font-size:13px;margin-bottom:16px;}
+
+/* MOBILE */
+.menu-toggle{display:none;background:none;border:none;font-size:22px;cursor:pointer;padding:4px;}
+@media(max-width:768px){
+  .sidebar{position:fixed;left:calc(-1 * var(--sidebar));top:0;bottom:0;z-index:100;}
+  .sidebar.open{left:0;}
+  .menu-toggle{display:flex;}
+  .content{padding:16px;}
+  .kpi-grid{grid-template-columns:1fr 1fr;}
 }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-logo">Asso<span>Pilot</span><span class="dot"></span></div>
-  <ul class="nav-links">
-    <li><a href="#features">Fonctions</a></li>
-    <li><a href="#pricing">Tarifs</a></li>
-    <li><a href="#faq">FAQ</a></li>
-  </ul>
-  <a href="#pricing" class="nav-cta">Essai gratuit →</a>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
-  <div class="hero-content">
-    <div class="hero-badge">✦ Conçu pour les associations loi 1901 françaises</div>
-    <h1>
-      Fini les<br>
-      <span class="strike">tableaux Excel</span><br>
-      <em>Bienvenue AssoPilot</em>
-    </h1>
-    <p class="hero-sub">Gérez vos adhérents, cotisations, assemblées générales et comptabilité en un seul endroit. Simple, légal, français.</p>
-    <div class="hero-actions">
-      <a href="app/assopilot-app.html" class="btn-primary">🚀 Essayer gratuitement <small style="opacity:.7;font-size:12px">(sans CB)</small></a>
-      <a href="#features" class="btn-secondary">Voir les fonctions →</a>
+<!-- ══ AUTH ══ -->
+<div id="auth-screen" class="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">Asso<span>Pilot</span><span style="display:inline-block;width:7px;height:7px;background:#E76F51;border-radius:50%;margin-left:3px;vertical-align:middle"></span></div>
+    <div class="auth-sub">La gestion d'association, enfin simple.</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login',this)">Connexion</button>
+      <button class="auth-tab" onclick="switchAuthTab('register',this)">Créer un compte</button>
     </div>
-    <div class="hero-stats">
-      <div class="stat"><div class="stat-n">2 min</div><div class="stat-l">pour configurer votre asso</div></div>
-      <div class="stat"><div class="stat-n">100%</div><div class="stat-l">conforme loi 1901</div></div>
-      <div class="stat"><div class="stat-n">0€</div><div class="stat-l">pour commencer</div></div>
+    <div id="auth-err" class="auth-err"></div>
+    <div id="auth-ok" class="auth-ok"></div>
+
+    <!-- LOGIN -->
+    <div id="tab-login">
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="login-email" type="email" placeholder="vous@exemple.fr"></div>
+      <div class="form-group"><label class="form-label">Mot de passe</label><input class="form-input" id="login-pwd" type="password" placeholder="••••••••"></div>
+      <button class="btn-full primary" onclick="doLogin()" id="btn-login">Se connecter</button>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="tab-register" style="display:none">
+      <div class="form-group"><label class="form-label">Nom complet</label><input class="form-input" id="reg-name" placeholder="Marie Dupont"></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="reg-email" type="email" placeholder="vous@exemple.fr"></div>
+      <div class="form-group"><label class="form-label">Mot de passe</label><input class="form-input" id="reg-pwd" type="password" placeholder="8 caractères minimum"></div>
+      <button class="btn-full primary" onclick="doRegister()" id="btn-register">Créer mon compte gratuit</button>
     </div>
   </div>
-</section>
+</div>
 
-<!-- PAIN -->
-<section class="pain">
-  <div class="section-label">Le problème</div>
-  <h2>Les associations méritent mieux que des bricolages</h2>
-  <div class="pain-grid">
-    <div class="pain-card reveal">
-      <div class="pain-icon">📊</div>
-      <h3>Fichiers Excel impossibles</h3>
-      <p>Un fichier par an, des formules cassées, personne ne sait qui a payé sa cotisation.</p>
+<!-- ══ ASSO PICKER ══ -->
+<div id="picker-screen" style="display:none" class="picker-screen">
+  <div class="picker-box">
+    <div class="picker-title">Vos associations</div>
+    <div class="picker-sub">Sélectionnez l'association à gérer ou créez-en une nouvelle.</div>
+    <div class="asso-list" id="asso-list-picker">
+      <div class="loader"><div class="spinner"></div> Chargement…</div>
     </div>
-    <div class="pain-card reveal">
-      <div class="pain-icon">📄</div>
-      <h3>Documents à rédiger de zéro</h3>
-      <p>PV d'AG, convocations, bilans moraux… chaque fois c'est des heures perdues.</p>
-    </div>
-    <div class="pain-card reveal">
-      <div class="pain-icon">💸</div>
-      <h3>Comptabilité confuse</h3>
-      <p>Qui a remboursé quoi ? Le compte de l'asso est-il positif ? Impossible à suivre.</p>
-    </div>
-    <div class="pain-card reveal">
-      <div class="pain-icon">📅</div>
-      <h3>Événements désorganisés</h3>
-      <p>Les inscriptions par SMS, les listes sur papier, les relances manuelles… c'est épuisant.</p>
-    </div>
+    <div class="divider">ou</div>
+    <button class="btn-full sage" onclick="openModal('modal-new-asso')">+ Créer une nouvelle association</button>
+    <button class="btn-full" style="background:transparent;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:10px;font-size:13px" onclick="doLogout()">Se déconnecter</button>
   </div>
-</section>
+</div>
 
-<!-- FEATURES -->
-<section class="features" id="features">
-  <div class="section-label">Ce qu'on fait</div>
-  <div class="section-title">Tout ce dont votre asso a besoin</div>
-  <p class="section-sub">4 modules pensés pour simplifier le quotidien de vos bénévoles.</p>
-  <div class="features-grid">
+<!-- ══ APP ══ -->
+<div id="app">
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">Asso<span>Pilot</span><span class="logo-dot"></span></div>
+      <div class="asso-switcher" onclick="showPicker()">
+        <div class="asso-switcher-name"><span id="sw-name">—</span> <span style="font-size:11px;opacity:.5">⇄</span></div>
+        <div class="asso-switcher-sub">Changer d'association</div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-label">Principal</div>
+          <div class="nav-item active" onclick="goTo('dashboard')"><span class="ni">🏠</span> Tableau de bord</div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-label">Modules</div>
+          <div class="nav-item" onclick="goTo('adherents')"><span class="ni">👥</span> Adhérents</div>
+          <div class="nav-item" onclick="goTo('documents')"><span class="ni">📄</span> Documents</div>
+          <div class="nav-item" onclick="goTo('compta')"><span class="ni">💰</span> Comptabilité</div>
+          <div class="nav-item" onclick="goTo('events')"><span class="ni">🗓️</span> Événements</div>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-label">Compte</div>
+          <div class="nav-item" onclick="goTo('settings')"><span class="ni">⚙️</span> Paramètres</div>
+          <div class="nav-item" onclick="goTo('upgrade')"><span class="ni">⭐</span> Passer Pro</div>
+        </div>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="user-row">
+          <div class="user-av" id="user-av">?</div>
+          <div style="flex:1"><div class="user-name-s" id="user-name-s">—</div><div class="user-plan-s" id="user-plan-s">Plan gratuit</div></div>
+          <button class="logout-btn" onclick="doLogout()" title="Déconnexion">⏻</button>
+        </div>
+      </div>
+    </aside>
 
-    <div class="feat-card reveal">
-      <div class="feat-icon green">👥</div>
-      <h3>Gestion des adhérents</h3>
-      <p>Fiches membres, suivi des cotisations, relances automatiques, historique complet.</p>
-      <ul class="feat-list">
-        <li>Import/export CSV</li>
-        <li>Statuts : actif, en retard, radié</li>
-        <li>Reçus de cotisation PDF auto</li>
-        <li>Envoi d'e-mails groupés</li>
-      </ul>
-    </div>
+    <div class="main">
+      <div class="topbar">
+        <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div class="topbar-title" id="topbar-title">Tableau de bord</div>
+        <div id="topbar-actions" style="display:flex;gap:8px;align-items:center"></div>
+      </div>
 
-    <div class="feat-card reveal">
-      <div class="feat-icon warm">📝</div>
-      <h3>Documents officiels</h3>
-      <p>Générez en 1 clic tous vos documents légaux, pré-remplis avec vos données.</p>
-      <ul class="feat-list">
-        <li>Convocation AG + ordre du jour</li>
-        <li>PV d'assemblée générale</li>
-        <li>Bilan moral & financier</li>
-        <li>Déclaration en préfecture</li>
-      </ul>
-    </div>
+      <div class="content">
 
-    <div class="feat-card reveal">
-      <div class="feat-icon blue">📒</div>
-      <h3>Comptabilité simplifiée</h3>
-      <p>Recettes, dépenses, solde en temps réel. Pensé pour les non-comptables.</p>
-      <ul class="feat-list">
-        <li>Tableau de trésorerie auto</li>
-        <li>Catégories de dépenses</li>
-        <li>Export bilan annuel PDF</li>
-        <li>Multi-comptes bancaires</li>
-      </ul>
-    </div>
+        <!-- DASHBOARD -->
+        <div class="page active" id="page-dashboard">
+          <div class="kpi-grid">
+            <div class="kpi green"><div class="kpi-label">👥 Adhérents actifs</div><div class="kpi-num" id="kpi-adh">—</div><div class="kpi-sub">membres</div></div>
+            <div class="kpi warm"><div class="kpi-label">⚠️ Cotisations en retard</div><div class="kpi-num" id="kpi-retard">—</div><div class="kpi-sub">à relancer</div></div>
+            <div class="kpi blue"><div class="kpi-label">💰 Solde trésorerie</div><div class="kpi-num" id="kpi-solde">—</div><div class="kpi-sub">euros</div></div>
+            <div class="kpi yellow"><div class="kpi-label">🗓️ Événements</div><div class="kpi-num" id="kpi-ev">—</div><div class="kpi-sub">à venir</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Activité récente</div>
+            <div id="dash-activity"><div class="loader"><div class="spinner"></div> Chargement…</div></div>
+          </div>
+        </div>
 
-    <div class="feat-card reveal">
-      <div class="feat-icon yellow">🗓️</div>
-      <h3>Événements & réservations</h3>
-      <p>Créez vos événements, gérez les inscriptions, envoyez les confirmations.</p>
-      <ul class="feat-list">
-        <li>Page d'inscription publique</li>
-        <li>Gestion des présences</li>
-        <li>Rappels automatiques</li>
-        <li>Billetterie simple</li>
-      </ul>
-    </div>
+        <!-- ADHÉRENTS -->
+        <div class="page" id="page-adherents">
+          <div class="search-row">
+            <input class="search-input" placeholder="🔍 Rechercher…" oninput="filterAdh(this.value)" id="adh-search">
+            <button class="btn primary" onclick="openModal('modal-adherent')">+ Adhérent</button>
+          </div>
+          <div class="filter-chips">
+            <span class="chip active" onclick="setAdhFilter('tous',this)">Tous</span>
+            <span class="chip" onclick="setAdhFilter('actif',this)">✓ Actifs</span>
+            <span class="chip" onclick="setAdhFilter('retard',this)">⚠ En retard</span>
+            <span class="chip" onclick="setAdhFilter('inactif',this)">— Inactifs</span>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Membre</th><th>Contact</th><th>Cotisation</th><th>Statut</th><th>Actions</th></tr></thead>
+              <tbody id="adh-tbody"><tr><td colspan="5"><div class="loader"><div class="spinner"></div> Chargement…</div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
 
-  </div>
-</section>
+        <!-- DOCUMENTS -->
+        <div class="page" id="page-documents">
+          <div id="doc-list">
+            <div class="doc-grid">
+              <div class="doc-card" onclick="showDoc('ag')"><div class="doc-icon">📋</div><div class="doc-name">Convocation AG</div><div class="doc-desc">Lettre de convocation officielle.</div><span class="doc-badge auto">Auto-rempli</span></div>
+              <div class="doc-card" onclick="showDoc('pv')"><div class="doc-icon">📝</div><div class="doc-name">PV d'AG</div><div class="doc-desc">Procès-verbal conforme loi 1901.</div><span class="doc-badge auto">Auto-rempli</span></div>
+              <div class="doc-card" onclick="showDoc('bilan')"><div class="doc-icon">📊</div><div class="doc-name">Bilan moral & financier</div><div class="doc-desc">Rapport annuel complet.</div><span class="doc-badge auto">Auto-rempli</span></div>
+              <div class="doc-card" onclick="showDoc('recu')"><div class="doc-icon">🧾</div><div class="doc-name">Reçu de cotisation</div><div class="doc-desc">Reçu fiscal par adhérent.</div><span class="doc-badge auto">Auto-rempli</span></div>
+              <div class="doc-card" onclick="showDoc('statuts')"><div class="doc-icon">📜</div><div class="doc-name">Statuts type</div><div class="doc-desc">Modèle statuts loi 1901.</div><span class="doc-badge auto">Modèle</span></div>
+              <div class="doc-card" onclick="showDoc('prefecture')"><div class="doc-icon">🏛️</div><div class="doc-name">Déclaration préfecture</div><div class="doc-desc">Cerfa 13971*03 pré-rempli.</div><span class="doc-badge auto">Modèle</span></div>
+            </div>
+          </div>
+          <div id="doc-preview" style="display:none">
+            <button class="btn secondary" style="margin-bottom:14px" onclick="document.getElementById('doc-list').style.display='';document.getElementById('doc-preview').style.display='none'">← Retour</button>
+            <div class="doc-preview" id="doc-preview-content"></div>
+          </div>
+        </div>
 
-<!-- PRICING -->
-<section class="pricing" id="pricing">
-  <div class="section-label">Tarifs</div>
-  <div class="section-title" style="margin-bottom:12px">Transparent, sans surprise</div>
-  <p class="section-sub">Commencez gratuitement. Passez au payant quand vous êtes prêt.</p>
+        <!-- COMPTA -->
+        <div class="page" id="page-compta">
+          <div class="compta-kpi">
+            <div class="ckpi"><div class="ckpi-label">💚 Recettes</div><div class="ckpi-num pos" id="ck-inc">—</div></div>
+            <div class="ckpi"><div class="ckpi-label">🔴 Dépenses</div><div class="ckpi-num neg" id="ck-exp">—</div></div>
+            <div class="ckpi"><div class="ckpi-label">🔵 Solde</div><div class="ckpi-num neu" id="ck-sol">—</div></div>
+          </div>
+          <div class="search-row">
+            <div class="filter-chips" style="margin-bottom:0">
+              <span class="chip active" onclick="setComptaTab('all',this)">Tout</span>
+              <span class="chip" onclick="setComptaTab('income',this)">Recettes</span>
+              <span class="chip" onclick="setComptaTab('expense',this)">Dépenses</span>
+            </div>
+            <button class="btn primary" onclick="openModal('modal-trans')">+ Opération</button>
+          </div>
+          <div id="trans-list"><div class="loader"><div class="spinner"></div> Chargement…</div></div>
+        </div>
 
-  <div class="pricing-grid">
+        <!-- EVENTS -->
+        <div class="page" id="page-events">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+            <button class="btn primary" onclick="openModal('modal-event')">+ Événement</button>
+          </div>
+          <div class="ev-grid" id="ev-grid"><div class="loader"><div class="spinner"></div> Chargement…</div></div>
+        </div>
 
-    <div class="price-card reveal">
-      <div class="price-name">Gratuit</div>
-      <p class="price-desc">Pour découvrir et les petites structures.</p>
-      <div class="price-amount"><span class="eur">€</span><span class="num">0</span><span class="per">/mois</span></div>
-      <p class="price-note">Pour toujours gratuit</p>
-      <ul class="price-features">
-        <li>Jusqu'à 25 adhérents</li>
-        <li>1 événement actif</li>
-        <li>Documents de base</li>
-        <li class="muted">Comptabilité</li>
-        <li class="muted">Export PDF illimité</li>
-        <li class="muted">Support prioritaire</li>
-      </ul>
-      <a href="assopilot-app.html" class="btn-price outline">Commencer gratuitement</a>
-    </div>
+        <!-- SETTINGS -->
+        <div class="page" id="page-settings">
+          <div class="settings-wrap">
+            <div class="settings-section">
+              <div class="settings-title">🏛️ Informations de l'association</div>
+              <div class="form-group"><label class="form-label">Nom</label><input class="form-input" id="s-name" placeholder="Nom de l'association"></div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">RNA</label><input class="form-input" id="s-rna" placeholder="W123456789"></div>
+                <div class="form-group"><label class="form-label">Date création</label><input class="form-input" id="s-date" type="date"></div>
+              </div>
+              <div class="form-group"><label class="form-label">Adresse siège</label><input class="form-input" id="s-addr" placeholder="Adresse complète"></div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Ville</label><input class="form-input" id="s-city" placeholder="Dunkerque"></div>
+                <div class="form-group"><label class="form-label">Code postal</label><input class="form-input" id="s-cp" placeholder="59140"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Président(e)</label><input class="form-input" id="s-pres" placeholder="Nom Prénom"></div>
+                <div class="form-group"><label class="form-label">Trésorier(ière)</label><input class="form-input" id="s-tres" placeholder="Nom Prénom"></div>
+              </div>
+              <div class="form-group"><label class="form-label">Secrétaire</label><input class="form-input" id="s-sec" placeholder="Nom Prénom"></div>
+              <div class="form-group"><label class="form-label">Cotisation annuelle (€)</label><input class="form-input" id="s-cotis" type="number" placeholder="25"></div>
+              <button class="btn sage" onclick="saveSettings()">💾 Enregistrer</button>
+            </div>
+          </div>
+        </div>
 
-    <div class="price-card featured reveal">
-      <div class="price-badge">⭐ Le plus populaire</div>
-      <div class="price-name">Pro</div>
-      <p class="price-desc">Pour les assos actives qui veulent tout gérer proprement.</p>
-      <div class="price-amount"><span class="eur">€</span><span class="num">19</span><span class="per">/mois</span></div>
-      <p class="price-note">ou 179€/an (économisez 49€)</p>
-      <ul class="price-features">
-        <li>Adhérents illimités</li>
-        <li>Événements illimités</li>
-        <li>Tous les documents officiels</li>
-        <li>Comptabilité complète</li>
-        <li>Export PDF illimité</li>
-        <li>Support par e-mail sous 24h</li>
-      </ul>
-      <a href="assopilot-app.html" class="btn-price light">Essai 14 jours gratuit →</a>
-    </div>
+        <!-- UPGRADE -->
+        <div class="page" id="page-upgrade">
+          <div style="max-width:520px">
+            <div class="plan-box">
+              <div class="plan-title">⭐ Passer au plan Pro</div>
+              <div class="plan-desc">Débloquez toutes les fonctionnalités : adhérents illimités, tous les documents, export PDF, support prioritaire.</div>
+              <div class="plan-options">
+                <div class="plan-opt selected" id="opt-monthly" onclick="selectPlan('monthly')">
+                  <div class="plan-opt-name">Mensuel</div>
+                  <div class="plan-opt-price">19€</div>
+                  <div class="plan-opt-per">/mois</div>
+                </div>
+                <div class="plan-opt" id="opt-yearly" onclick="selectPlan('yearly')">
+                  <div class="plan-opt-name">Annuel</div>
+                  <div class="plan-opt-price">179€</div>
+                  <div class="plan-opt-per">/an</div>
+                  <div class="plan-opt-note">🎁 Économisez 49€</div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">Ce que vous débloquez</div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;align-items:center;gap:10px;font-size:14px"><span style="color:var(--sage2);font-weight:700">✓</span> Adhérents illimités (gratuit = 25 max)</div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:14px"><span style="color:var(--sage2);font-weight:700">✓</span> Tous les documents officiels + export PDF</div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:14px"><span style="color:var(--sage2);font-weight:700">✓</span> Comptabilité complète + export</div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:14px"><span style="color:var(--sage2);font-weight:700">✓</span> Événements illimités</div>
+                <div style="display:flex;align-items:center;gap:10px;font-size:14px"><span style="color:var(--sage2);font-weight:700">✓</span> Support par email sous 24h</div>
+              </div>
+              <button class="btn-full sage" style="margin-top:20px" onclick="doCheckout()" id="btn-checkout">🚀 S'abonner maintenant</button>
+              <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">Paiement sécurisé par Stripe · Sans engagement · Annulation en 1 clic</p>
+            </div>
+          </div>
+        </div>
 
-    <div class="price-card reveal">
-      <div class="price-name">Fédération</div>
-      <p class="price-desc">Pour les fédérations gérant plusieurs associations.</p>
-      <div class="price-amount"><span class="eur">€</span><span class="num">49</span><span class="per">/mois</span></div>
-      <p class="price-note">Jusqu'à 10 associations</p>
-      <ul class="price-features">
-        <li>Tout le plan Pro</li>
-        <li>Jusqu'à 10 assos</li>
-        <li>Tableau de bord global</li>
-        <li>Rapports consolidés</li>
-        <li>Utilisateurs multiples</li>
-        <li>Support téléphonique</li>
-      </ul>
-      <a href="#" class="btn-price dark">Nous contacter</a>
-    </div>
+      </div><!-- /content -->
+    </div><!-- /main -->
+  </div><!-- /layout -->
+</div><!-- /app -->
 
-  </div>
-</section>
+<!-- ══ MODALS ══ -->
 
-<!-- TESTIMONIALS -->
-<section class="testimonials">
-  <div class="section-label">Ils nous font confiance</div>
-  <div class="section-title" style="margin-bottom:48px">Ce que disent nos utilisateurs</div>
-  <div class="testi-grid">
-    <div class="testi-card reveal">
-      <div class="stars">★★★★★</div>
-      <div class="testi-quote">"</div>
-      <p class="testi-text">Avant AssoPilot, notre AG durait 3h à cause de la paperasse. Maintenant on génère tout en 5 minutes. Un gain de temps énorme.</p>
-      <div class="testi-author">
-        <div class="testi-avatar g">M</div>
-        <div><div class="testi-name">Marie-Claire D.</div><div class="testi-role">Présidente, Asso sportive — Lyon</div></div>
+<!-- Nouvelle asso -->
+<div class="modal-bg" id="modal-new-asso">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Nouvelle association</div><button class="modal-close" onclick="closeModal('modal-new-asso')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nom de l'association *</label><input class="form-input" id="na-name" placeholder="Ex: Association Sportive de…"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Ville</label><input class="form-input" id="na-city" placeholder="Dunkerque"></div>
+        <div class="form-group"><label class="form-label">Président(e)</label><input class="form-input" id="na-pres" placeholder="Nom Prénom"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Cotisation annuelle (€)</label><input class="form-input" id="na-cotis" type="number" value="25"></div>
+      <div class="modal-actions">
+        <button class="btn secondary" onclick="closeModal('modal-new-asso')">Annuler</button>
+        <button class="btn sage" onclick="createAsso()">✓ Créer</button>
       </div>
     </div>
-    <div class="testi-card reveal">
-      <div class="stars">★★★★★</div>
-      <div class="testi-quote">"</div>
-      <p class="testi-text">Enfin un outil qui comprend les besoins réels d'une association. Les reçus de cotisation automatiques nous ont sauvé la mise à chaque fin d'année.</p>
-      <div class="testi-author">
-        <div class="testi-avatar o">T</div>
-        <div><div class="testi-name">Thomas R.</div><div class="testi-role">Trésorier, Association culturelle — Nantes</div></div>
+  </div>
+</div>
+
+<!-- Adhérent -->
+<div class="modal-bg" id="modal-adherent">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Nouvel adhérent</div><button class="modal-close" onclick="closeModal('modal-adherent')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Prénom *</label><input class="form-input" id="a-prenom" placeholder="Marie"></div>
+        <div class="form-group"><label class="form-label">Nom *</label><input class="form-input" id="a-nom" placeholder="Dupont"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="a-email" type="email" placeholder="marie@exemple.fr"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Téléphone</label><input class="form-input" id="a-tel" placeholder="06 12 34 56 78"></div>
+        <div class="form-group"><label class="form-label">Date de naissance</label><input class="form-input" id="a-birth" type="date"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Cotisation payée ?</label>
+          <select class="form-input" id="a-paid"><option value="true">✓ Payée</option><option value="false">✗ En attente</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Année</label><input class="form-input" id="a-year" type="number" value="2025"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn secondary" onclick="closeModal('modal-adherent')">Annuler</button>
+        <button class="btn sage" onclick="addAdherent()">✓ Ajouter</button>
       </div>
     </div>
-    <div class="testi-card reveal">
-      <div class="stars">★★★★☆</div>
-      <div class="testi-quote">"</div>
-      <p class="testi-text">Simple à prendre en main même pour nos bénévoles qui ne sont pas à l'aise avec l'informatique. L'interface est vraiment intuitive.</p>
-      <div class="testi-author">
-        <div class="testi-avatar b">S</div>
-        <div><div class="testi-name">Sophie L.</div><div class="testi-role">Secrétaire, Asso caritative — Bordeaux</div></div>
+  </div>
+</div>
+
+<!-- Transaction -->
+<div class="modal-bg" id="modal-trans">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Nouvelle opération</div><button class="modal-close" onclick="closeModal('modal-trans')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Type</label>
+        <select class="form-input" id="t-type"><option value="income">💚 Recette</option><option value="expense">🔴 Dépense</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Libellé *</label><input class="form-input" id="t-label" placeholder="Ex: Cotisation annuelle"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Montant (€) *</label><input class="form-input" id="t-amount" type="number" placeholder="0"></div>
+        <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="t-date" type="date"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Catégorie</label>
+        <select class="form-input" id="t-cat">
+          <option>🏷️ Cotisations</option><option>🎉 Événements</option><option>🛠️ Matériel</option>
+          <option>🏢 Local / Loyer</option><option>📢 Communication</option><option>🎁 Subvention</option><option>💼 Autre</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn secondary" onclick="closeModal('modal-trans')">Annuler</button>
+        <button class="btn sage" onclick="addTransaction()">✓ Enregistrer</button>
       </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- FAQ -->
-<section class="faq" id="faq">
-  <div class="section-label">Questions fréquentes</div>
-  <div class="section-title" style="margin-bottom:40px">On répond à vos doutes</div>
-  <div class="faq-list">
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">AssoPilot est-il conforme à la loi 1901 française ? <span class="arrow">▾</span></div>
-      <div class="faq-a"><div class="faq-a-inner">Oui, tous les documents générés (PV d'AG, bilans, convocations) respectent les exigences légales françaises pour les associations loi 1901. Nous mettons à jour les modèles à chaque évolution réglementaire.</div></div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">Mes données sont-elles sécurisées ? <span class="arrow">▾</span></div>
-      <div class="faq-a"><div class="faq-a-inner">Vos données sont hébergées en France, chiffrées en transit et au repos. Nous sommes conformes au RGPD. Vous restez propriétaire de vos données et pouvez les exporter ou supprimer à tout moment.</div></div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">Puis-je importer mes données existantes ? <span class="arrow">▾</span></div>
-      <div class="faq-a"><div class="faq-a-inner">Oui ! AssoPilot accepte les imports CSV depuis Excel, Google Sheets ou n'importe quel logiciel. Notre assistant d'import guide chaque étape. Pour les grands volumes, notre support vous accompagne.</div></div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">Comment fonctionne l'essai gratuit ? <span class="arrow">▾</span></div>
-      <div class="faq-a"><div class="faq-a-inner">14 jours d'accès complet au plan Pro, sans carte bancaire. À la fin de l'essai, vous choisissez le plan qui vous convient ou restez sur le plan Gratuit. Aucune surprise, aucun engagement.</div></div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">Y a-t-il un engagement de durée ? <span class="arrow">▾</span></div>
-      <div class="faq-a"><div class="faq-a-inner">Non. L'abonnement mensuel se résilie à tout moment en 1 clic. L'abonnement annuel est non remboursable mais sans reconduction automatique.</div></div>
+<!-- Événement -->
+<div class="modal-bg" id="modal-event">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Nouvel événement</div><button class="modal-close" onclick="closeModal('modal-event')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nom *</label><input class="form-input" id="e-name" placeholder="Réunion mensuelle"></div>
+      <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="e-desc" placeholder="Courte description…"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Date *</label><input class="form-input" id="e-date" type="date"></div>
+        <div class="form-group"><label class="form-label">Heure</label><input class="form-input" id="e-time" type="time" value="19:00"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Lieu</label><input class="form-input" id="e-lieu" placeholder="Salle des fêtes…"></div>
+        <div class="form-group"><label class="form-label">Places max</label><input class="form-input" id="e-places" type="number" placeholder="30"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn secondary" onclick="closeModal('modal-event')">Annuler</button>
+        <button class="btn sage" onclick="addEvent()">✓ Créer</button>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- CTA FINAL -->
-<section class="cta-final">
-  <h2>Votre association mérite un outil à sa hauteur.</h2>
-  <p>Rejoignez les associations qui gagnent du temps chaque semaine.</p>
-  <a href="assopilot-app.html" class="btn-primary">🚀 Commencer gratuitement — sans CB</a>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-logo">AssoPilot<span style="color:var(--warm)">.</span></div>
-  <div>© 2025 AssoPilot — Fait avec ♥ pour les associations françaises</div>
-  <div style="display:flex;gap:20px">
-    <a href="#" style="color:inherit;text-decoration:none">CGU</a>
-    <a href="#" style="color:inherit;text-decoration:none">RGPD</a>
-    <a href="#" style="color:inherit;text-decoration:none">Contact</a>
-  </div>
-</footer>
+<div class="toast-wrap" id="toasts"></div>
 
 <script>
-// Reveal on scroll
-const reveals = document.querySelectorAll('.reveal');
-const io = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-reveals.forEach(r => io.observe(r));
+// ════════════════════════════════════════
+//  CONFIG
+// ════════════════════════════════════════
+const SUPA_URL  = 'https://jgazqvjxeluyhjhvkqmd.supabase.co';
+const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpnYXpxdmp4ZWx1eWhqaHZrcW1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3ODI0NzUsImV4cCI6MjA5NDM1ODQ3NX0.UVK43dNGcJBlgH1YnohPlR5XvcyYozf-MLoIv2OvY3Y';
+const STRIPE_PK = 'pk_test_51TX6PYRFt1VtaecjybtUavJR7vl2gWZZXe2c6ghjfEGZuQhV83WVugN9yAk2ADKnDk21TEAOfaeDVmgLmoV84BOJ00H0W73HET';
+const PRICE_MONTHLY = 'price_1TX7NNRFt1VtaecjjIjFeTbI';
+const PRICE_YEARLY  = 'price_1TX7NmRFt1VtaecjxL77a9Qs';
 
-// FAQ
-function toggleFaq(el) {
-  const item = el.closest('.faq-item');
-  const isOpen = item.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-  if(!isOpen) item.classList.add('open');
+const { createClient } = supabase;
+const sb = createClient(SUPA_URL, SUPA_KEY);
+const stripe = Stripe(STRIPE_PK);
+
+// ════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════
+let currentUser = null;
+let currentProfile = null;
+let currentAsso = null;
+let allAdherents = [];
+let allTransactions = [];
+let adhFilter = 'tous';
+let comptaFilter = 'all';
+let selectedPlan = 'monthly';
+const COLORS = ['#2D6A4F','#E76F51','#3A70C4','#F4B942','#9B30FF','#D64045','#40916C'];
+
+// ════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    await loadProfile();
+    showPicker();
+  }
+  // Auth state listener
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      currentUser = session.user;
+      await loadProfile();
+      showPicker();
+    }
+    if (event === 'SIGNED_OUT') {
+      currentUser = null; currentProfile = null; currentAsso = null;
+      show('auth-screen'); hide('picker-screen'); hide('app');
+    }
+  });
+})();
+
+async function loadProfile() {
+  const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
+  currentProfile = data;
+  if (currentProfile) {
+    document.getElementById('user-name-s').textContent = currentProfile.full_name || currentProfile.email.split('@')[0];
+    document.getElementById('user-av').textContent = (currentProfile.full_name||currentProfile.email)[0].toUpperCase();
+    document.getElementById('user-plan-s').textContent = currentProfile.plan === 'pro' ? '⭐ Plan Pro' : 'Plan Gratuit';
+  }
 }
 
-// Stagger pain cards
-document.querySelectorAll('.pain-card').forEach((c,i) => {
-  c.style.transitionDelay = (i*0.08)+'s';
-});
+// ════════════════════════════════════════
+//  AUTH
+// ════════════════════════════════════════
+function switchAuthTab(tab, btn) {
+  document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  show('tab-' + tab);
+  hide(tab === 'login' ? 'tab-register' : 'tab-login');
+  clearAuthMsg();
+}
+
+async function doLogin() {
+  const email = v('login-email'), pwd = v('login-pwd');
+  if (!email || !pwd) { authErr('Remplis tous les champs.'); return; }
+  setBtn('btn-login', '⏳ Connexion…', true);
+  const { error } = await sb.auth.signInWithPassword({ email, password: pwd });
+  setBtn('btn-login', 'Se connecter', false);
+  if (error) authErr(error.message === 'Invalid login credentials' ? 'Email ou mot de passe incorrect.' : error.message);
+}
+
+async function doRegister() {
+  const name = v('reg-name'), email = v('reg-email'), pwd = v('reg-pwd');
+  if (!name || !email || !pwd) { authErr('Remplis tous les champs.'); return; }
+  if (pwd.length < 8) { authErr('Mot de passe trop court (8 caractères minimum).'); return; }
+  setBtn('btn-register', '⏳ Création…', true);
+  const { error } = await sb.auth.signUp({ email, password: pwd, options: { data: { full_name: name } } });
+  setBtn('btn-register', 'Créer mon compte gratuit', false);
+  if (error) authErr(error.message);
+  else authOk('Compte créé ! Vérifie ton email pour confirmer, puis connecte-toi.');
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+}
+
+// ════════════════════════════════════════
+//  ASSO PICKER
+// ════════════════════════════════════════
+async function showPicker() {
+  hide('app'); hide('auth-screen');
+  show('picker-screen');
+  const list = document.getElementById('asso-list-picker');
+  list.innerHTML = '<div class="loader"><div class="spinner"></div> Chargement…</div>';
+  const { data: owned } = await sb.from('associations').select('*').eq('owner_id', currentUser.id);
+  const { data: membered } = await sb.from('asso_members').select('*, associations(*)').eq('user_id', currentUser.id);
+
+  const all = [
+    ...(owned || []).map(a => ({ ...a, role: 'owner' })),
+    ...(membered || []).filter(m => m.associations).map(m => ({ ...m.associations, role: m.role }))
+  ];
+  // Dédupliquer
+  const seen = new Set();
+  const unique = all.filter(a => { if (seen.has(a.id)) return false; seen.add(a.id); return true; });
+
+  if (!unique.length) {
+    list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:14px;padding:20px">Vous n\'avez pas encore d\'association.<br>Créez-en une ci-dessous !</div>';
+    return;
+  }
+  list.innerHTML = unique.map(a => `
+    <div class="asso-item" onclick="selectAsso('${a.id}','${(a.name||'').replace(/'/g,"\\'")}')">
+      <div class="asso-avatar">${(a.name||'?')[0].toUpperCase()}</div>
+      <div class="asso-info">
+        <div class="asso-name">${a.name}</div>
+        <div class="asso-role">${a.city||''} · ${a.role === 'owner' ? 'Propriétaire' : a.role === 'admin' ? 'Admin' : 'Membre'}</div>
+      </div>
+      <span class="asso-plan">${currentProfile?.plan === 'pro' ? 'Pro' : 'Gratuit'}</span>
+    </div>`).join('');
+}
+
+async function selectAsso(id, name) {
+  const { data } = await sb.from('associations').select('*').eq('id', id).single();
+  currentAsso = data;
+  document.getElementById('sw-name').textContent = currentAsso.name;
+  hide('picker-screen'); show('app');
+  document.getElementById('topbar-title').textContent = 'Tableau de bord';
+  // Load settings into form
+  fillSettings();
+  await loadDashboard();
+}
+
+async function createAsso() {
+  const name = v('na-name');
+  if (!name) { toast('Le nom est obligatoire', '⚠️'); return; }
+  const { data, error } = await sb.from('associations').insert({
+    owner_id: currentUser.id,
+    name, city: v('na-city'),
+    president: v('na-pres'),
+    cotisation_amount: parseFloat(v('na-cotis')) || 25
+  }).select().single();
+  if (error) { toast('Erreur: ' + error.message, '❌', 'error'); return; }
+  closeModal('modal-new-asso');
+  toast(name + ' créée !', '✅', 'success');
+  currentAsso = data;
+  document.getElementById('sw-name').textContent = data.name;
+  hide('picker-screen'); show('app');
+  fillSettings();
+  await loadDashboard();
+  ['na-name','na-city','na-pres'].forEach(id => document.getElementById(id).value = '');
+}
+
+// ════════════════════════════════════════
+//  DASHBOARD
+// ════════════════════════════════════════
+async function loadDashboard() {
+  if (!currentAsso) return;
+  // Adhérents
+  const { data: adh } = await sb.from('adherents').select('*').eq('asso_id', currentAsso.id);
+  allAdherents = adh || [];
+  const actifs = allAdherents.filter(a => a.status === 'actif').length;
+  const retard = allAdherents.filter(a => a.status === 'retard').length;
+  document.getElementById('kpi-adh').textContent = actifs;
+  document.getElementById('kpi-retard').textContent = retard;
+  // Transactions
+  const { data: trans } = await sb.from('transactions').select('*').eq('asso_id', currentAsso.id);
+  allTransactions = trans || [];
+  const inc = allTransactions.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0);
+  const exp = allTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0);
+  document.getElementById('kpi-solde').textContent = fmt(inc - exp) + '€';
+  // Events
+  const { data: evs } = await sb.from('events').select('*').eq('asso_id', currentAsso.id);
+  document.getElementById('kpi-ev').textContent = (evs || []).length;
+  // Activity
+  const acts = [];
+  allAdherents.slice(0, 3).forEach(a => acts.push({ icon: '👤', text: `<strong>${a.first_name} ${a.last_name}</strong> — adhérent ${a.status}`, time: formatDate(a.created_at) }));
+  allTransactions.slice(0, 2).forEach(t => acts.push({ icon: t.type === 'income' ? '💚' : '🔴', text: `${t.label} — ${t.type === 'income' ? '+' : '-'}${t.amount}€`, time: formatDate(t.created_at) }));
+  document.getElementById('dash-activity').innerHTML = acts.length
+    ? acts.map(a => `<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="font-size:16px">${a.icon}</span><div style="flex:1">${a.text}</div><span style="color:var(--muted);font-size:11px;white-space:nowrap">${a.time}</span></div>`).join('')
+    : '<div class="empty"><div class="empty-icon">📭</div><p>Aucune activité encore.</p></div>';
+}
+
+// ════════════════════════════════════════
+//  ADHÉRENTS
+// ════════════════════════════════════════
+async function loadAdherents() {
+  const { data } = await sb.from('adherents').select('*').eq('asso_id', currentAsso.id).order('created_at', { ascending: false });
+  allAdherents = data || [];
+  renderAdh();
+}
+
+function renderAdh(list) {
+  const data = list !== undefined ? list : filterAdhData();
+  const tbody = document.getElementById('adh-tbody');
+  if (!data.length) { tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><div class="empty-icon">👥</div><h3>Aucun adhérent</h3><p>Ajoutez votre premier membre.</p></div></td></tr>`; return; }
+  tbody.innerHTML = data.map(a => {
+    const init = ((a.first_name||'?')[0] + (a.last_name||'?')[0]).toUpperCase();
+    const col = COLORS[a.first_name.charCodeAt(0) % COLORS.length];
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div class="av-sm" style="background:${col}">${init}</div>
+        <div><div style="font-weight:600">${a.first_name} ${a.last_name}</div></div>
+      </div></td>
+      <td style="color:var(--muted)">${a.email || '—'}<br><span style="font-size:11px">${a.phone || ''}</span></td>
+      <td>${a.cotisation_paid ? '<span style="color:var(--sage2);font-weight:600">✓ Payée</span>' : '<span style="color:var(--warm);font-weight:600">⚠ En attente</span>'}</td>
+      <td><span class="badge-status ${a.status}">${a.status === 'actif' ? 'Actif' : a.status === 'retard' ? 'En retard' : 'Inactif'}</span></td>
+      <td><div style="display:flex;gap:6px">
+        <button class="btn danger sm" onclick="deleteAdh('${a.id}')">✕</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterAdhData() {
+  return allAdherents.filter(a => {
+    if (adhFilter === 'actif') return a.status === 'actif';
+    if (adhFilter === 'retard') return a.status === 'retard';
+    if (adhFilter === 'inactif') return a.status === 'inactif';
+    return true;
+  });
+}
+function filterAdh(q) {
+  const s = q.toLowerCase();
+  renderAdh(allAdherents.filter(a => (a.first_name + ' ' + a.last_name + (a.email || '')).toLowerCase().includes(s)));
+}
+function setAdhFilter(f, btn) {
+  adhFilter = f;
+  document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderAdh();
+}
+async function addAdherent() {
+  const fn = v('a-prenom'), ln = v('a-nom');
+  if (!fn || !ln) { toast('Prénom et nom requis', '⚠️'); return; }
+  const paid = document.getElementById('a-paid').value === 'true';
+  const { error } = await sb.from('adherents').insert({
+    asso_id: currentAsso.id,
+    first_name: fn, last_name: ln,
+    email: v('a-email'), phone: v('a-tel'),
+    birthdate: v('a-birth') || null,
+    cotisation_paid: paid,
+    cotisation_year: parseInt(v('a-year')) || 2025,
+    status: paid ? 'actif' : 'retard',
+    cotisation_amount: currentAsso.cotisation_amount || 25
+  });
+  if (error) { toast('Erreur: ' + error.message, '❌', 'error'); return; }
+  closeModal('modal-adherent');
+  toast(fn + ' ' + ln + ' ajouté(e) ✓', '✅', 'success');
+  ['a-prenom','a-nom','a-email','a-tel','a-birth'].forEach(id => document.getElementById(id).value = '');
+  await loadAdherents();
+}
+async function deleteAdh(id) {
+  if (!confirm('Supprimer cet adhérent ?')) return;
+  await sb.from('adherents').delete().eq('id', id);
+  toast('Adhérent supprimé', '🗑️');
+  await loadAdherents();
+}
+
+// ════════════════════════════════════════
+//  DOCUMENTS
+// ════════════════════════════════════════
+const a = () => currentAsso || {};
+const today = () => new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+const DOCS = {
+  ag: () => `<h3>CONVOCATION À L'ASSEMBLÉE GÉNÉRALE</h3>
+<p class="doc-center">${a().name} · ${today()}</p>
+<div class="doc-section"><strong>Madame, Monsieur,</strong><br>Nous avons l'honneur de vous convoquer à l'Assemblée Générale de l'association <strong>${a().name}</strong> qui se tiendra le <strong>____ à __h__</strong> à <strong>${a().city || '___'}</strong>.</div>
+<div class="doc-hr"></div>
+<div class="doc-section"><strong>Ordre du jour :</strong><br>1. Rapport moral — ${a().president || '___'}<br>2. Rapport financier — ${a().treasurer || '___'}<br>3. Approbation des comptes<br>4. Questions diverses</div>
+<div class="doc-hr"></div>
+<div style="text-align:right;margin-top:16px"><em>Le Président,</em><br><strong>${a().president || '___'}</strong></div>`,
+
+  pv: () => `<h3>PROCÈS-VERBAL D'ASSEMBLÉE GÉNÉRALE</h3>
+<p class="doc-center">${a().name} · Loi du 1er juillet 1901</p>
+<div class="doc-section"><strong>Date :</strong> ${today()} · <strong>Lieu :</strong> ${a().city || '___'}</div>
+<div class="doc-section"><strong>Membres présents :</strong> ${allAdherents.filter(x => x.status === 'actif').slice(0, 5).map(x => x.first_name + ' ' + x.last_name).join(', ') || '___'}</div>
+<div class="doc-section"><strong>Quorum :</strong> ${allAdherents.filter(x => x.cotisation_paid).length} membres à jour de cotisation sur ${allAdherents.length}.</div>
+<div class="doc-hr"></div>
+<div class="doc-section"><strong>1. Rapport moral</strong><br>${a().president || '___'} présente le bilan de l'année écoulée.</div>
+<div class="doc-section"><strong>2. Rapport financier</strong><br>Recettes : ${fmt(allTransactions.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount),0))}€ — Dépenses : ${fmt(allTransactions.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount),0))}€</div>
+<div class="doc-section"><strong>Vote :</strong> Comptes approuvés à l'unanimité.</div>
+<div class="doc-hr"></div>
+<div style="display:flex;justify-content:space-between;margin-top:16px;font-size:13px">
+  <div><em>Le Secrétaire</em><br><br>${a().secretary || '_______________'}</div>
+  <div style="text-align:right"><em>Le Président</em><br><br>${a().president || '_______________'}</div>
+</div>`,
+
+  bilan: () => {
+    const inc = allTransactions.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount),0);
+    const exp = allTransactions.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount),0);
+    return `<h3>BILAN MORAL & FINANCIER</h3>
+<p class="doc-center">${a().name} · Exercice ${new Date().getFullYear()}</p>
+<div class="doc-section"><strong>I. BILAN MORAL</strong><br>${allAdherents.length} adhérents dont ${allAdherents.filter(x=>x.status==='actif').length} actifs.</div>
+<div class="doc-section"><strong>II. BILAN FINANCIER</strong>
+<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px">
+<tr style="background:var(--cream2)"><th style="text-align:left;padding:7px;border:1px solid var(--border)">Poste</th><th style="text-align:right;padding:7px;border:1px solid var(--border)">Montant</th></tr>
+${allTransactions.filter(t=>t.type==='income').map(t=>`<tr><td style="padding:7px;border:1px solid var(--border)">${t.label}</td><td style="text-align:right;padding:7px;border:1px solid var(--border)">+${t.amount}€</td></tr>`).join('')}
+<tr style="font-weight:700;background:var(--cream2)"><td style="padding:7px;border:1px solid var(--border)">TOTAL RECETTES</td><td style="text-align:right;padding:7px;border:1px solid var(--border);color:var(--sage2)">+${fmt(inc)}€</td></tr>
+${allTransactions.filter(t=>t.type==='expense').map(t=>`<tr><td style="padding:7px;border:1px solid var(--border)">${t.label}</td><td style="text-align:right;padding:7px;border:1px solid var(--border)">-${t.amount}€</td></tr>`).join('')}
+<tr style="font-weight:700;background:var(--cream2)"><td style="padding:7px;border:1px solid var(--border)">TOTAL DÉPENSES</td><td style="text-align:right;padding:7px;border:1px solid var(--border);color:var(--red)">-${fmt(exp)}€</td></tr>
+</table>
+<div style="text-align:right;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-top:10px;color:var(--sage2)">SOLDE NET : ${fmt(inc-exp)}€</div></div>`;
+  },
+
+  recu: () => `<h3>REÇU DE COTISATION</h3>
+<p class="doc-center">${a().name} · Exercice ${new Date().getFullYear()}</p>
+<div class="doc-section"><strong>Reçu le :</strong> ${today()}</div>
+<div class="doc-section"><strong>De :</strong> _____________________ (Adhérent n°____)</div>
+<div class="doc-section"><strong>Somme :</strong> <strong style="font-size:16px">${a().cotisation_amount || 25},00 €</strong></div>
+<div class="doc-section"><strong>Au titre de :</strong> Cotisation annuelle ${new Date().getFullYear()}</div>
+<div class="doc-hr"></div>
+<div style="display:flex;justify-content:space-between;margin-top:16px;font-size:13px">
+  <div><em>Signature adhérent</em><br><br>_______________</div>
+  <div style="text-align:right"><em>Le Trésorier</em><br><br>${a().treasurer || '_______________'}</div>
+</div>`,
+
+  statuts: () => `<h3>STATUTS TYPE</h3>
+<p class="doc-center">Loi du 1er juillet 1901</p>
+<div class="doc-section"><strong>ART. 1 — DÉNOMINATION</strong><br>Association : <strong>${a().name}</strong></div>
+<div class="doc-section"><strong>ART. 2 — OBJET</strong><br>_______________________________________________</div>
+<div class="doc-section"><strong>ART. 3 — SIÈGE</strong><br>${a().address || '___'}, ${a().postal_code || ''} ${a().city || ''}</div>
+<div class="doc-section"><strong>ART. 4 — DURÉE</strong><br>Illimitée.</div>
+<div class="doc-section"><em>(Modèle complet disponible en plan Pro)</em></div>`,
+
+  prefecture: () => `<h3>DÉCLARATION PRÉFECTURE — CERFA 13971*03</h3>
+<div class="doc-section"><strong>Titre :</strong> ${a().name}</div>
+<div class="doc-section"><strong>Siège :</strong> ${a().address || '___'}, ${a().postal_code || ''} ${a().city || ''}</div>
+<table style="width:100%;border-collapse:collapse;font-size:12px">
+<tr style="background:var(--cream2)"><th style="padding:7px;border:1px solid var(--border);text-align:left">Fonction</th><th style="padding:7px;border:1px solid var(--border);text-align:left">Nom</th></tr>
+<tr><td style="padding:7px;border:1px solid var(--border)">Président(e)</td><td style="padding:7px;border:1px solid var(--border)">${a().president || '___'}</td></tr>
+<tr><td style="padding:7px;border:1px solid var(--border)">Trésorier(ière)</td><td style="padding:7px;border:1px solid var(--border)">${a().treasurer || '___'}</td></tr>
+<tr><td style="padding:7px;border:1px solid var(--border)">Secrétaire</td><td style="padding:7px;border:1px solid var(--border)">${a().secretary || '___'}</td></tr>
+</table>`
+};
+
+function showDoc(type) {
+  document.getElementById('doc-list').style.display = 'none';
+  document.getElementById('doc-preview').style.display = '';
+  document.getElementById('doc-preview-content').innerHTML = (DOCS[type] ? DOCS[type]() : '<p>Non disponible.</p>') +
+    `<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+      <button class="btn secondary" onclick="window.print()">🖨️ Imprimer</button>
+      <button class="btn sage" onclick="toast('Téléchargement PDF disponible en plan Pro','⭐')">↓ PDF</button>
+    </div>`;
+}
+
+// ════════════════════════════════════════
+//  COMPTABILITÉ
+// ════════════════════════════════════════
+async function loadCompta() {
+  const { data } = await sb.from('transactions').select('*').eq('asso_id', currentAsso.id).order('transaction_date', { ascending: false });
+  allTransactions = data || [];
+  renderCompta();
+}
+
+function renderCompta() {
+  const list = comptaFilter === 'all' ? allTransactions : allTransactions.filter(t => t.type === comptaFilter);
+  const inc = allTransactions.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0);
+  const exp = allTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0);
+  document.getElementById('ck-inc').textContent = '+' + fmt(inc) + '€';
+  document.getElementById('ck-exp').textContent = '-' + fmt(exp) + '€';
+  document.getElementById('ck-sol').textContent = fmt(inc - exp) + '€';
+  const el = document.getElementById('trans-list');
+  if (!list.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">💰</div><h3>Aucune opération</h3><p>Ajoutez votre première opération.</p></div>'; return; }
+  el.innerHTML = list.map(t => {
+    const isInc = t.type === 'income';
+    const d = t.transaction_date ? new Date(t.transaction_date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+    return `<div class="trans-item">
+      <div class="trans-cat" style="background:${isInc ? 'rgba(64,145,108,0.1)' : 'rgba(214,64,69,0.1)'}">${(t.category || '💼').split(' ')[0]}</div>
+      <div class="trans-info"><div class="trans-label">${t.label}</div><div class="trans-date">${d} · ${t.category || ''}</div></div>
+      <div class="trans-amount ${isInc ? 'inc' : 'exp'}">${isInc ? '+' : '-'}${t.amount}€</div>
+      <button class="btn danger sm" style="margin-left:8px" onclick="deleteTrans('${t.id}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function setComptaTab(f, btn) {
+  comptaFilter = f;
+  document.querySelectorAll('#page-compta .chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderCompta();
+}
+
+async function addTransaction() {
+  const label = v('t-label'), amount = parseFloat(v('t-amount'));
+  if (!label || !amount) { toast('Libellé et montant requis', '⚠️'); return; }
+  const { error } = await sb.from('transactions').insert({
+    asso_id: currentAsso.id, created_by: currentUser.id,
+    type: v('t-type'), label, amount,
+    transaction_date: v('t-date') || new Date().toISOString().split('T')[0],
+    category: v('t-cat')
+  });
+  if (error) { toast('Erreur: ' + error.message, '❌', 'error'); return; }
+  closeModal('modal-trans');
+  toast('Opération enregistrée ✓', '✅', 'success');
+  ['t-label','t-amount'].forEach(id => document.getElementById(id).value = '');
+  await loadCompta();
+}
+
+async function deleteTrans(id) {
+  await sb.from('transactions').delete().eq('id', id);
+  toast('Opération supprimée', '🗑️');
+  await loadCompta();
+}
+
+// ════════════════════════════════════════
+//  ÉVÉNEMENTS
+// ════════════════════════════════════════
+async function loadEvents() {
+  const { data } = await sb.from('events').select('*, event_registrations(count)').eq('asso_id', currentAsso.id).order('event_date');
+  renderEvents(data || []);
+}
+
+function renderEvents(evs) {
+  const grid = document.getElementById('ev-grid');
+  if (!evs.length) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🗓️</div><h3>Aucun événement</h3><p>Créez votre premier événement.</p><button class="btn primary" onclick="openModal(\'modal-event\')">+ Créer</button></div>';
+    return;
+  }
+  grid.innerHTML = evs.map(e => {
+    const inscrits = e.event_registrations?.[0]?.count || 0;
+    const pct = e.max_places ? Math.round(inscrits / e.max_places * 100) : 0;
+    const d = e.event_date ? new Date(e.event_date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : '—';
+    return `<div class="ev-card">
+      <div class="ev-band" style="background:${e.color || '#40916C'}"></div>
+      <div class="ev-body">
+        <div class="ev-date">📅 ${d}${e.event_time ? ' · ' + e.event_time : ''}</div>
+        <div class="ev-name">${e.name}</div>
+        <div class="ev-desc">${e.description || ''}</div>
+        <div class="ev-stats">
+          <div class="ev-stat">📍 <strong>${e.location || '—'}</strong></div>
+          <div class="ev-stat">👥 <strong>${inscrits}/${e.max_places || '∞'}</strong></div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${e.color || '#40916C'}"></div></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn secondary sm" onclick="toast('Lien: assopilot.fr/event/${e.id}','🔗')">🔗 Partager</button>
+          <button class="btn danger sm" onclick="deleteEvent('${e.id}')">✕</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function addEvent() {
+  const name = v('e-name'), date = v('e-date');
+  if (!name || !date) { toast('Nom et date requis', '⚠️'); return; }
+  const { error } = await sb.from('events').insert({
+    asso_id: currentAsso.id, name, description: v('e-desc'),
+    event_date: date, event_time: v('e-time'),
+    location: v('e-lieu'), max_places: parseInt(v('e-places')) || 30,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)]
+  });
+  if (error) { toast('Erreur: ' + error.message, '❌', 'error'); return; }
+  closeModal('modal-event');
+  toast(name + ' créé ✓', '✅', 'success');
+  ['e-name','e-desc','e-date','e-lieu','e-places'].forEach(id => document.getElementById(id).value = '');
+  await loadEvents();
+}
+
+async function deleteEvent(id) {
+  if (!confirm('Supprimer cet événement ?')) return;
+  await sb.from('events').delete().eq('id', id);
+  toast('Événement supprimé', '🗑️');
+  await loadEvents();
+}
+
+// ════════════════════════════════════════
+//  SETTINGS
+// ════════════════════════════════════════
+function fillSettings() {
+  if (!currentAsso) return;
+  const fields = { 's-name': 'name', 's-rna': 'rna', 's-date': 'founded_date', 's-addr': 'address', 's-city': 'city', 's-cp': 'postal_code', 's-pres': 'president', 's-tres': 'treasurer', 's-sec': 'secretary', 's-cotis': 'cotisation_amount' };
+  Object.entries(fields).forEach(([id, key]) => { const el = document.getElementById(id); if (el && currentAsso[key]) el.value = currentAsso[key]; });
+}
+
+async function saveSettings() {
+  const updates = {
+    name: v('s-name'), rna: v('s-rna'), founded_date: v('s-date') || null,
+    address: v('s-addr'), city: v('s-city'), postal_code: v('s-cp'),
+    president: v('s-pres'), treasurer: v('s-tres'), secretary: v('s-sec'),
+    cotisation_amount: parseFloat(v('s-cotis')) || 25, updated_at: new Date().toISOString()
+  };
+  const { data, error } = await sb.from('associations').update(updates).eq('id', currentAsso.id).select().single();
+  if (error) { toast('Erreur: ' + error.message, '❌', 'error'); return; }
+  currentAsso = data;
+  document.getElementById('sw-name').textContent = currentAsso.name;
+  toast('Paramètres enregistrés ✓', '✅', 'success');
+}
+
+// ════════════════════════════════════════
+//  STRIPE CHECKOUT
+// ════════════════════════════════════════
+function selectPlan(plan) {
+  selectedPlan = plan;
+  document.getElementById('opt-monthly').classList.toggle('selected', plan === 'monthly');
+  document.getElementById('opt-yearly').classList.toggle('selected', plan === 'yearly');
+}
+
+async function doCheckout() {
+  const btn = document.getElementById('btn-checkout');
+  btn.textContent = '⏳ Redirection…'; btn.disabled = true;
+  try {
+    const priceId = selectedPlan === 'monthly' ? PRICE_MONTHLY : PRICE_YEARLY;
+    const { error } = await stripe.redirectToCheckout({
+      lineItems: [{ price: priceId, quantity: 1 }],
+      mode: 'subscription',
+      successUrl: window.location.href + '?payment=success',
+      cancelUrl: window.location.href + '?payment=cancel',
+      customerEmail: currentUser?.email
+    });
+    if (error) { toast('Erreur paiement: ' + error.message, '❌', 'error'); }
+  } catch (e) { toast('Erreur: ' + e.message, '❌', 'error'); }
+  btn.textContent = '🚀 S\'abonner maintenant'; btn.disabled = false;
+}
+
+// Vérifier retour paiement
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('payment') === 'success') toast('Abonnement activé ! Bienvenue en Pro ⭐', '🎉', 'success');
+if (urlParams.get('payment') === 'cancel') toast('Paiement annulé.', 'ℹ️');
+
+// ════════════════════════════════════════
+//  NAVIGATION
+// ════════════════════════════════════════
+const PAGE_TITLES = { dashboard: 'Tableau de bord', adherents: 'Adhérents', documents: 'Documents officiels', compta: 'Comptabilité', events: 'Événements', settings: 'Paramètres', upgrade: 'Passer Pro ⭐' };
+
+async function goTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.textContent.trim().toLowerCase().startsWith((PAGE_TITLES[page] || '').toLowerCase().slice(0, 5))) n.classList.add('active');
+  });
+  document.getElementById('topbar-title').textContent = PAGE_TITLES[page];
+  document.getElementById('sidebar').classList.remove('open');
+  // Reset doc view
+  if (page === 'documents') { document.getElementById('doc-list').style.display = ''; document.getElementById('doc-preview').style.display = 'none'; }
+  // Load data
+  if (page === 'adherents' && currentAsso) await loadAdherents();
+  if (page === 'compta' && currentAsso) await loadCompta();
+  if (page === 'events' && currentAsso) await loadEvents();
+}
+
+// ════════════════════════════════════════
+//  MODALS
+// ════════════════════════════════════════
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  const di = document.querySelector(`#${id} input[type=date]`);
+  if (di && !di.value) di.value = new Date().toISOString().split('T')[0];
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-bg').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); }));
+
+// ════════════════════════════════════════
+//  TOASTS
+// ════════════════════════════════════════
+function toast(msg, icon = 'ℹ️', type = 'info') {
+  const wrap = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = `toast-n ${type}`;
+  el.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(20px)'; el.style.transition = 'all .3s'; setTimeout(() => el.remove(), 300); }, 3000);
+}
+
+// ════════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════════
+function v(id) { return document.getElementById(id)?.value?.trim() || ''; }
+function show(id) { document.getElementById(id).style.display = ''; }
+function hide(id) { document.getElementById(id).style.display = 'none'; }
+function fmt(n) { return Math.round(n).toLocaleString('fr-FR'); }
+function formatDate(d) { if (!d) return '—'; return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }); }
+function setBtn(id, text, disabled) { const b = document.getElementById(id); b.textContent = text; b.disabled = disabled; }
+function authErr(msg) { const e = document.getElementById('auth-err'); e.textContent = msg; e.style.display = 'block'; document.getElementById('auth-ok').style.display = 'none'; }
+function authOk(msg) { const e = document.getElementById('auth-ok'); e.textContent = msg; e.style.display = 'block'; document.getElementById('auth-err').style.display = 'none'; }
+function clearAuthMsg() { document.getElementById('auth-err').style.display = 'none'; document.getElementById('auth-ok').style.display = 'none'; }
 </script>
 </body>
 </html>
