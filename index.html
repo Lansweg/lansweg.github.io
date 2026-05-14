@@ -1165,7 +1165,7 @@ async function saveSettings() {
     president: v('s-pres'), treasurer: v('s-tres'), secretary: v('s-sec'),
     cotisation_amount: parseFloat(v('s-cotis')) || 25, updated_at: new Date().toISOString()
   };
-  const { data, error } = await sb.from('associations').update(updates).eq('id', currentAsso.id).select().single();
+  const { data, error } = await sb.from('associations').update(updates).eq('id', currentAsso.id).select('*');
   if (error) { toast('Erreur: ' + error.message, '❌', 'error'); return; }
   currentAsso = data;
   document.getElementById('sw-name').textContent = currentAsso.name;
