@@ -801,7 +801,7 @@ async function createAsso() {
   const { data, error } = await sb
     .from('associations')
     .insert({
-      name,
+      name: name,
       city: v('na-city'),
       president: v('na-pres'),
       cotisation_amount: parseFloat(v('na-cotis')) || 25
