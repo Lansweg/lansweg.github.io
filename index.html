@@ -1260,6 +1260,31 @@ function setBtn(id, text, disabled) { const b = document.getElementById(id); b.t
 function authErr(msg) { const e = document.getElementById('auth-err'); e.textContent = msg; e.style.display = 'block'; document.getElementById('auth-ok').style.display = 'none'; }
 function authOk(msg) { const e = document.getElementById('auth-ok'); e.textContent = msg; e.style.display = 'block'; document.getElementById('auth-err').style.display = 'none'; }
 function clearAuthMsg() { document.getElementById('auth-err').style.display = 'none'; document.getElementById('auth-ok').style.display = 'none'; }
+
+function show(id) {
+  document.getElementById(id).style.display = 'block';
+}
+
+function hide(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+function v(id) {
+  return document.getElementById(id).value.trim();
+}
+
+function fmt(n) {
+  return Number(n || 0).toFixed(2);
+}
+
 </script>
 </body>
 </html>
