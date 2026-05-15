@@ -327,14 +327,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     </div>
     <div id="auth-err" class="auth-err"></div>
     <div id="auth-ok" class="auth-ok"></div>
-
+ 
     <!-- LOGIN -->
     <div id="tab-login">
       <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="login-email" type="email" placeholder="vous@exemple.fr"></div>
       <div class="form-group"><label class="form-label">Mot de passe</label><input class="form-input" id="login-pwd" type="password" placeholder="••••••••"></div>
       <button class="btn-full primary" onclick="doLogin()" id="btn-login">Se connecter</button>
     </div>
-
+ 
     <!-- REGISTER -->
     <div id="tab-register" style="display:none">
       <div class="form-group"><label class="form-label">Nom complet</label><input class="form-input" id="reg-name" placeholder="Marie Dupont"></div>
@@ -344,7 +344,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     </div>
   </div>
 </div>
-
+ 
 <!-- ══ ASSO PICKER ══ -->
 <div id="picker-screen" style="display:none" class="picker-screen">
   <div class="picker-box">
@@ -358,7 +358,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     <button class="btn-full" style="background:transparent;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:10px;font-size:13px" onclick="doLogout()">Se déconnecter</button>
   </div>
 </div>
-
+ 
 <!-- ══ APP ══ -->
 <div id="app">
   <div class="layout">
@@ -371,19 +371,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
       <nav class="sidebar-nav">
         <div class="nav-section">
           <div class="nav-section-label">Principal</div>
-          <div class="nav-item active" onclick="goTo('dashboard')"><span class="ni">🏠</span> Tableau de bord</div>
+          <div class="nav-item active" data-page="dashboard" onclick="goTo('dashboard')"><span class="ni">🏠</span> Tableau de bord</div>
         </div>
         <div class="nav-section">
           <div class="nav-section-label">Modules</div>
-          <div class="nav-item" onclick="goTo('adherents')"><span class="ni">👥</span> Adhérents</div>
-          <div class="nav-item" onclick="goTo('documents')"><span class="ni">📄</span> Documents</div>
-          <div class="nav-item" onclick="goTo('compta')"><span class="ni">💰</span> Comptabilité</div>
-          <div class="nav-item" onclick="goTo('events')"><span class="ni">🗓️</span> Événements</div>
+          <div class="nav-item" data-page="adherents" onclick="goTo('adherents')"><span class="ni">👥</span> Adhérents</div>
+          <div class="nav-item" data-page="documents" onclick="goTo('documents')"><span class="ni">📄</span> Documents</div>
+          <div class="nav-item" data-page="compta" onclick="goTo('compta')"><span class="ni">💰</span> Comptabilité</div>
+          <div class="nav-item" data-page="events" onclick="goTo('events')"><span class="ni">🗓️</span> Événements</div>
         </div>
         <div class="nav-section">
           <div class="nav-section-label">Compte</div>
-          <div class="nav-item" onclick="goTo('settings')"><span class="ni">⚙️</span> Paramètres</div>
-          <div class="nav-item" onclick="goTo('upgrade')"><span class="ni">⭐</span> Passer Pro</div>
+          <div class="nav-item" data-page="settings" onclick="goTo('settings')"><span class="ni">⚙️</span> Paramètres</div>
+          <div class="nav-item" data-page="upgrade" onclick="goTo('upgrade')"><span class="ni">⭐</span> Passer Pro</div>
         </div>
       </nav>
       <div class="sidebar-bottom">
@@ -394,16 +394,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
         </div>
       </div>
     </aside>
-
+ 
     <div class="main">
       <div class="topbar">
         <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
         <div class="topbar-title" id="topbar-title">Tableau de bord</div>
         <div id="topbar-actions" style="display:flex;gap:8px;align-items:center"></div>
       </div>
-
+ 
       <div class="content">
-
+ 
         <!-- DASHBOARD -->
         <div class="page active" id="page-dashboard">
           <div class="kpi-grid">
@@ -417,7 +417,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
             <div id="dash-activity"><div class="loader"><div class="spinner"></div> Chargement…</div></div>
           </div>
         </div>
-
+ 
         <!-- ADHÉRENTS -->
         <div class="page" id="page-adherents">
           <div class="search-row">
@@ -437,7 +437,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
             </table>
           </div>
         </div>
-
+ 
         <!-- DOCUMENTS -->
         <div class="page" id="page-documents">
           <div id="doc-list">
@@ -455,7 +455,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
             <div class="doc-preview" id="doc-preview-content"></div>
           </div>
         </div>
-
+ 
         <!-- COMPTA -->
         <div class="page" id="page-compta">
           <div class="compta-kpi">
@@ -471,9 +471,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
             </div>
             <button class="btn primary" onclick="openModal('modal-trans')">+ Opération</button>
           </div>
-          <div id="trans-list"><div class="loader"><div class="spinner"></div> Chargement…</div></div>
+          <div id="trans-list" style="margin-top:12px"><div class="loader"><div class="spinner"></div> Chargement…</div></div>
         </div>
-
+ 
         <!-- EVENTS -->
         <div class="page" id="page-events">
           <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
@@ -481,7 +481,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
           </div>
           <div class="ev-grid" id="ev-grid"><div class="loader"><div class="spinner"></div> Chargement…</div></div>
         </div>
-
+ 
         <!-- SETTINGS -->
         <div class="page" id="page-settings">
           <div class="settings-wrap">
@@ -507,7 +507,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
             </div>
           </div>
         </div>
-
+ 
         <!-- UPGRADE -->
         <div class="page" id="page-upgrade">
           <div style="max-width:520px">
@@ -542,14 +542,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
             </div>
           </div>
         </div>
-
+ 
       </div><!-- /content -->
     </div><!-- /main -->
   </div><!-- /layout -->
 </div><!-- /app -->
-
+ 
 <!-- ══ MODALS ══ -->
-
+ 
 <!-- Nouvelle asso -->
 <div class="modal-bg" id="modal-new-asso">
   <div class="modal">
@@ -568,7 +568,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     </div>
   </div>
 </div>
-
+ 
 <!-- Adhérent -->
 <div class="modal-bg" id="modal-adherent">
   <div class="modal">
@@ -596,7 +596,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     </div>
   </div>
 </div>
-
+ 
 <!-- Transaction -->
 <div class="modal-bg" id="modal-trans">
   <div class="modal">
@@ -623,7 +623,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     </div>
   </div>
 </div>
-
+ 
 <!-- Événement -->
 <div class="modal-bg" id="modal-event">
   <div class="modal">
@@ -646,9 +646,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     </div>
   </div>
 </div>
-
+ 
 <div class="toast-wrap" id="toasts"></div>
-
+ 
 <script>
 // ════════════════════════════════════════
 //  CONFIG
@@ -658,24 +658,102 @@ const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIs
 const STRIPE_PK = 'pk_test_51TX6PYRFt1VtaecjybtUavJR7vl2gWZZXe2c6ghjfEGZuQhV83WVugN9yAk2ADKnDk21TEAOfaeDVmgLmoV84BOJ00H0W73HET';
 const PRICE_MONTHLY = 'price_1TX7NNRFt1VtaecjjIjFeTbI';
 const PRICE_YEARLY  = 'price_1TX7NmRFt1VtaecjxL77a9Qs';
-
+ 
 const { createClient } = supabase;
 const sb = createClient(SUPA_URL, SUPA_KEY);
 const stripe = Stripe(STRIPE_PK);
-
+ 
 // ════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════
-let currentUser = null;
+let currentUser    = null;
 let currentProfile = null;
-let currentAsso = null;
-let allAdherents = [];
-let allTransactions = [];
-let adhFilter = 'tous';
-let comptaFilter = 'all';
-let selectedPlan = 'monthly';
+let currentAsso    = null;
+let allAdherents   = [];
+let allTransactions= [];
+let adhFilter      = 'tous';
+let comptaFilter   = 'all';
+let selectedPlan   = 'monthly';
 const COLORS = ['#2D6A4F','#E76F51','#3A70C4','#F4B942','#9B30FF','#D64045','#40916C'];
-
+ 
+// ════════════════════════════════════════
+//  UTILS  (defined ONCE, at the top)
+// ════════════════════════════════════════
+function show(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = '';
+}
+function hide(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'none';
+}
+function v(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+function fmt(n) {
+  return Math.round(Number(n) || 0).toLocaleString('fr-FR');
+}
+function formatDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+}
+function setBtn(id, text, disabled) {
+  const b = document.getElementById(id);
+  if (b) { b.textContent = text; b.disabled = disabled; }
+}
+function authErr(msg) {
+  const e = document.getElementById('auth-err');
+  e.textContent = msg; e.style.display = 'block';
+  document.getElementById('auth-ok').style.display = 'none';
+}
+function authOk(msg) {
+  const e = document.getElementById('auth-ok');
+  e.textContent = msg; e.style.display = 'block';
+  document.getElementById('auth-err').style.display = 'none';
+}
+function clearAuthMsg() {
+  document.getElementById('auth-err').style.display = 'none';
+  document.getElementById('auth-ok').style.display = 'none';
+}
+ 
+// ════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════
+function toast(msg, icon = 'ℹ️', type = 'info') {
+  const wrap = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = `toast-n ${type}`;
+  el.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(20px)';
+    el.style.transition = 'all .3s';
+    setTimeout(() => el.remove(), 300);
+  }, 3500);
+}
+ 
+// ════════════════════════════════════════
+//  MODALS
+// ════════════════════════════════════════
+function openModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.add('open');
+  // Auto-fill today's date on date inputs
+  m && m.querySelectorAll('input[type=date]').forEach(di => {
+    if (!di.value) di.value = new Date().toISOString().split('T')[0];
+  });
+}
+function closeModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.remove('open');
+}
+// Close modal on backdrop click
+document.querySelectorAll('.modal-bg').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+ 
 // ════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════
@@ -686,7 +764,6 @@ const COLORS = ['#2D6A4F','#E76F51','#3A70C4','#F4B942','#9B30FF','#D64045','#40
     await loadProfile();
     showPicker();
   }
-  // Auth state listener
   sb.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session) {
       currentUser = session.user;
@@ -699,17 +776,17 @@ const COLORS = ['#2D6A4F','#E76F51','#3A70C4','#F4B942','#9B30FF','#D64045','#40
     }
   });
 })();
-
+ 
 async function loadProfile() {
   const { data } = await sb.from('profiles').select('*').eq('id', currentUser.id).single();
   currentProfile = data;
   if (currentProfile) {
     document.getElementById('user-name-s').textContent = currentProfile.full_name || currentProfile.email.split('@')[0];
-    document.getElementById('user-av').textContent = (currentProfile.full_name||currentProfile.email)[0].toUpperCase();
+    document.getElementById('user-av').textContent = (currentProfile.full_name || currentProfile.email)[0].toUpperCase();
     document.getElementById('user-plan-s').textContent = currentProfile.plan === 'pro' ? '⭐ Plan Pro' : 'Plan Gratuit';
   }
 }
-
+ 
 // ════════════════════════════════════════
 //  AUTH
 // ════════════════════════════════════════
@@ -720,7 +797,7 @@ function switchAuthTab(tab, btn) {
   hide(tab === 'login' ? 'tab-register' : 'tab-login');
   clearAuthMsg();
 }
-
+ 
 async function doLogin() {
   const email = v('login-email'), pwd = v('login-pwd');
   if (!email || !pwd) { authErr('Remplis tous les champs.'); return; }
@@ -729,7 +806,7 @@ async function doLogin() {
   setBtn('btn-login', 'Se connecter', false);
   if (error) authErr(error.message === 'Invalid login credentials' ? 'Email ou mot de passe incorrect.' : error.message);
 }
-
+ 
 async function doRegister() {
   const name = v('reg-name'), email = v('reg-email'), pwd = v('reg-pwd');
   if (!name || !email || !pwd) { authErr('Remplis tous les champs.'); return; }
@@ -740,123 +817,119 @@ async function doRegister() {
   if (error) authErr(error.message);
   else authOk('Compte créé ! Vérifie ton email pour confirmer, puis connecte-toi.');
 }
-
+ 
 async function doLogout() {
   await sb.auth.signOut();
 }
-
+ 
 // ════════════════════════════════════════
 //  ASSO PICKER
 // ════════════════════════════════════════
 async function showPicker() {
   hide('app'); hide('auth-screen');
-  show('picker-screen');
+  document.getElementById('picker-screen').style.display = 'flex';
   const list = document.getElementById('asso-list-picker');
   list.innerHTML = '<div class="loader"><div class="spinner"></div> Chargement…</div>';
+ 
   const { data: owned } = await sb.from('associations').select('*').eq('owner_id', currentUser.id);
   const { data: membered } = await sb.from('asso_members').select('*, associations(*)').eq('user_id', currentUser.id);
-
+ 
   const all = [
     ...(owned || []).map(a => ({ ...a, role: 'owner' })),
     ...(membered || []).filter(m => m.associations).map(m => ({ ...m.associations, role: m.role }))
   ];
-  // Dédupliquer
   const seen = new Set();
   const unique = all.filter(a => { if (seen.has(a.id)) return false; seen.add(a.id); return true; });
-
+ 
   if (!unique.length) {
     list.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:14px;padding:20px">Vous n\'avez pas encore d\'association.<br>Créez-en une ci-dessous !</div>';
     return;
   }
   list.innerHTML = unique.map(a => `
-    <div class="asso-item" onclick="selectAsso('${a.id}','${(a.name||'').replace(/'/g,"\\'")}')">
-      <div class="asso-avatar">${(a.name||'?')[0].toUpperCase()}</div>
+    <div class="asso-item" onclick="selectAsso('${a.id}')">
+      <div class="asso-avatar">${(a.name || '?')[0].toUpperCase()}</div>
       <div class="asso-info">
         <div class="asso-name">${a.name}</div>
-        <div class="asso-role">${a.city||''} · ${a.role === 'owner' ? 'Propriétaire' : a.role === 'admin' ? 'Admin' : 'Membre'}</div>
+        <div class="asso-role">${a.city || ''} · ${a.role === 'owner' ? 'Propriétaire' : a.role === 'admin' ? 'Admin' : 'Membre'}</div>
       </div>
       <span class="asso-plan">${currentProfile?.plan === 'pro' ? 'Pro' : 'Gratuit'}</span>
     </div>`).join('');
 }
-
-async function selectAsso(id, name) {
-  const { data } = await sb.from('associations').select('*').eq('id', id).single();
+ 
+async function selectAsso(id) {
+  const { data, error } = await sb.from('associations').select('*').eq('id', id).single();
+  if (error || !data) { toast('Erreur chargement association', '❌', 'error'); return; }
   currentAsso = data;
   document.getElementById('sw-name').textContent = currentAsso.name;
-  hide('picker-screen'); show('app');
+  document.getElementById('picker-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
   document.getElementById('topbar-title').textContent = 'Tableau de bord';
-  // Load settings into form
   fillSettings();
   await loadDashboard();
 }
-
+ 
 async function createAsso() {
   const name = v('na-name');
-
-  if (!name) {
-    toast('Le nom est obligatoire', '⚠️');
-    return;
-  }
-
+  if (!name) { toast('Le nom est obligatoire', '⚠️'); return; }
+ 
   const { data, error } = await sb
     .from('associations')
     .insert({
       name: name,
       city: v('na-city'),
       president: v('na-pres'),
-      cotisation_amount: parseFloat(v('na-cotis')) || 25
+      cotisation_amount: parseFloat(v('na-cotis')) || 25,
+      owner_id: currentUser.id
     })
     .select()
-    .single();
-
+    .single(); // returns the single object, not an array
+ 
   if (error) {
     console.error(error);
     toast('Erreur: ' + error.message, '❌', 'error');
     return;
   }
-
+ 
+  // FIX: data is an object (not array) when using .single()
+  currentAsso = data;
   closeModal('modal-new-asso');
-
   toast(name + ' créée !', '✅', 'success');
-
-  currentAsso = data[0];
-
-  document.getElementById('sw-name').textContent = data.name;
-
-  hide('picker-screen');
-  show('app');
-
+ 
+  document.getElementById('sw-name').textContent = currentAsso.name;
+  document.getElementById('picker-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+ 
   fillSettings();
-
   await loadDashboard();
-
-  ['na-name','na-city','na-pres'].forEach(id => {
-    document.getElementById(id).value = '';
+ 
+  ['na-name', 'na-city', 'na-pres'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
   });
+  document.getElementById('na-cotis').value = '25';
 }
-
+ 
 // ════════════════════════════════════════
 //  DASHBOARD
 // ════════════════════════════════════════
 async function loadDashboard() {
   if (!currentAsso) return;
-  // Adhérents
   const { data: adh } = await sb.from('adherents').select('*').eq('asso_id', currentAsso.id);
   allAdherents = adh || [];
   const actifs = allAdherents.filter(a => a.status === 'actif').length;
   const retard = allAdherents.filter(a => a.status === 'retard').length;
   document.getElementById('kpi-adh').textContent = actifs;
   document.getElementById('kpi-retard').textContent = retard;
-  // Transactions
+ 
   const { data: trans } = await sb.from('transactions').select('*').eq('asso_id', currentAsso.id);
   allTransactions = trans || [];
-  const inc = allTransactions.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0);
-  const exp = allTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0);
+  const inc = allTransactions.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount || 0), 0);
+  const exp = allTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount || 0), 0);
   document.getElementById('kpi-solde').textContent = fmt(inc - exp) + '€';
-  // Events
+ 
   const { data: evs } = await sb.from('events').select('*').eq('asso_id', currentAsso.id);
   document.getElementById('kpi-ev').textContent = (evs || []).length;
-  // Activity
+ 
   const acts = [];
   allAdherents.slice(0, 3).forEach(a => acts.push({ icon: '👤', text: `<strong>${a.first_name} ${a.last_name}</strong> — adhérent ${a.status}`, time: formatDate(a.created_at) }));
   allTransactions.slice(0, 2).forEach(t => acts.push({ icon: t.type === 'income' ? '💚' : '🔴', text: `${t.label} — ${t.type === 'income' ? '+' : '-'}${t.amount}€`, time: formatDate(t.created_at) }));
@@ -864,7 +937,7 @@ async function loadDashboard() {
     ? acts.map(a => `<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="font-size:16px">${a.icon}</span><div style="flex:1">${a.text}</div><span style="color:var(--muted);font-size:11px;white-space:nowrap">${a.time}</span></div>`).join('')
     : '<div class="empty"><div class="empty-icon">📭</div><p>Aucune activité encore.</p></div>';
 }
-
+ 
 // ════════════════════════════════════════
 //  ADHÉRENTS
 // ════════════════════════════════════════
@@ -873,14 +946,17 @@ async function loadAdherents() {
   allAdherents = data || [];
   renderAdh();
 }
-
+ 
 function renderAdh(list) {
   const data = list !== undefined ? list : filterAdhData();
   const tbody = document.getElementById('adh-tbody');
-  if (!data.length) { tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><div class="empty-icon">👥</div><h3>Aucun adhérent</h3><p>Ajoutez votre premier membre.</p></div></td></tr>`; return; }
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty"><div class="empty-icon">👥</div><h3>Aucun adhérent</h3><p>Ajoutez votre premier membre.</p></div></td></tr>`;
+    return;
+  }
   tbody.innerHTML = data.map(a => {
-    const init = ((a.first_name||'?')[0] + (a.last_name||'?')[0]).toUpperCase();
-    const col = COLORS[a.first_name.charCodeAt(0) % COLORS.length];
+    const init = ((a.first_name || '?')[0] + (a.last_name || '?')[0]).toUpperCase();
+    const col = COLORS[(a.first_name || '').charCodeAt(0) % COLORS.length];
     return `<tr>
       <td><div style="display:flex;align-items:center;gap:10px">
         <div class="av-sm" style="background:${col}">${init}</div>
@@ -895,7 +971,7 @@ function renderAdh(list) {
     </tr>`;
   }).join('');
 }
-
+ 
 function filterAdhData() {
   return allAdherents.filter(a => {
     if (adhFilter === 'actif') return a.status === 'actif';
@@ -904,16 +980,21 @@ function filterAdhData() {
     return true;
   });
 }
+ 
 function filterAdh(q) {
   const s = q.toLowerCase();
-  renderAdh(allAdherents.filter(a => (a.first_name + ' ' + a.last_name + (a.email || '')).toLowerCase().includes(s)));
+  renderAdh(allAdherents.filter(a =>
+    (a.first_name + ' ' + a.last_name + (a.email || '')).toLowerCase().includes(s)
+  ));
 }
+ 
 function setAdhFilter(f, btn) {
   adhFilter = f;
-  document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('#page-adherents .filter-chips .chip').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
   renderAdh();
 }
+ 
 async function addAdherent() {
   const fn = v('a-prenom'), ln = v('a-nom');
   if (!fn || !ln) { toast('Prénom et nom requis', '⚠️'); return; }
@@ -921,32 +1002,37 @@ async function addAdherent() {
   const { error } = await sb.from('adherents').insert({
     asso_id: currentAsso.id,
     first_name: fn, last_name: ln,
-    email: v('a-email'), phone: v('a-tel'),
+    email: v('a-email') || null,
+    phone: v('a-tel') || null,
     birthdate: v('a-birth') || null,
     cotisation_paid: paid,
-    cotisation_year: parseInt(v('a-year')) || 2025,
+    cotisation_year: parseInt(v('a-year')) || new Date().getFullYear(),
     status: paid ? 'actif' : 'retard',
     cotisation_amount: currentAsso.cotisation_amount || 25
   });
   if (error) { toast('Erreur: ' + error.message, '❌', 'error'); return; }
   closeModal('modal-adherent');
   toast(fn + ' ' + ln + ' ajouté(e) ✓', '✅', 'success');
-  ['a-prenom','a-nom','a-email','a-tel','a-birth'].forEach(id => document.getElementById(id).value = '');
+  ['a-prenom', 'a-nom', 'a-email', 'a-tel', 'a-birth'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
   await loadAdherents();
 }
+ 
 async function deleteAdh(id) {
   if (!confirm('Supprimer cet adhérent ?')) return;
   await sb.from('adherents').delete().eq('id', id);
   toast('Adhérent supprimé', '🗑️');
   await loadAdherents();
 }
-
+ 
 // ════════════════════════════════════════
 //  DOCUMENTS
 // ════════════════════════════════════════
 const a = () => currentAsso || {};
 const today = () => new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-
+ 
 const DOCS = {
   ag: () => `<h3>CONVOCATION À L'ASSEMBLÉE GÉNÉRALE</h3>
 <p class="doc-center">${a().name} · ${today()}</p>
@@ -955,7 +1041,7 @@ const DOCS = {
 <div class="doc-section"><strong>Ordre du jour :</strong><br>1. Rapport moral — ${a().president || '___'}<br>2. Rapport financier — ${a().treasurer || '___'}<br>3. Approbation des comptes<br>4. Questions diverses</div>
 <div class="doc-hr"></div>
 <div style="text-align:right;margin-top:16px"><em>Le Président,</em><br><strong>${a().president || '___'}</strong></div>`,
-
+ 
   pv: () => `<h3>PROCÈS-VERBAL D'ASSEMBLÉE GÉNÉRALE</h3>
 <p class="doc-center">${a().name} · Loi du 1er juillet 1901</p>
 <div class="doc-section"><strong>Date :</strong> ${today()} · <strong>Lieu :</strong> ${a().city || '___'}</div>
@@ -963,17 +1049,17 @@ const DOCS = {
 <div class="doc-section"><strong>Quorum :</strong> ${allAdherents.filter(x => x.cotisation_paid).length} membres à jour de cotisation sur ${allAdherents.length}.</div>
 <div class="doc-hr"></div>
 <div class="doc-section"><strong>1. Rapport moral</strong><br>${a().president || '___'} présente le bilan de l'année écoulée.</div>
-<div class="doc-section"><strong>2. Rapport financier</strong><br>Recettes : ${fmt(allTransactions.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount),0))}€ — Dépenses : ${fmt(allTransactions.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount),0))}€</div>
+<div class="doc-section"><strong>2. Rapport financier</strong><br>Recettes : ${fmt(allTransactions.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount||0),0))}€ — Dépenses : ${fmt(allTransactions.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount||0),0))}€</div>
 <div class="doc-section"><strong>Vote :</strong> Comptes approuvés à l'unanimité.</div>
 <div class="doc-hr"></div>
 <div style="display:flex;justify-content:space-between;margin-top:16px;font-size:13px">
   <div><em>Le Secrétaire</em><br><br>${a().secretary || '_______________'}</div>
   <div style="text-align:right"><em>Le Président</em><br><br>${a().president || '_______________'}</div>
 </div>`,
-
+ 
   bilan: () => {
-    const inc = allTransactions.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount),0);
-    const exp = allTransactions.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount),0);
+    const inc = allTransactions.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount||0),0);
+    const exp = allTransactions.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount||0),0);
     return `<h3>BILAN MORAL & FINANCIER</h3>
 <p class="doc-center">${a().name} · Exercice ${new Date().getFullYear()}</p>
 <div class="doc-section"><strong>I. BILAN MORAL</strong><br>${allAdherents.length} adhérents dont ${allAdherents.filter(x=>x.status==='actif').length} actifs.</div>
@@ -987,7 +1073,7 @@ ${allTransactions.filter(t=>t.type==='expense').map(t=>`<tr><td style="padding:7
 </table>
 <div style="text-align:right;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-top:10px;color:var(--sage2)">SOLDE NET : ${fmt(inc-exp)}€</div></div>`;
   },
-
+ 
   recu: () => `<h3>REÇU DE COTISATION</h3>
 <p class="doc-center">${a().name} · Exercice ${new Date().getFullYear()}</p>
 <div class="doc-section"><strong>Reçu le :</strong> ${today()}</div>
@@ -999,7 +1085,7 @@ ${allTransactions.filter(t=>t.type==='expense').map(t=>`<tr><td style="padding:7
   <div><em>Signature adhérent</em><br><br>_______________</div>
   <div style="text-align:right"><em>Le Trésorier</em><br><br>${a().treasurer || '_______________'}</div>
 </div>`,
-
+ 
   statuts: () => `<h3>STATUTS TYPE</h3>
 <p class="doc-center">Loi du 1er juillet 1901</p>
 <div class="doc-section"><strong>ART. 1 — DÉNOMINATION</strong><br>Association : <strong>${a().name}</strong></div>
@@ -1007,7 +1093,7 @@ ${allTransactions.filter(t=>t.type==='expense').map(t=>`<tr><td style="padding:7
 <div class="doc-section"><strong>ART. 3 — SIÈGE</strong><br>${a().address || '___'}, ${a().postal_code || ''} ${a().city || ''}</div>
 <div class="doc-section"><strong>ART. 4 — DURÉE</strong><br>Illimitée.</div>
 <div class="doc-section"><em>(Modèle complet disponible en plan Pro)</em></div>`,
-
+ 
   prefecture: () => `<h3>DÉCLARATION PRÉFECTURE — CERFA 13971*03</h3>
 <div class="doc-section"><strong>Titre :</strong> ${a().name}</div>
 <div class="doc-section"><strong>Siège :</strong> ${a().address || '___'}, ${a().postal_code || ''} ${a().city || ''}</div>
@@ -1018,7 +1104,7 @@ ${allTransactions.filter(t=>t.type==='expense').map(t=>`<tr><td style="padding:7
 <tr><td style="padding:7px;border:1px solid var(--border)">Secrétaire</td><td style="padding:7px;border:1px solid var(--border)">${a().secretary || '___'}</td></tr>
 </table>`
 };
-
+ 
 function showDoc(type) {
   document.getElementById('doc-list').style.display = 'none';
   document.getElementById('doc-preview').style.display = '';
@@ -1028,7 +1114,7 @@ function showDoc(type) {
       <button class="btn sage" onclick="toast('Téléchargement PDF disponible en plan Pro','⭐')">↓ PDF</button>
     </div>`;
 }
-
+ 
 // ════════════════════════════════════════
 //  COMPTABILITÉ
 // ════════════════════════════════════════
@@ -1037,16 +1123,19 @@ async function loadCompta() {
   allTransactions = data || [];
   renderCompta();
 }
-
+ 
 function renderCompta() {
   const list = comptaFilter === 'all' ? allTransactions : allTransactions.filter(t => t.type === comptaFilter);
-  const inc = allTransactions.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount), 0);
-  const exp = allTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount), 0);
+  const inc = allTransactions.filter(t => t.type === 'income').reduce((s, t) => s + parseFloat(t.amount || 0), 0);
+  const exp = allTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + parseFloat(t.amount || 0), 0);
   document.getElementById('ck-inc').textContent = '+' + fmt(inc) + '€';
   document.getElementById('ck-exp').textContent = '-' + fmt(exp) + '€';
   document.getElementById('ck-sol').textContent = fmt(inc - exp) + '€';
   const el = document.getElementById('trans-list');
-  if (!list.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">💰</div><h3>Aucune opération</h3><p>Ajoutez votre première opération.</p></div>'; return; }
+  if (!list.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-icon">💰</div><h3>Aucune opération</h3><p>Ajoutez votre première opération.</p></div>';
+    return;
+  }
   el.innerHTML = list.map(t => {
     const isInc = t.type === 'income';
     const d = t.transaction_date ? new Date(t.transaction_date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
@@ -1058,36 +1147,39 @@ function renderCompta() {
     </div>`;
   }).join('');
 }
-
+ 
 function setComptaTab(f, btn) {
   comptaFilter = f;
   document.querySelectorAll('#page-compta .chip').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
   renderCompta();
 }
-
+ 
 async function addTransaction() {
   const label = v('t-label'), amount = parseFloat(v('t-amount'));
   if (!label || !amount) { toast('Libellé et montant requis', '⚠️'); return; }
   const { error } = await sb.from('transactions').insert({
-    asso_id: currentAsso.id, created_by: currentUser.id,
-    type: v('t-type'), label, amount,
+    asso_id: currentAsso.id,
+    created_by: currentUser.id,
+    type: v('t-type'),
+    label, amount,
     transaction_date: v('t-date') || new Date().toISOString().split('T')[0],
     category: v('t-cat')
   });
   if (error) { toast('Erreur: ' + error.message, '❌', 'error'); return; }
   closeModal('modal-trans');
   toast('Opération enregistrée ✓', '✅', 'success');
-  ['t-label','t-amount'].forEach(id => document.getElementById(id).value = '');
+  ['t-label', 't-amount'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
   await loadCompta();
 }
-
+ 
 async function deleteTrans(id) {
+  if (!confirm('Supprimer cette opération ?')) return;
   await sb.from('transactions').delete().eq('id', id);
   toast('Opération supprimée', '🗑️');
   await loadCompta();
 }
-
+ 
 // ════════════════════════════════════════
 //  ÉVÉNEMENTS
 // ════════════════════════════════════════
@@ -1095,7 +1187,7 @@ async function loadEvents() {
   const { data } = await sb.from('events').select('*, event_registrations(count)').eq('asso_id', currentAsso.id).order('event_date');
   renderEvents(data || []);
 }
-
+ 
 function renderEvents(evs) {
   const grid = document.getElementById('ev-grid');
   if (!evs.length) {
@@ -1125,62 +1217,79 @@ function renderEvents(evs) {
     </div>`;
   }).join('');
 }
-
+ 
 async function addEvent() {
   const name = v('e-name'), date = v('e-date');
   if (!name || !date) { toast('Nom et date requis', '⚠️'); return; }
   const { error } = await sb.from('events').insert({
-    asso_id: currentAsso.id, name, description: v('e-desc'),
-    event_date: date, event_time: v('e-time'),
-    location: v('e-lieu'), max_places: parseInt(v('e-places')) || 30,
+    asso_id: currentAsso.id, name,
+    description: v('e-desc') || null,
+    event_date: date,
+    event_time: v('e-time') || null,
+    location: v('e-lieu') || null,
+    max_places: parseInt(v('e-places')) || 30,
     color: COLORS[Math.floor(Math.random() * COLORS.length)]
   });
   if (error) { toast('Erreur: ' + error.message, '❌', 'error'); return; }
   closeModal('modal-event');
   toast(name + ' créé ✓', '✅', 'success');
-  ['e-name','e-desc','e-date','e-lieu','e-places'].forEach(id => document.getElementById(id).value = '');
+  ['e-name', 'e-desc', 'e-date', 'e-lieu', 'e-places'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
   await loadEvents();
 }
-
+ 
 async function deleteEvent(id) {
   if (!confirm('Supprimer cet événement ?')) return;
   await sb.from('events').delete().eq('id', id);
   toast('Événement supprimé', '🗑️');
   await loadEvents();
 }
-
+ 
 // ════════════════════════════════════════
 //  SETTINGS
 // ════════════════════════════════════════
 function fillSettings() {
   if (!currentAsso) return;
-  const fields = { 's-name': 'name', 's-rna': 'rna', 's-date': 'founded_date', 's-addr': 'address', 's-city': 'city', 's-cp': 'postal_code', 's-pres': 'president', 's-tres': 'treasurer', 's-sec': 'secretary', 's-cotis': 'cotisation_amount' };
-  Object.entries(fields).forEach(([id, key]) => { const el = document.getElementById(id); if (el && currentAsso[key]) el.value = currentAsso[key]; });
+  const fields = {
+    's-name': 'name', 's-rna': 'rna', 's-date': 'founded_date',
+    's-addr': 'address', 's-city': 'city', 's-cp': 'postal_code',
+    's-pres': 'president', 's-tres': 'treasurer', 's-sec': 'secretary',
+    's-cotis': 'cotisation_amount'
+  };
+  Object.entries(fields).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el && currentAsso[key] != null) el.value = currentAsso[key];
+  });
 }
-
+ 
 async function saveSettings() {
   const updates = {
-    name: v('s-name'), rna: v('s-rna'), founded_date: v('s-date') || null,
+    name: v('s-name'), rna: v('s-rna'),
+    founded_date: v('s-date') || null,
     address: v('s-addr'), city: v('s-city'), postal_code: v('s-cp'),
     president: v('s-pres'), treasurer: v('s-tres'), secretary: v('s-sec'),
-    cotisation_amount: parseFloat(v('s-cotis')) || 25, updated_at: new Date().toISOString()
+    cotisation_amount: parseFloat(v('s-cotis')) || 25,
+    updated_at: new Date().toISOString()
   };
-  const { data, error } = await sb.from('associations').update(updates).eq('id', currentAsso.id).select('*');
+  // FIX: use .select().single() so data is an object, not an array
+  const { data, error } = await sb.from('associations').update(updates).eq('id', currentAsso.id).select().single();
   if (error) { toast('Erreur: ' + error.message, '❌', 'error'); return; }
-  currentAsso = data;
+  currentAsso = data; // data is now the object directly
   document.getElementById('sw-name').textContent = currentAsso.name;
   toast('Paramètres enregistrés ✓', '✅', 'success');
 }
-
+ 
 // ════════════════════════════════════════
-//  STRIPE CHECKOUT
+//  STRIPE
 // ════════════════════════════════════════
 function selectPlan(plan) {
   selectedPlan = plan;
   document.getElementById('opt-monthly').classList.toggle('selected', plan === 'monthly');
   document.getElementById('opt-yearly').classList.toggle('selected', plan === 'yearly');
 }
-
+ 
 async function doCheckout() {
   const btn = document.getElementById('btn-checkout');
   btn.textContent = '⏳ Redirection…'; btn.disabled = true;
@@ -1189,102 +1298,50 @@ async function doCheckout() {
     const { error } = await stripe.redirectToCheckout({
       lineItems: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
-      successUrl: window.location.href + '?payment=success',
-      cancelUrl: window.location.href + '?payment=cancel',
+      successUrl: window.location.href.split('?')[0] + '?payment=success',
+      cancelUrl: window.location.href.split('?')[0] + '?payment=cancel',
       customerEmail: currentUser?.email
     });
-    if (error) { toast('Erreur paiement: ' + error.message, '❌', 'error'); }
-  } catch (e) { toast('Erreur: ' + e.message, '❌', 'error'); }
+    if (error) toast('Erreur paiement: ' + error.message, '❌', 'error');
+  } catch (e) {
+    toast('Erreur: ' + e.message, '❌', 'error');
+  }
   btn.textContent = '🚀 S\'abonner maintenant'; btn.disabled = false;
 }
-
-// Vérifier retour paiement
+ 
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('payment') === 'success') toast('Abonnement activé ! Bienvenue en Pro ⭐', '🎉', 'success');
 if (urlParams.get('payment') === 'cancel') toast('Paiement annulé.', 'ℹ️');
-
+ 
 // ════════════════════════════════════════
-//  NAVIGATION
+//  NAVIGATION  (FIX: uses data-page attribute)
 // ════════════════════════════════════════
-const PAGE_TITLES = { dashboard: 'Tableau de bord', adherents: 'Adhérents', documents: 'Documents officiels', compta: 'Comptabilité', events: 'Événements', settings: 'Paramètres', upgrade: 'Passer Pro ⭐' };
-
+const PAGE_TITLES = {
+  dashboard: 'Tableau de bord', adherents: 'Adhérents',
+  documents: 'Documents officiels', compta: 'Comptabilité',
+  events: 'Événements', settings: 'Paramètres', upgrade: 'Passer Pro ⭐'
+};
+ 
 async function goTo(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+ 
+  // FIX: use data-page attribute instead of fragile text matching
   document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.textContent.trim().toLowerCase().startsWith((PAGE_TITLES[page] || '').toLowerCase().slice(0, 5))) n.classList.add('active');
+    n.classList.toggle('active', n.dataset.page === page);
   });
-  document.getElementById('topbar-title').textContent = PAGE_TITLES[page];
+ 
+  document.getElementById('topbar-title').textContent = PAGE_TITLES[page] || page;
   document.getElementById('sidebar').classList.remove('open');
-  // Reset doc view
-  if (page === 'documents') { document.getElementById('doc-list').style.display = ''; document.getElementById('doc-preview').style.display = 'none'; }
-  // Load data
+ 
+  if (page === 'documents') {
+    document.getElementById('doc-list').style.display = '';
+    document.getElementById('doc-preview').style.display = 'none';
+  }
   if (page === 'adherents' && currentAsso) await loadAdherents();
-  if (page === 'compta' && currentAsso) await loadCompta();
-  if (page === 'events' && currentAsso) await loadEvents();
+  if (page === 'compta'    && currentAsso) await loadCompta();
+  if (page === 'events'    && currentAsso) await loadEvents();
 }
-
-// ════════════════════════════════════════
-//  MODALS
-// ════════════════════════════════════════
-function openModal(id) {
-  document.getElementById(id).classList.add('open');
-  const di = document.querySelector(`#${id} input[type=date]`);
-  if (di && !di.value) di.value = new Date().toISOString().split('T')[0];
-}
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-bg').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); }));
-
-// ════════════════════════════════════════
-//  TOASTS
-// ════════════════════════════════════════
-function toast(msg, icon = 'ℹ️', type = 'info') {
-  const wrap = document.getElementById('toasts');
-  const el = document.createElement('div');
-  el.className = `toast-n ${type}`;
-  el.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
-  wrap.appendChild(el);
-  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(20px)'; el.style.transition = 'all .3s'; setTimeout(() => el.remove(), 300); }, 3000);
-}
-
-// ════════════════════════════════════════
-//  UTILS
-// ════════════════════════════════════════
-function v(id) { return document.getElementById(id)?.value?.trim() || ''; }
-function show(id) { document.getElementById(id).style.display = ''; }
-function hide(id) { document.getElementById(id).style.display = 'none'; }
-function fmt(n) { return Math.round(n).toLocaleString('fr-FR'); }
-function formatDate(d) { if (!d) return '—'; return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }); }
-function setBtn(id, text, disabled) { const b = document.getElementById(id); b.textContent = text; b.disabled = disabled; }
-function authErr(msg) { const e = document.getElementById('auth-err'); e.textContent = msg; e.style.display = 'block'; document.getElementById('auth-ok').style.display = 'none'; }
-function authOk(msg) { const e = document.getElementById('auth-ok'); e.textContent = msg; e.style.display = 'block'; document.getElementById('auth-err').style.display = 'none'; }
-function clearAuthMsg() { document.getElementById('auth-err').style.display = 'none'; document.getElementById('auth-ok').style.display = 'none'; }
-
-function show(id) {
-  document.getElementById(id).style.display = 'block';
-}
-
-function hide(id) {
-  document.getElementById(id).style.display = 'none';
-}
-
-function openModal(id) {
-  document.getElementById(id).classList.add('show');
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('show');
-}
-
-function v(id) {
-  return document.getElementById(id).value.trim();
-}
-
-function fmt(n) {
-  return Number(n || 0).toFixed(2);
-}
-
 </script>
 </body>
 </html>
