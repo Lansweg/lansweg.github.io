@@ -519,10 +519,24 @@ const SUPABASE_KEY = 'sb_publishable_rEfoyYQ624Y6TvFFv4v4Qw_pKyahZRL';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Sync indicator
-function syncSet(state){ // 'syncing'|'ok'|'err'
-  const d=g('sync-dot');
-  d.className='sync-dot '+state;
-  g('sync-label').textContent=state==='syncing'?'Sync…':state==='ok'?'Sauvegardé':'Erreur sync';
+function syncSet(state){
+
+  const d = g('sync-dot');
+  const label = g('sync-label');
+
+  if(!d || !label){
+    console.warn('sync-dot ou sync-label introuvable');
+    return;
+  }
+
+  d.className = 'sync-dot ' + state;
+
+  label.textContent =
+    state === 'syncing'
+      ? 'Sync…'
+      : state === 'ok'
+      ? 'Sauvegardé'
+      : 'Erreur sync';
 }
 
 // ═══════════════════════════════════════════════════
