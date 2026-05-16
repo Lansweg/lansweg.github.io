@@ -682,6 +682,7 @@ async function loadSettings(){
 }
 
 async function saveSettings(){
+
   settings.name=v('s-name');
   settings.type=v('s-type');
   settings.siret=v('s-siret');
@@ -700,17 +701,40 @@ async function saveSettings(){
 
   syncSet('syncing');
 
-  const payload = {
-    id: 1,
-    data: settings,
-    dev_num: devNum,
-    fac_num: facNum,
-    updated_at: new Date().toISOString()
-  };
-
-  const { error } = await sb
+  // Vérifie si une ligne existe déjà
+  const { data: existing } = await sb
     .from('settings')
-    .upsert(payload);
+    .select('*')
+    .limit(1);
+
+  let error;
+
+  if(existing && existing.length > 0){
+
+    // UPDATE
+    ({ error } = await sb
+      .from('settings')
+      .update({
+        data: settings,
+        dev_num: devNum,
+        fac_num: facNum,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', existing[0].id));
+
+  } else {
+
+    // INSERT
+    ({ error } = await sb
+      .from('settings')
+      .insert({
+        data: settings,
+        dev_num: devNum,
+        fac_num: facNum,
+        updated_at: new Date().toISOString()
+      }));
+
+  }
 
   if(error){
     console.error(error);
