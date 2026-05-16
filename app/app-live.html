@@ -1,1 +1,1393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FC Événement — Gestionnaire Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0D0F14;
+  --bg2: #13161E;
+  --bg3: #1A1E29;
+  --bg4: #222739;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #F0EEE8;
+  --muted: rgba(240,238,232,0.45);
+  --muted2: rgba(240,238,232,0.25);
+  --orange: #F4722B;
+  --orange2: #F9A06E;
+  --orange-dim: rgba(244,114,43,0.15);
+  --green: #2ECC8A;
+  --green-dim: rgba(46,204,138,0.12);
+  --red: #E84040;
+  --red-dim: rgba(232,64,64,0.12);
+  --blue: #4E9EF5;
+  --blue-dim: rgba(78,158,245,0.12);
+  --yellow: #F5C842;
+  --yellow-dim: rgba(245,200,66,0.12);
+  --r: 10px;
+  --r2: 14px;
+}
 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Manrope', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  grid-template-rows: 56px 1fr;
+  height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  grid-column: 1 / -1;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+}
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--text);
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+}
+.logo span { color: var(--orange); }
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(232,64,64,0.15);
+  border: 1px solid rgba(232,64,64,0.3);
+  border-radius: 50px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--red);
+  display: none;
+}
+.live-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: pulse 1.4s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+
+.topbar-nav {
+  display: flex;
+  gap: 4px;
+  margin-left: 12px;
+}
+.topbar-tab {
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  transition: all .15s;
+  font-family: 'Manrope', sans-serif;
+}
+.topbar-tab:hover { color: var(--text); background: var(--bg4); }
+.topbar-tab.active { background: var(--orange); color: #fff; }
+
+.topbar-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── MAIN ── */
+.main {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── VIEWS ── */
+.view { display: none; flex: 1; overflow: hidden; }
+.view.active { display: flex; flex-direction: column; }
+
+/* ── BUTTONS ── */
+.btn {
+  padding: 8px 18px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all .15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'Manrope', sans-serif;
+  white-space: nowrap;
+}
+.btn.orange { background: var(--orange); color: #fff; }
+.btn.orange:hover { background: #d95f1f; }
+.btn.ghost { background: var(--bg4); color: var(--text); border: 1px solid var(--border2); }
+.btn.ghost:hover { background: var(--bg3); border-color: rgba(255,255,255,.2); }
+.btn.green { background: var(--green); color: #0D0F14; }
+.btn.green:hover { background: #26b578; }
+.btn.red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(232,64,64,.25); }
+.btn.sm { padding: 5px 12px; font-size: 12px; }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── FORM ── */
+.finput {
+  width: 100%;
+  padding: 9px 13px;
+  border: 1.5px solid var(--border2);
+  border-radius: var(--r);
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  background: var(--bg3);
+  color: var(--text);
+  outline: none;
+  transition: border .2s;
+}
+.finput:focus { border-color: var(--orange); }
+.finput::placeholder { color: var(--muted2); }
+.flabel { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 5px; display: block; }
+.fgroup { margin-bottom: 12px; }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+select.finput option { background: var(--bg3); }
+
+/* ── START SCREEN ── */
+.start-screen {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+.start-box {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  padding: 40px;
+  width: 100%;
+  max-width: 480px;
+}
+.start-box h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+.start-box p { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+
+/* ── LIVE LAYOUT ── */
+.live-layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  overflow: hidden;
+}
+
+/* ── PANIERS ZONE ── */
+.paniers-zone {
+  padding: 16px;
+  overflow-y: auto;
+}
+.paniers-topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.live-stats-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.lstat {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lstat-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; }
+.lstat-label { font-size: 11px; color: var(--muted); }
+.lstat.orange .lstat-num { color: var(--orange); }
+.lstat.green .lstat-num { color: var(--green); }
+.lstat.blue .lstat-num { color: var(--blue); }
+
+/* ── PANIERS GRID ── */
+.paniers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  gap: 6px;
+}
+.p-btn {
+  aspect-ratio: 1;
+  border-radius: var(--r);
+  border: 1.5px solid var(--border2);
+  background: var(--bg3);
+  cursor: pointer;
+  transition: all .15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  position: relative;
+  padding: 4px;
+}
+.p-btn:hover { border-color: rgba(255,255,255,.25); transform: scale(1.04); }
+.p-btn.active { border-color: var(--orange); background: var(--orange-dim); box-shadow: 0 0 0 1px var(--orange); }
+.p-btn.has-items { border-color: rgba(46,204,138,.4); background: var(--green-dim); }
+.p-btn.closed { border-color: rgba(78,158,245,.4); background: var(--blue-dim); opacity: .8; }
+.p-btn.active.has-items { border-color: var(--orange); background: var(--orange-dim); box-shadow: 0 0 0 1px var(--orange); }
+.p-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; line-height: 1; }
+.p-name { font-size: 9px; color: var(--muted); max-width: 68px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+.p-tot { font-size: 10px; font-weight: 700; color: var(--green); }
+.p-dot { position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; }
+.p-dot.open { background: var(--green); }
+.p-dot.filled { background: var(--orange); }
+.p-dot.closed { background: var(--blue); }
+
+/* ── PANIER PANEL ── */
+.panier-panel {
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.pp-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.pp-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pp-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px;
+}
+.pp-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.pp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--muted);
+  gap: 10px;
+  font-size: 13px;
+}
+.pp-empty-icon { font-size: 48px; }
+
+/* Articles list */
+.art-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.art-row:last-child { border-bottom: none; }
+.art-emoji { font-size: 18px; flex-shrink: 0; width: 28px; text-align: center; }
+.art-name { flex: 1; font-weight: 600; }
+.art-price { font-weight: 800; font-size: 13px; min-width: 52px; text-align: right; }
+.qty-ctrl { display: flex; align-items: center; gap: 5px; }
+.qty-btn {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 1px solid var(--border2);
+  background: var(--bg4);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .1s;
+}
+.qty-btn:hover { background: var(--bg3); border-color: rgba(255,255,255,.3); }
+.qty-num { font-weight: 800; font-size: 13px; min-width: 18px; text-align: center; }
+.del-btn {
+  background: none;
+  border: none;
+  color: var(--red);
+  cursor: pointer;
+  font-size: 16px;
+  opacity: .5;
+  transition: opacity .15s;
+  padding: 2px 4px;
+}
+.del-btn:hover { opacity: 1; }
+.pp-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+.pp-total-label { font-size: 13px; color: var(--muted); }
+.pp-total-amount { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 26px; color: var(--green); }
+
+/* Note zone */
+.note-zone {
+  margin-top: 8px;
+}
+.note-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+.note-area {
+  width: 100%;
+  background: var(--bg3);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text);
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  padding: 8px 10px;
+  resize: vertical;
+  min-height: 64px;
+  outline: none;
+  transition: border .2s;
+}
+.note-area:focus { border-color: var(--orange); }
+.note-area::placeholder { color: var(--muted2); }
+
+/* Add article inline */
+.add-art-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.add-art-bar .finput { flex: 1; }
+
+/* Quick catalogue chips */
+.quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.qchip {
+  background: var(--bg4);
+  border: 1px solid var(--border2);
+  border-radius: 50px;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.qchip:hover { border-color: var(--orange); background: var(--orange-dim); }
+.qchip-price { color: var(--orange2); }
+
+/* Section separator */
+.sep {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  color: var(--muted);
+  margin: 10px 0 7px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sep::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── CATALOGUE VIEW ── */
+.cat-view { padding: 20px; overflow-y: auto; flex: 1; }
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.cat-card {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color .15s;
+}
+.cat-card:hover { border-color: rgba(255,255,255,.2); }
+.cat-emoji { font-size: 28px; }
+.cat-name { font-weight: 700; font-size: 14px; }
+.cat-price { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; color: var(--orange); }
+.cat-tag { font-size: 11px; color: var(--muted); }
+.cat-del { background: none; border: none; color: var(--red); cursor: pointer; font-size: 12px; opacity: .5; align-self: flex-end; margin-top: auto; transition: opacity .15s; }
+.cat-del:hover { opacity: 1; }
+
+/* ── DOCS VIEW ── */
+.docs-view { padding: 20px; overflow-y: auto; flex: 1; }
+.doc-item {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.doc-item:hover { border-color: rgba(255,255,255,.2); background: var(--bg4); }
+.doc-type-badge {
+  width: 42px; height: 42px;
+  border-radius: var(--r);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.doc-type-badge.devis { background: var(--blue-dim); }
+.doc-type-badge.facture { background: var(--green-dim); }
+.doc-info { flex: 1; }
+.doc-num { font-weight: 800; font-size: 14px; }
+.doc-client { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.doc-amount { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; }
+.doc-amount.devis { color: var(--blue); }
+.doc-amount.facture { color: var(--green); }
+.badge {
+  display: inline-flex;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.badge.devis { background: var(--blue-dim); color: var(--blue); }
+.badge.facture { background: var(--green-dim); color: var(--green); }
+
+/* ── MODAL ── */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(3px);
+}
+.overlay.open { display: flex; }
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  width: 100%;
+  max-width: 520px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 24px;
+  animation: mIn .2s cubic-bezier(.34,1.56,.64,1);
+}
+.modal.wide { max-width: 720px; }
+@keyframes mIn { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:scale(1)} }
+.modal-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-close {
+  background: var(--bg4);
+  border: none;
+  color: var(--muted);
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.modal-close:hover { color: var(--text); background: var(--bg3); }
+
+/* Doc preview */
+.doc-preview {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.doc-preview-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border2);
+}
+.doc-table { width: 100%; border-collapse: collapse; font-size: 12px; margin: 12px 0; }
+.doc-table th {
+  text-align: left; padding: 7px 10px;
+  background: var(--bg3);
+  font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted);
+  border: 1px solid var(--border2);
+}
+.doc-table td { padding: 8px 10px; border: 1px solid var(--border); }
+
+/* ── RECAP ── */
+.recap-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.recap-table th { text-align: left; padding: 8px 10px; background: var(--bg3); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); border-bottom: 1px solid var(--border); }
+.recap-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); }
+.recap-table tr:hover td { background: var(--bg3); }
+
+/* ── TOAST ── */
+.toasts { position: fixed; bottom: 18px; right: 18px; z-index: 500; display: flex; flex-direction: column; gap: 6px; }
+.toast {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 10px 15px;
+  border-radius: var(--r);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 8px 32px rgba(0,0,0,.4);
+  display: flex; align-items: center; gap: 8px;
+  animation: tIn .25s cubic-bezier(.34,1.56,.64,1);
+  max-width: 300px;
+}
+.toast.ok { border-left: 3px solid var(--green); }
+.toast.err { border-left: 3px solid var(--red); }
+@keyframes tIn { from{opacity:0;transform:translateX(14px)} to{opacity:1;transform:translateX(0)} }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* Doc lines in form */
+.doc-line-row {
+  display: grid;
+  grid-template-columns: 1fr 55px 70px 32px;
+  gap: 6px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+
+/* History */
+.history-item {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.history-item:hover { border-color: var(--border2); }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo">FC<span>ÉVÉNEMENT</span></div>
+    <div class="live-indicator" id="live-ind">
+      <div class="live-dot"></div>
+      EN DIRECT
+    </div>
+    <div class="topbar-nav">
+      <button class="topbar-tab active" onclick="switchTab('live', this)">🎥 Live</button>
+      <button class="topbar-tab" onclick="switchTab('catalogue', this)">📦 Catalogue</button>
+      <button class="topbar-tab" onclick="switchTab('docs', this)">📄 Devis / Factures</button>
+    </div>
+    <div class="topbar-right" id="topbar-right"></div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:2px">Historique lives</div>
+    <div id="history-list">
+      <div style="font-size:12px;color:var(--muted2);padding:8px 0">Aucun live encore.</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- ══ LIVE VIEW ══ -->
+    <div class="view active" id="view-live">
+
+      <!-- Start screen -->
+      <div class="start-screen" id="start-screen">
+        <div class="start-box">
+          <div style="font-size:48px;margin-bottom:16px">🎥</div>
+          <h2>Démarrer un live</h2>
+          <p>Les paniers sont remis à 1 à chaque nouveau live.</p>
+          <div class="fgroup">
+            <label class="flabel">Nom du live</label>
+            <input class="finput" id="live-name" placeholder="Ex: Live mode — 16 mai">
+          </div>
+          <div class="frow">
+            <div class="fgroup">
+              <label class="flabel">Nombre de paniers</label>
+              <input class="finput" id="live-nb" type="number" value="80" min="1" max="300">
+            </div>
+            <div class="fgroup">
+              <label class="flabel">Date</label>
+              <input class="finput" id="live-date" type="date">
+            </div>
+          </div>
+          <button class="btn orange" style="width:100%;justify-content:center;padding:12px" onclick="startLive()">
+            🚀 Lancer le live
+          </button>
+        </div>
+      </div>
+
+      <!-- Live active -->
+      <div id="live-active" style="display:none;flex:1;overflow:hidden;display:none">
+        <div class="live-layout" id="live-layout">
+
+          <!-- Paniers zone -->
+          <div class="paniers-zone">
+            <div class="live-stats-row">
+              <div class="lstat orange">
+                <div class="lstat-num" id="st-paniers">0</div>
+                <div class="lstat-label">Paniers actifs</div>
+              </div>
+              <div class="lstat green">
+                <div class="lstat-num" id="st-total">0 €</div>
+                <div class="lstat-label">Total live</div>
+              </div>
+              <div class="lstat blue">
+                <div class="lstat-num" id="st-clos">0</div>
+                <div class="lstat-label">Clôturés</div>
+              </div>
+            </div>
+
+            <div class="paniers-topbar">
+              <input class="finput" id="jump-input" type="number" placeholder="Numéro panier…" style="width:170px" onkeydown="if(event.key==='Enter') jumpTo()">
+              <button class="btn ghost sm" onclick="jumpTo()">Aller →</button>
+              <button class="btn ghost sm" onclick="showRecap()">📊 Récap</button>
+              <button class="btn red sm" onclick="endLive()">⏹ Terminer</button>
+            </div>
+
+            <div class="paniers-grid" id="paniers-grid"></div>
+          </div>
+
+          <!-- Panier panel -->
+          <div class="panier-panel" id="panier-panel">
+            <div class="pp-empty" id="pp-empty">
+              <div class="pp-empty-icon">🛒</div>
+              <div>Cliquez sur un panier</div>
+            </div>
+            <div id="pp-content" style="display:none;flex:1;flex-direction:column;overflow:hidden;display:none">
+              <div class="pp-header">
+                <div class="pp-title">
+                  <span id="pp-num">Panier 1</span>
+                  <span id="pp-status-badge" style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px"></span>
+                </div>
+                <div class="fgroup" style="margin-bottom:0">
+                  <input class="finput" id="pp-name" placeholder="Nom Facebook / client" oninput="updatePanierName(this.value)" style="font-size:13px">
+                </div>
+              </div>
+              <div class="pp-body">
+                <!-- Quick catalogue -->
+                <div class="sep">Catalogue rapide</div>
+                <div class="quick-chips" id="quick-chips"></div>
+
+                <!-- Manual add -->
+                <div class="sep">Ajouter manuellement</div>
+                <div class="add-art-bar">
+                  <input class="finput" id="ma-name" placeholder="Article (ex: robe fleurie T38)">
+                  <input class="finput" id="ma-price" type="number" placeholder="Prix €" style="width:90px">
+                  <button class="btn orange sm" onclick="addManual()">+</button>
+                </div>
+
+                <!-- Articles list -->
+                <div class="sep">Articles du panier</div>
+                <div id="arts-list"></div>
+
+                <!-- Note -->
+                <div class="note-zone">
+                  <div class="note-label">Note libre (articles hors catalogue, remarques…)</div>
+                  <textarea class="note-area" id="pp-note" placeholder="Ex: Veste en cuir 90€ — taille S, à mettre de côté&#10;Robe dégriffée 55€&#10;..." oninput="updateNote(this.value)"></textarea>
+                </div>
+              </div>
+              <div class="pp-footer">
+                <div class="pp-total">
+                  <div>
+                    <div class="pp-total-label" id="pp-art-count">0 article</div>
+                    <div style="font-size:11px;color:var(--muted)" id="pp-note-indicator"></div>
+                  </div>
+                  <div class="pp-total-amount" id="pp-total">0 €</div>
+                </div>
+                <div style="display:flex;gap:7px">
+                  <button class="btn green" style="flex:1;justify-content:center" id="pp-close-btn" onclick="toggleClose()">✓ Clôturer</button>
+                  <button class="btn ghost sm" onclick="clearPanier()" style="color:var(--red)">🗑 Vider</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CATALOGUE VIEW ══ -->
+    <div class="view" id="view-catalogue">
+      <div class="cat-view">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px">Catalogue articles</div>
+          <button class="btn orange" onclick="openModal('modal-cat')">+ Ajouter</button>
+        </div>
+        <div class="cat-grid" id="cat-grid"></div>
+      </div>
+    </div>
+
+    <!-- ══ DOCS VIEW ══ -->
+    <div class="view" id="view-docs">
+      <div class="docs-view">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px">Devis & Factures — FC Événement</div>
+          <button class="btn orange" onclick="openModal('modal-new-doc')">+ Nouveau document</button>
+        </div>
+        <div id="docs-list">
+          <div style="text-align:center;padding:60px 20px;color:var(--muted)">
+            <div style="font-size:48px;margin-bottom:12px">📄</div>
+            <p style="font-size:14px">Aucun document. Créez un devis ou une facture.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- ══ MODALS ══ -->
+
+<!-- Recap -->
+<div class="overlay" id="modal-recap">
+  <div class="modal wide">
+    <div class="modal-title">📊 Récapitulatif du live <button class="modal-close" onclick="closeModal('modal-recap')">✕</button></div>
+    <div id="recap-content"></div>
+  </div>
+</div>
+
+<!-- Catalogue article -->
+<div class="overlay" id="modal-cat">
+  <div class="modal">
+    <div class="modal-title">Nouvel article <button class="modal-close" onclick="closeModal('modal-cat')">✕</button></div>
+    <div class="fgroup"><label class="flabel">Nom *</label><input class="finput" id="nc-name" placeholder="Ex: T-shirt FC Event"></div>
+    <div class="frow">
+      <div class="fgroup"><label class="flabel">Prix (€) *</label><input class="finput" id="nc-price" type="number" placeholder="0"></div>
+      <div class="fgroup"><label class="flabel">Emoji</label><input class="finput" id="nc-emoji" placeholder="👕" style="text-align:center;font-size:20px"></div>
+    </div>
+    <div class="fgroup"><label class="flabel">Catégorie</label>
+      <select class="finput" id="nc-cat">
+        <option>Vêtements</option><option>Accessoires</option><option>Chaussures</option><option>Sacs</option><option>Mascotte</option><option>Autre</option>
+      </select>
+    </div>
+    <button class="btn orange" style="width:100%;justify-content:center;margin-top:4px" onclick="addCatItem()">✓ Ajouter</button>
+  </div>
+</div>
+
+<!-- Nouveau doc -->
+<div class="overlay" id="modal-new-doc">
+  <div class="modal wide">
+    <div class="modal-title">Nouveau document <button class="modal-close" onclick="closeModal('modal-new-doc')">✕</button></div>
+    <div class="frow">
+      <div class="fgroup"><label class="flabel">Type</label>
+        <select class="finput" id="dt">
+          <option value="devis">📋 Devis</option>
+          <option value="facture">🧾 Facture</option>
+        </select>
+      </div>
+      <div class="fgroup"><label class="flabel">Date</label><input class="finput" id="dd" type="date"></div>
+    </div>
+    <div class="frow">
+      <div class="fgroup"><label class="flabel">Nom / Prénom client *</label><input class="finput" id="dc" placeholder="Copie-colle le nom Facebook ou nom complet"></div>
+      <div class="fgroup"><label class="flabel">Téléphone</label><input class="finput" id="dtel" placeholder="06 ..."></div>
+    </div>
+    <div class="fgroup"><label class="flabel">Objet / prestation</label><input class="finput" id="dobj" placeholder="Ex: Location mascotte FC Dunkerque — samedi 21 juin"></div>
+
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px">Lignes du document</div>
+    <div id="doc-lines-wrap"></div>
+    <button class="btn ghost sm" style="margin-bottom:14px" onclick="addDocLine()">+ Ligne</button>
+
+    <div class="fgroup"><label class="flabel">Informations supplémentaires / articles non facturés</label>
+      <textarea class="note-area" id="dnotes" placeholder="Ex: Articles pris pendant le live : robe 45€, veste 60€&#10;Conditions : acompte 30% à la commande…" style="min-height:80px"></textarea>
+    </div>
+    <button class="btn orange" style="width:100%;justify-content:center;padding:12px" onclick="createDoc()">✓ Créer le document</button>
+  </div>
+</div>
+
+<!-- Doc detail / print -->
+<div class="overlay" id="modal-doc">
+  <div class="modal wide">
+    <div class="modal-title" id="mdoc-title">Document <button class="modal-close" onclick="closeModal('modal-doc')">✕</button></div>
+    <div id="mdoc-body"></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn ghost" onclick="printDoc()">🖨️ Imprimer / PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+// ═══════════════════════════════
+// STATE
+// ═══════════════════════════════
+let live = null;
+let selPanier = null;
+let liveHistory = [];
+let catalogue = [
+  {id:1,name:'T-shirt',price:20,emoji:'👕',cat:'Vêtements'},
+  {id:2,name:'Casquette',price:15,emoji:'🧢',cat:'Accessoires'},
+  {id:3,name:'Sweat',price:40,emoji:'🧥',cat:'Vêtements'},
+  {id:4,name:'Écharpe',price:12,emoji:'🧣',cat:'Accessoires'},
+  {id:5,name:'Peluche mascotte',price:25,emoji:'🧸',cat:'Mascotte'},
+];
+let documents = [];
+let docLines = [];
+let catId = 10, docNum = 1;
+
+// ═══════════════════════════════
+// UTILS
+// ═══════════════════════════════
+const g = id => document.getElementById(id);
+const v = id => (g(id)?.value || '').trim();
+function toast(msg, type='ok') {
+  const w = g('toasts');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${type==='ok'?'✅':'❌'}</span><span>${msg}</span>`;
+  w.appendChild(el);
+  setTimeout(() => { el.style.opacity='0'; el.style.transition='all .3s'; setTimeout(()=>el.remove(),300); }, 3000);
+}
+function openModal(id) { g(id).classList.add('open'); }
+function closeModal(id) { g(id).classList.remove('open'); }
+document.querySelectorAll('.overlay').forEach(m => {
+  m.addEventListener('click', e => { if(e.target===m) m.classList.remove('open'); });
+});
+function fmt(n) { return Number(n||0).toLocaleString('fr-FR') + ' €'; }
+
+// ═══════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════
+function switchTab(name, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  g('view-'+name).classList.add('active');
+  document.querySelectorAll('.topbar-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if(name==='catalogue') renderCatalogue();
+  if(name==='docs') renderDocs();
+}
+
+// ═══════════════════════════════
+// LIVE
+// ═══════════════════════════════
+function startLive() {
+  const name = v('live-name') || ('Live du ' + new Date().toLocaleDateString('fr-FR'));
+  const nb = parseInt(v('live-nb')) || 80;
+  const date = v('live-date') || new Date().toISOString().split('T')[0];
+  live = {
+    id: Date.now(),
+    name, date, nb,
+    paniers: Array.from({length:nb}, (_,i) => ({
+      num: i+1, name:'', items:[], note:'', closed:false
+    }))
+  };
+  selPanier = null;
+  g('start-screen').style.display = 'none';
+  g('live-active').style.display = 'flex';
+  g('live-active').style.flexDirection = 'column';
+  g('live-active').style.flex = '1';
+  g('live-active').style.overflow = 'hidden';
+  g('live-ind').style.display = 'flex';
+  g('topbar-right').innerHTML = `<span style="font-size:13px;color:var(--muted)">${name}</span>`;
+  renderGrid();
+  updateStats();
+  renderQuickChips();
+  toast(`Live démarré — ${nb} paniers`);
+}
+
+function panierOf(num) { return live?.paniers.find(p=>p.num===num); }
+function panierTotal(p) { return p.items.reduce((s,i)=>s+(i.price*i.qty), 0); }
+
+function renderGrid() {
+  const g2 = g('paniers-grid');
+  if(!live) { g2.innerHTML=''; return; }
+  g2.innerHTML = live.paniers.map(p => {
+    const tot = panierTotal(p);
+    const dotClass = p.closed ? 'closed' : (p.items.length||p.note) ? 'filled' : 'open';
+    const cardClass = [
+      selPanier===p.num ? 'active' : '',
+      p.closed ? 'closed' : (p.items.length||p.note) ? 'has-items' : ''
+    ].filter(Boolean).join(' ');
+    return `<div class="p-btn ${cardClass}" onclick="selectPanier(${p.num})">
+      <div class="p-dot ${dotClass}"></div>
+      <div class="p-num">${p.num}</div>
+      ${p.name ? `<div class="p-name">${p.name.split(' ')[0]}</div>` : ''}
+      ${tot>0 ? `<div class="p-tot">${tot}€</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function selectPanier(num) {
+  selPanier = (selPanier===num) ? null : num;
+  renderGrid();
+  if(selPanier) showPanierPanel();
+  else hidePanierPanel();
+}
+
+function showPanierPanel() {
+  const p = panierOf(selPanier);
+  if(!p) return;
+  g('pp-empty').style.display = 'none';
+  const c = g('pp-content');
+  c.style.display = 'flex';
+  c.style.flexDirection = 'column';
+  c.style.flex = '1';
+  c.style.overflow = 'hidden';
+  g('pp-num').textContent = `Panier ${p.num}`;
+  const badge = g('pp-status-badge');
+  if(p.closed) { badge.textContent='✓ Clôturé'; badge.style.background='var(--blue-dim)'; badge.style.color='var(--blue)'; }
+  else { badge.textContent='En cours'; badge.style.background='var(--green-dim)'; badge.style.color='var(--green)'; }
+  g('pp-name').value = p.name || '';
+  g('pp-note').value = p.note || '';
+  g('pp-close-btn').textContent = p.closed ? '↩ Réouvrir' : '✓ Clôturer';
+  renderArtsList();
+  renderQuickChips();
+}
+
+function hidePanierPanel() {
+  g('pp-empty').style.display = 'flex';
+  g('pp-content').style.display = 'none';
+}
+
+function renderArtsList() {
+  const p = panierOf(selPanier);
+  if(!p) return;
+  const el = g('arts-list');
+  const tot = panierTotal(p);
+  const artCount = p.items.reduce((s,i)=>s+i.qty,0);
+  g('pp-art-count').textContent = artCount + ' article' + (artCount>1?'s':'');
+  g('pp-total').textContent = fmt(tot);
+  g('pp-note-indicator').textContent = p.note ? '📝 Note présente' : '';
+  if(!p.items.length) { el.innerHTML = `<div style="color:var(--muted2);font-size:12px;padding:10px 0">Aucun article encore.</div>`; return; }
+  el.innerHTML = p.items.map((it,idx)=>`
+    <div class="art-row">
+      <div class="art-emoji">${it.emoji||'📦'}</div>
+      <div class="art-name">${it.name}</div>
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="chgQty(${idx},-1)">−</button>
+        <div class="qty-num">${it.qty}</div>
+        <button class="qty-btn" onclick="chgQty(${idx},1)">+</button>
+      </div>
+      <div class="art-price">${it.price*it.qty}€</div>
+      <button class="del-btn" onclick="delItem(${idx})">✕</button>
+    </div>`).join('');
+}
+
+function renderQuickChips() {
+  const el = g('quick-chips');
+  if(!el) return;
+  el.innerHTML = catalogue.map(a=>`
+    <div class="qchip" onclick="addFromCat(${a.id})">
+      ${a.emoji} ${a.name} <span class="qchip-price">${a.price}€</span>
+    </div>`).join('');
+}
+
+function addFromCat(id) {
+  const art = catalogue.find(a=>a.id===id);
+  const p = panierOf(selPanier);
+  if(!art||!p) return;
+  const ex = p.items.find(i=>i.catId===id);
+  if(ex) ex.qty++;
+  else p.items.push({catId:id,name:art.name,price:art.price,emoji:art.emoji,qty:1});
+  renderArtsList();
+  renderGrid();
+  updateStats();
+}
+
+function addManual() {
+  const name = v('ma-name');
+  const price = parseFloat(v('ma-price'))||0;
+  const p = panierOf(selPanier);
+  if(!name||!p) { if(!name) toast('Nom de l\'article requis','err'); return; }
+  p.items.push({name,price,emoji:'📦',qty:1});
+  g('ma-name').value=''; g('ma-price').value='';
+  renderArtsList();
+  renderGrid();
+  updateStats();
+  toast(name+' ajouté');
+}
+
+function chgQty(idx, delta) {
+  const p = panierOf(selPanier);
+  if(!p) return;
+  p.items[idx].qty = Math.max(1, p.items[idx].qty+delta);
+  renderArtsList();
+  renderGrid();
+  updateStats();
+}
+
+function delItem(idx) {
+  const p = panierOf(selPanier);
+  if(!p) return;
+  p.items.splice(idx,1);
+  renderArtsList();
+  renderGrid();
+  updateStats();
+}
+
+function updatePanierName(val) {
+  const p = panierOf(selPanier);
+  if(p) { p.name=val; renderGrid(); }
+}
+
+function updateNote(val) {
+  const p = panierOf(selPanier);
+  if(p) { p.note=val; renderArtsList(); renderGrid(); }
+}
+
+function toggleClose() {
+  const p = panierOf(selPanier);
+  if(!p) return;
+  p.closed = !p.closed;
+  toast(p.closed ? `Panier ${p.num} clôturé` : `Panier ${p.num} réouvert`);
+  showPanierPanel();
+  renderGrid();
+  updateStats();
+}
+
+function clearPanier() {
+  const p = panierOf(selPanier);
+  if(!p||!confirm('Vider ce panier ?')) return;
+  p.items=[]; p.note=''; p.name='';
+  showPanierPanel();
+  renderGrid();
+  updateStats();
+  toast('Panier vidé');
+}
+
+function jumpTo() {
+  const num = parseInt(v('jump-input'));
+  if(!num||!live) return;
+  if(num<1||num>live.paniers.length) { toast('Panier introuvable','err'); return; }
+  g('jump-input').value='';
+  selectPanier(num);
+  // Scroll to the panier button
+  const grid = g('paniers-grid');
+  const btns = grid.querySelectorAll('.p-btn');
+  const target = btns[num-1];
+  if(target) target.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function updateStats() {
+  if(!live) return;
+  const active = live.paniers.filter(p=>p.items.length||p.note).length;
+  const closed = live.paniers.filter(p=>p.closed).length;
+  const total = live.paniers.reduce((s,p)=>s+panierTotal(p),0);
+  g('st-paniers').textContent = active;
+  g('st-total').textContent = total+' €';
+  g('st-clos').textContent = closed;
+}
+
+function showRecap() {
+  if(!live) return;
+  const active = live.paniers.filter(p=>p.items.length||p.note);
+  const total = live.paniers.reduce((s,p)=>s+panierTotal(p),0);
+  const el = g('recap-content');
+  if(!active.length) { el.innerHTML='<p style="color:var(--muted);text-align:center;padding:24px">Aucun panier avec articles.</p>'; openModal('modal-recap'); return; }
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg3);border-radius:var(--r);padding:12px 16px;margin-bottom:14px">
+      <span style="color:var(--muted);font-size:13px">${active.length} paniers actifs · ${live.paniers.filter(p=>p.closed).length} clôturés</span>
+      <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green)">${total} €</span>
+    </div>
+    <table class="recap-table">
+      <thead><tr><th>N°</th><th>Client</th><th>Articles</th><th>Note</th><th style="text-align:right">Total</th></tr></thead>
+      <tbody>${active.map(p=>`<tr>
+        <td style="font-family:'Syne',sans-serif;font-weight:800">${p.num}</td>
+        <td style="font-weight:700">${p.name||'—'}</td>
+        <td style="font-size:12px;color:var(--muted)">${p.items.map(i=>i.qty>1?`${i.qty}×${i.name}`:i.name).join(', ')||'—'}</td>
+        <td style="font-size:11px;color:var(--muted2);max-width:180px;white-space:pre-wrap">${p.note||''}</td>
+        <td style="text-align:right;font-weight:800;color:var(--green)">${panierTotal(p)} €</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  openModal('modal-recap');
+}
+
+function endLive() {
+  if(!live||!confirm('Terminer ce live ?')) return;
+  liveHistory.unshift({...live, endedAt: new Date().toISOString()});
+  renderHistory();
+  g('live-ind').style.display='none';
+  g('topbar-right').innerHTML='';
+  live=null; selPanier=null;
+  g('live-active').style.display='none';
+  g('start-screen').style.display='flex';
+  g('live-name').value='';
+  toast('Live terminé et sauvegardé');
+}
+
+function renderHistory() {
+  const el = g('history-list');
+  if(!liveHistory.length) { el.innerHTML='<div style="font-size:12px;color:var(--muted2);padding:8px 0">Aucun live encore.</div>'; return; }
+  el.innerHTML = liveHistory.map((l,i)=>{
+    const total = l.paniers.reduce((s,p)=>s+panierTotal(p),0);
+    const d = new Date(l.date).toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+    return `<div class="history-item" onclick="viewHistory(${i})">
+      <div style="font-size:20px">📼</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13px">${l.name}</div>
+        <div style="font-size:11px;color:var(--muted)">${d} · ${total}€</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function viewHistory(idx) {
+  const l = liveHistory[idx];
+  if(!l) return;
+  live = l; selPanier = null;
+  g('start-screen').style.display='none';
+  g('live-active').style.display='flex';
+  g('live-active').style.flexDirection='column';
+  g('live-active').style.flex='1';
+  g('live-active').style.overflow='hidden';
+  g('topbar-right').innerHTML=`<span style="font-size:12px;color:var(--muted)">📼 Historique</span>`;
+  hidePanierPanel();
+  renderGrid();
+  updateStats();
+  // Switch to live tab
+  const tabs = document.querySelectorAll('.topbar-tab');
+  switchTab('live', tabs[0]);
+}
+
+// ═══════════════════════════════
+// CATALOGUE
+// ═══════════════════════════════
+function renderCatalogue() {
+  const el = g('cat-grid');
+  if(!catalogue.length) { el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:20px">Aucun article.</div>'; return; }
+  el.innerHTML = catalogue.map(a=>`
+    <div class="cat-card">
+      <div class="cat-emoji">${a.emoji}</div>
+      <div class="cat-name">${a.name}</div>
+      <div class="cat-price">${a.price}€</div>
+      <div class="cat-tag">${a.cat}</div>
+      <button class="cat-del" onclick="delCatItem(${a.id})">✕ Supprimer</button>
+    </div>`).join('');
+}
+
+function addCatItem() {
+  const name = v('nc-name'), price = parseFloat(v('nc-price'))||0;
+  const emoji = v('nc-emoji')||'📦', cat = v('nc-cat');
+  if(!name) { toast('Nom requis','err'); return; }
+  catalogue.push({id:catId++,name,price,emoji,cat});
+  closeModal('modal-cat');
+  ['nc-name','nc-price','nc-emoji'].forEach(id=>g(id).value='');
+  renderCatalogue();
+  renderQuickChips();
+  toast(name+' ajouté au catalogue');
+}
+
+function delCatItem(id) {
+  if(!confirm('Supprimer cet article ?')) return;
+  catalogue = catalogue.filter(a=>a.id!==id);
+  renderCatalogue();
+  renderQuickChips();
+}
+
+// ═══════════════════════════════
+// DOCUMENTS
+// ═══════════════════════════════
+function addDocLine() {
+  docLines.push({desc:'',qty:1,price:0});
+  renderDocLines();
+}
+
+function renderDocLines() {
+  const el = g('doc-lines-wrap');
+  if(!docLines.length) { el.innerHTML=''; return; }
+  const total = docLines.reduce((s,l)=>s+(l.qty*l.price),0);
+  el.innerHTML = docLines.map((l,i)=>`
+    <div class="doc-line-row">
+      <input class="finput" placeholder="Description (ex: Location mascotte)" value="${l.desc}" oninput="docLines[${i}].desc=this.value" style="font-size:12px">
+      <input class="finput" type="number" value="${l.qty}" oninput="docLines[${i}].qty=parseFloat(this.value)||1" style="font-size:12px;text-align:center" min="1">
+      <input class="finput" type="number" placeholder="€" value="${l.price||''}" oninput="docLines[${i}].price=parseFloat(this.value)||0" style="font-size:12px;text-align:right">
+      <button class="btn red sm" onclick="docLines.splice(${i},1);renderDocLines()" style="border-radius:8px;padding:5px 7px">✕</button>
+    </div>`).join('') +
+    `<div style="text-align:right;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--green);margin:6px 0 10px">Total : ${total} €</div>`;
+}
+
+function createDoc() {
+  const client = v('dc');
+  if(!client) { toast('Nom client requis','err'); return; }
+  if(!docLines.length&&!v('dnotes')) { toast('Ajoutez au moins une ligne ou une note','err'); return; }
+  const total = docLines.reduce((s,l)=>s+(l.qty*l.price),0);
+  const type = v('dt');
+  const num = (type==='devis'?'DEV':'FAC') + String(docNum++).padStart(4,'0');
+  documents.push({
+    id: documents.length+1, num, type, client,
+    tel: v('dtel'), objet: v('dobj'),
+    date: v('dd')||new Date().toISOString().split('T')[0],
+    notes: v('dnotes'),
+    lines: [...docLines],
+    total
+  });
+  docLines = [];
+  closeModal('modal-new-doc');
+  ['dc','dtel','dobj','dnotes'].forEach(id=>g(id).value='');
+  renderDocLines();
+  renderDocs();
+  // Switch to docs
+  const tabs = document.querySelectorAll('.topbar-tab');
+  switchTab('docs', tabs[2]);
+  toast(`${num} créé`);
+}
+
+function renderDocs() {
+  const el = g('docs-list');
+  if(!documents.length) {
+    el.innerHTML='<div style="text-align:center;padding:60px;color:var(--muted)"><div style="font-size:48px;margin-bottom:12px">📄</div><p>Aucun document.</p></div>';
+    return;
+  }
+  el.innerHTML = [...documents].reverse().map(d=>`
+    <div class="doc-item" onclick="viewDoc(${d.id})">
+      <div class="doc-type-badge ${d.type}">${d.type==='devis'?'📋':'🧾'}</div>
+      <div class="doc-info">
+        <div class="doc-num">${d.num}</div>
+        <div class="doc-client">${d.client}${d.objet?' — '+d.objet:''}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="doc-amount ${d.type}">${d.total} €</div>
+        <span class="badge ${d.type}">${d.type==='devis'?'Devis':'Facture'}</span>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${new Date(d.date).toLocaleDateString('fr-FR')}</div>
+      </div>
+    </div>`).join('');
+}
+
+function viewDoc(id) {
+  const d = documents.find(x=>x.id===id);
+  if(!d) return;
+  g('mdoc-title').innerHTML = `${d.num} — FC Événement <button class="modal-close" onclick="closeModal('modal-doc')">✕</button>`;
+  const el = g('mdoc-body');
+  el.innerHTML = `
+    <div class="doc-preview" id="print-zone">
+      <div class="doc-preview-header">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--text)">FC ÉVÉNEMENT</div>
+          <div style="color:var(--muted);font-size:12px;margin-top:2px">Association loi 1901</div>
+        </div>
+        <div style="text-align:right">
+          <span class="badge ${d.type}" style="font-size:14px;padding:5px 14px">${d.type.toUpperCase()}</span>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;margin-top:6px;font-size:16px">${d.num}</div>
+          <div style="color:var(--muted);font-size:12px">${new Date(d.date).toLocaleDateString('fr-FR')}</div>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;padding:12px 14px;background:var(--bg3);border-radius:var(--r)">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:4px">Client</div>
+        <div style="font-weight:800;font-size:15px">${d.client}</div>
+        ${d.tel?`<div style="color:var(--muted);font-size:13px">${d.tel}</div>`:''}
+      </div>
+      ${d.objet?`<div style="margin-bottom:14px;font-size:13px"><strong>Objet :</strong> ${d.objet}</div>`:''}
+      ${d.lines.length?`
+        <table class="doc-table">
+          <thead><tr><th>Description</th><th style="text-align:center">Qté</th><th style="text-align:right">Prix unit.</th><th style="text-align:right">Total</th></tr></thead>
+          <tbody>${d.lines.map(l=>`<tr>
+            <td>${l.desc}</td>
+            <td style="text-align:center">${l.qty}</td>
+            <td style="text-align:right">${l.price} €</td>
+            <td style="text-align:right;font-weight:700">${l.qty*l.price} €</td>
+          </tr>`).join('')}</tbody>
+        </table>
+        <div style="text-align:right;font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);margin:10px 0">Total : ${d.total} €</div>
+      `:''}
+      ${d.notes?`<div style="margin-top:12px;padding:12px 14px;background:var(--bg3);border-radius:var(--r);font-size:12px;color:var(--muted);white-space:pre-wrap">${d.notes}</div>`:''}
+      <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:11px;color:var(--muted2)">
+        <div>FC Événement · Association loi 1901</div>
+        <div>${d.num} · ${new Date(d.date).toLocaleDateString('fr-FR')}</div>
+      </div>
+    </div>`;
+  openModal('modal-doc');
+}
+
+function printDoc() {
+  const zone = document.getElementById('print-zone');
+  if(!zone) return;
+  const win = window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Document FC Événement</title>
+    <style>
+      body{font-family:system-ui,sans-serif;padding:30px;max-width:680px;margin:0 auto;color:#1a1a1a}
+      table{width:100%;border-collapse:collapse;font-size:12px;margin:12px 0}
+      th{text-align:left;padding:7px 10px;background:#f5f5f5;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border:1px solid #ddd}
+      td{padding:8px 10px;border:1px solid #e5e5e5}
+      .header{display:flex;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #eee}
+      .total{text-align:right;font-size:20px;font-weight:800;color:#2ECC8A;margin:10px 0}
+      .note-box{background:#f9f9f9;padding:12px;border-radius:8px;font-size:12px;color:#666;margin-top:12px;white-space:pre-wrap}
+      .footer{margin-top:30px;padding-top:12px;border-top:1px solid #eee;font-size:10px;color:#999;display:flex;justify-content:space-between}
+      @media print{body{padding:20px}}
+    </style></head><body>
+    ${zone.innerHTML.replace(/color:var\([^)]+\)/g,'').replace(/background:var\([^)]+\)/g,'background:#f9f9f9').replace(/border:[^;]+var\([^)]+\)[^;]*/g,'border:1px solid #ddd')}
+    </body></html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(()=>win.print(),500);
+}
+
+// ═══════════════════════════════
+// INIT
+// ═══════════════════════════════
+g('live-date').value = new Date().toISOString().split('T')[0];
+g('dd').value = new Date().toISOString().split('T')[0];
+addDocLine();
+</script>
+</body>
+</html>
