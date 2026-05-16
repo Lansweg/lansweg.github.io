@@ -682,25 +682,45 @@ async function loadSettings(){
 }
 
 async function saveSettings(){
-  settings.name=v('s-name');settings.type=v('s-type');
-  settings.siret=v('s-siret');settings.tva=v('s-tva');
-  settings.addr=v('s-addr');settings.cp=v('s-cp');settings.city=v('s-city');
-  settings.tel=v('s-tel');settings.email=v('s-email');settings.web=v('s-web');
-  settings.iban=v('s-iban');settings.mentions=v('s-mentions');
-  devNum=parseInt(v('s-dev-start'))||devNum;
-  facNum=parseInt(v('s-fac-start'))||facNum;
+  settings.name=v('s-name');
+  settings.type=v('s-type');
+  settings.siret=v('s-siret');
+  settings.tva=v('s-tva');
+  settings.addr=v('s-addr');
+  settings.cp=v('s-cp');
+  settings.city=v('s-city');
+  settings.tel=v('s-tel');
+  settings.email=v('s-email');
+  settings.web=v('s-web');
+  settings.iban=v('s-iban');
+  settings.mentions=v('s-mentions');
+
+  devNum=parseInt(v('s-dev-start')) || 1;
+  facNum=parseInt(v('s-fac-start')) || 1;
+
   syncSet('syncing');
-  // upsert: update the single row (id=1)
-  const {data:existing}=await sb.from('settings').select('id').single();
-  const payload={data:settings,dev_num:devNum,fac_num:facNum,updated_at:new Date().toISOString()};
-  let error;
-  if(existing){
-    ({error}=await sb.from('settings').update(payload).eq('id',existing.id));
-  } else {
-    ({error}=await sb.from('settings').insert(payload));
+
+  const payload = {
+    id: 1,
+    data: settings,
+    dev_num: devNum,
+    fac_num: facNum,
+    updated_at: new Date().toISOString()
+  };
+
+  const { error } = await sb
+    .from('settings')
+    .upsert(payload);
+
+  if(error){
+    console.error(error);
+    toast('Erreur sauvegarde : ' + error.message,'err');
+    syncSet('err');
+    return;
   }
-  if(error){toast('Erreur sauvegarde','err');syncSet('err');return;}
-  syncSet('ok');toast('Paramètres sauvegardés ✓');
+
+  syncSet('ok');
+  toast('Paramètres sauvegardés ✓');
 }
 
 function renderSettingsForm(){
