@@ -1,9 +1,12 @@
+# GALACTIC PLINKO PRO V2
+
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GALACTIC PLINKO PRO</title>
+<title>GALACTIC PLINKO PRO V2</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -11,13 +14,12 @@
 
 :root{
   --gold:#FFD700;
-  --gold2:#FFA500;
   --cyan:#00F5FF;
   --purple:#9B30FF;
   --dark:#050510;
-  --panel:#0D0D2B;
-  --red:#FF3A5C;
+  --panel:#111133;
   --green:#00FF88;
+  --red:#FF3A5C;
 }
 
 *{
@@ -27,11 +29,12 @@
 }
 
 body{
-  background:radial-gradient(circle at top,#151530,#050510);
+  background:
+  radial-gradient(circle at top,#181840,#050510);
   font-family:'Rajdhani',sans-serif;
   color:white;
-  overflow-x:hidden;
   min-height:100vh;
+  overflow-x:hidden;
 }
 
 body::before{
@@ -39,8 +42,8 @@ body::before{
   position:fixed;
   inset:0;
   background:
-    radial-gradient(circle at 20% 20%,rgba(155,48,255,.15),transparent 30%),
-    radial-gradient(circle at 80% 80%,rgba(0,245,255,.12),transparent 30%);
+  radial-gradient(circle at 20% 20%,rgba(155,48,255,.15),transparent 35%),
+  radial-gradient(circle at 80% 80%,rgba(0,245,255,.1),transparent 35%);
   pointer-events:none;
 }
 
@@ -49,7 +52,7 @@ body::before{
   margin:auto;
   padding:20px;
   display:grid;
-  grid-template-columns:340px 1fr;
+  grid-template-columns:320px 1fr;
   gap:20px;
 }
 
@@ -59,40 +62,19 @@ body::before{
   gap:15px;
 }
 
-.panel-card{
-  background:rgba(13,13,43,.95);
+.panel{
+  background:rgba(17,17,51,.95);
   border:1px solid rgba(0,245,255,.12);
   border-radius:18px;
   padding:20px;
-  box-shadow:0 0 25px rgba(0,0,0,.4);
+  box-shadow:0 0 30px rgba(0,0,0,.35);
 }
 
 .panel-title{
-  font-family:'Orbitron';
   color:var(--cyan);
-  margin-bottom:15px;
-  letter-spacing:2px;
-  font-size:14px;
-}
-
-.panel-text{
-  color:rgba(255,255,255,.7);
-  line-height:1.6;
-}
-
-.key-row{
-  display:flex;
-  justify-content:space-between;
-  padding:10px 0;
-  border-bottom:1px solid rgba(255,255,255,.06);
-}
-
-.best-multi{
-  text-align:center;
-  font-size:48px;
   font-family:'Orbitron';
-  color:var(--gold);
-  text-shadow:0 0 20px var(--gold);
+  letter-spacing:2px;
+  margin-bottom:15px;
 }
 
 .main{
@@ -101,11 +83,8 @@ body::before{
   gap:15px;
 }
 
-.header{
-  text-align:center;
-}
-
 .logo{
+  text-align:center;
   font-family:'Orbitron';
   font-size:48px;
   font-weight:900;
@@ -116,57 +95,49 @@ body::before{
 }
 
 .tagline{
+  text-align:center;
   color:var(--cyan);
   letter-spacing:4px;
-  font-size:12px;
   opacity:.7;
 }
 
-.stats-bar{
-  display:flex;
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
   gap:10px;
 }
 
-.stat-box{
-  flex:1;
-  background:rgba(13,13,43,.95);
+.stat{
+  background:rgba(17,17,51,.95);
   border-radius:14px;
-  padding:15px;
+  padding:16px;
   text-align:center;
-  border:1px solid rgba(0,245,255,.1);
+  border:1px solid rgba(255,255,255,.05);
 }
 
 .stat-label{
-  color:rgba(255,255,255,.4);
   font-size:11px;
   letter-spacing:2px;
+  opacity:.5;
   text-transform:uppercase;
 }
 
 .stat-value{
+  margin-top:6px;
   font-size:22px;
   font-family:'Orbitron';
-  margin-top:5px;
   color:var(--gold);
 }
 
 .canvas-wrap{
   position:relative;
-  background:
-  linear-gradient(
-  180deg,
-  rgba(25,25,60,.95),
-  rgba(5,5,20,.98)
-  );
-
   border-radius:20px;
   overflow:hidden;
-  border:1px solid rgba(155,48,255,.25);
-  backdrop-filter:blur(8px);
-
+  background:linear-gradient(180deg,#181850,#080810);
+  border:1px solid rgba(155,48,255,.2);
   box-shadow:
-  0 0 40px rgba(155,48,255,.2),
-  inset 0 0 50px rgba(0,0,0,.5);
+  0 0 50px rgba(155,48,255,.2),
+  inset 0 0 60px rgba(0,0,0,.6);
 }
 
 canvas{
@@ -175,80 +146,72 @@ canvas{
 }
 
 .controls{
-  background:rgba(13,13,43,.95);
+  background:rgba(17,17,51,.95);
   border-radius:18px;
   padding:20px;
-  border:1px solid rgba(0,245,255,.1);
   display:flex;
   flex-direction:column;
   gap:15px;
 }
 
-.bet-row{
+.row{
   display:flex;
   gap:10px;
   align-items:center;
 }
 
-.bet-label{
+.label{
   min-width:70px;
-  letter-spacing:2px;
   text-transform:uppercase;
-  color:rgba(255,255,255,.5);
+  letter-spacing:2px;
+  opacity:.6;
 }
 
-.bet-input{
+input{
   flex:1;
-  background:#080815;
+  background:#080818;
   border:1px solid rgba(0,245,255,.2);
   border-radius:10px;
-  padding:12px;
   color:var(--gold);
+  padding:12px;
   font-size:18px;
-  text-align:center;
   font-family:'Orbitron';
+  text-align:center;
 }
 
-.quick-bets{
+.quick{
   display:flex;
   gap:8px;
 }
 
-.qb{
+.quick button,
+.risk button{
   flex:1;
-  background:rgba(0,245,255,.08);
-  border:1px solid rgba(0,245,255,.15);
-  color:var(--cyan);
-  border-radius:8px;
-  padding:8px;
-  cursor:pointer;
-  transition:.2s;
-}
-
-.qb:hover{
-  transform:translateY(-2px);
-  box-shadow:0 0 15px rgba(0,245,255,.3);
-}
-
-.risk-row{
-  display:flex;
-  gap:8px;
-  flex:1;
-}
-
-.risk-btn{
-  flex:1;
-  padding:10px;
-  border-radius:10px;
   border:none;
+  border-radius:10px;
+  padding:10px;
   cursor:pointer;
   font-weight:bold;
-  letter-spacing:1px;
   transition:.2s;
+}
+
+.quick button{
+  background:rgba(0,245,255,.08);
+  color:var(--cyan);
+}
+
+.quick button:hover{
+  transform:translateY(-2px);
+}
+
+.risk{
+  display:flex;
+  gap:8px;
+  flex:1;
 }
 
 .low{background:#003d22;color:#00FF88;}
-.med{background:#4d3400;color:#FFD700;}
+.med{background:#4a3400;color:#FFD700;}
 .high{background:#4a0010;color:#FF3A5C;}
 
 .active{
@@ -256,32 +219,31 @@ canvas{
   box-shadow:0 0 20px rgba(255,255,255,.2);
 }
 
-.drop-btn{
-  padding:18px;
+.launch{
   border:none;
   border-radius:14px;
-  background:linear-gradient(135deg,#9B30FF,#6A0DAD);
+  padding:18px;
+  background:linear-gradient(135deg,#9B30FF,#5a00ff);
   color:white;
   font-family:'Orbitron';
   font-size:20px;
   letter-spacing:4px;
   cursor:pointer;
+  box-shadow:0 0 25px rgba(155,48,255,.4);
   transition:.2s;
-  box-shadow:0 0 25px rgba(155,48,255,.5);
 }
 
-.drop-btn:hover{
+.launch:hover{
   transform:translateY(-3px);
-  letter-spacing:5px;
 }
 
-.history-list{
+.history{
   display:flex;
   gap:8px;
   overflow:auto;
 }
 
-.hist-item{
+.hist{
   padding:8px 12px;
   border-radius:8px;
   font-family:'Orbitron';
@@ -290,138 +252,207 @@ canvas{
 
 .win{
   background:rgba(0,255,136,.15);
-  color:#00FF88;
+  color:var(--green);
 }
 
 .loss{
   background:rgba(255,58,92,.15);
-  color:#FF3A5C;
+  color:var(--red);
 }
+
+.result-screen{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(8px);
+  z-index:20;
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
+}
+
+.result-screen.show{
+  opacity:1;
+}
+
+.result-title{
+  font-family:'Orbitron';
+  font-size:52px;
+  color:var(--gold);
+  text-shadow:0 0 20px var(--gold);
+}
+
+.result-amount{
+  margin-top:10px;
+  font-size:34px;
+  color:var(--green);
+  font-family:'Orbitron';
+}
+
+.multipliers{
+  position:absolute;
+  bottom:20px;
+  left:0;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:6px;
+  z-index:5;
+}
+
+.mult{
+  width:8%;
+  min-width:50px;
+  text-align:center;
+  padding:10px 0;
+  border-radius:10px;
+  font-family:'Orbitron';
+  font-weight:bold;
+  border:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(6px);
+}
+
+.m0{background:#00FF8840;color:#00FF88;}
+.m1{background:#4ade8040;color:#4ade80;}
+.m2{background:#fde68a40;color:#fde68a;}
+.m3{background:#f8717140;color:#f87171;}
+.m4{background:#dc262640;color:#ff4444;}
 
 @media(max-width:900px){
 
   #app{
     grid-template-columns:1fr;
-    width:100%;
     padding:12px;
   }
 
-  .logo{
-    font-size:32px;
+  .stats{
+    grid-template-columns:repeat(2,1fr);
   }
 
-  .stats-bar{
-    flex-direction:column;
+  .logo{
+    font-size:34px;
+  }
+
+  .result-title{
+    font-size:36px;
   }
 
 }
 
 </style>
 </head>
-
 <body>
 
 <div id="app">
 
-  <div class="side-panel">
+<div class="side-panel">
 
-    <div class="panel-card">
-      <div class="panel-title">🚀 GALACTIC MODE</div>
+<div class="panel">
+<div class="panel-title">🚀 GALACTIC MODE</div>
+<div>
+Lance plusieurs billes simultanément, décroche des multiplicateurs géants et explose ton record.
+</div>
+</div>
 
-      <div class="panel-text">
-        Lance des sphères cosmiques et tente de décrocher les multiplicateurs ultimes.
-      </div>
-    </div>
+<div class="panel">
+<div class="panel-title">⌨️ COMMANDES</div>
+<div>Espace = lancer</div>
+<div>1 / 2 / 3 = changer le risque</div>
+</div>
 
-    <div class="panel-card">
-      <div class="panel-title">🎮 COMMANDES</div>
+<div class="panel">
+<div class="panel-title">🏆 RECORD</div>
+<div id="bestMulti" style="font-size:48px;text-align:center;font-family:Orbitron;color:#FFD700;">0x</div>
+</div>
 
-      <div class="key-row">
-        <span>Espace</span>
-        <span>Lancer</span>
-      </div>
+</div>
 
-      <div class="key-row">
-        <span>1 / 2 / 3</span>
-        <span>Risque</span>
-      </div>
-    </div>
+<div class="main">
 
-    <div class="panel-card">
-      <div class="panel-title">🏆 RECORD</div>
+<div class="logo">⬡ PLINKO ⬡</div>
+<div class="tagline">GALACTIC DROP</div>
 
-      <div class="best-multi" id="bestMulti">
-        0x
-      </div>
-    </div>
+<div class="stats">
 
-  </div>
+<div class="stat">
+<div class="stat-label">Balance</div>
+<div class="stat-value" id="balance">1000</div>
+</div>
 
-  <div class="main">
+<div class="stat">
+<div class="stat-label">Dernier gain</div>
+<div class="stat-value" id="lastWin">0</div>
+</div>
 
-    <div class="header">
-      <div class="logo">⬡ PLINKO ⬡</div>
-      <div class="tagline">GALACTIC DROP</div>
-    </div>
+<div class="stat">
+<div class="stat-label">Billes</div>
+<div class="stat-value" id="ballCount">5</div>
+</div>
 
-    <div class="stats-bar">
+<div class="stat">
+<div class="stat-label">Risque</div>
+<div class="stat-value" id="riskLabel">LOW</div>
+</div>
 
-      <div class="stat-box">
-        <div class="stat-label">Balance</div>
-        <div class="stat-value" id="balance">1000</div>
-      </div>
+</div>
 
-      <div class="stat-box">
-        <div class="stat-label">Dernier gain</div>
-        <div class="stat-value" id="lastWin">0</div>
-      </div>
+<div class="canvas-wrap">
 
-    </div>
+<canvas id="game"></canvas>
 
-    <div class="canvas-wrap">
-      <canvas id="gameCanvas"></canvas>
-    </div>
+<div class="multipliers" id="multipliers"></div>
 
-    <div class="controls">
+<div class="result-screen" id="resultScreen">
+<div class="result-title" id="resultTitle">VICTOIRE</div>
+<div class="result-amount" id="resultAmount">+500</div>
+</div>
 
-      <div class="bet-row">
-        <span class="bet-label">Mise</span>
-        <input type="number" id="betInput" class="bet-input" value="10">
-      </div>
+</div>
 
-      <div class="quick-bets">
-        <button class="qb" onclick="quick(.5)">½</button>
-        <button class="qb" onclick="quick(2)">x2</button>
-        <button class="qb" onclick="allIn()">ALL</button>
-      </div>
+<div class="controls">
 
-      <div class="bet-row">
+<div class="row">
+<div class="label">Mise</div>
+<input type="number" id="bet" value="10">
+</div>
 
-        <span class="bet-label">Risque</span>
+<div class="quick">
+<button onclick="quick(.5)">½</button>
+<button onclick="quick(2)">x2</button>
+<button onclick="allIn()">ALL</button>
+</div>
 
-        <div class="risk-row">
-          <button class="risk-btn low active" onclick="setRisk('low',this)">Faible</button>
-          <button class="risk-btn med" onclick="setRisk('med',this)">Moyen</button>
-          <button class="risk-btn high" onclick="setRisk('high',this)">Élevé</button>
-        </div>
+<div class="row">
+<div class="label">Billes</div>
+<input type="number" id="multiBalls" value="5" min="1" max="50">
+</div>
 
-      </div>
+<div class="row">
+<div class="label">Risque</div>
+<div class="risk">
+<button class="low active" onclick="setRisk('low',this)">Faible</button>
+<button class="med" onclick="setRisk('med',this)">Moyen</button>
+<button class="high" onclick="setRisk('high',this)">Élevé</button>
+</div>
+</div>
 
-      <button class="drop-btn" onclick="dropBall()">
-        ▼ LANCER
-      </button>
+<button class="launch" onclick="launchMulti()">▼ LANCER</button>
 
-    </div>
+</div>
 
-    <div class="history-list" id="history"></div>
+<div class="history" id="history"></div>
 
-  </div>
+</div>
 
 </div>
 
 <script>
 
-const canvas = document.getElementById('gameCanvas');
+const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 
 let W,H;
@@ -431,59 +462,86 @@ function resize(){
   W = canvas.parentElement.clientWidth;
 
   H = window.innerWidth > 900
-    ? W * .62
-    : W * 1.1;
+  ? W * .65
+  : W * 1.1;
 
   canvas.width = W;
   canvas.height = H;
 
+  buildBoard();
+
 }
 
 window.addEventListener('resize',resize);
-resize();
+
+const rows = 12;
+const ballRadius = 7;
+const pegRadius = 5;
+
+let pegs = [];
+let balls = [];
+let history = [];
 
 let balance = 1000;
 let risk = 'low';
+let bestMultiplier = 0;
 
-let balls = [];
-let pegs = [];
-let history = [];
-
-const rows = 12;
-const radius = 7;
-
-const multipliers = {
+const MULTS = {
   low:[5.6,2.1,1.1,1,.5,.3,.5,1,1.1,2.1,5.6],
   med:[13,3,1.3,.7,.4,.2,.4,.7,1.3,3,13],
   high:[29,4,1.5,.3,.2,.1,.2,.3,1.5,4,29]
 };
 
-function build(){
+function buildBoard(){
 
   pegs = [];
 
-  const gapY = H/(rows+3);
+  const top = 70;
+  const gapY = (H-180)/(rows-1);
 
   for(let r=0;r<rows;r++){
 
     const cols = r+3;
 
-    const gapX = W/(cols+1);
+    const totalWidth = (cols-1)*(W/(rows+2));
+
+    const startX = (W-totalWidth)/2;
 
     for(let c=0;c<cols;c++){
 
       pegs.push({
-        x:gapX*(c+1),
-        y:80+r*gapY
+        x:startX+c*(W/(rows+2)),
+        y:top+r*gapY
       });
 
     }
 
   }
 
+  drawMultipliers();
+
 }
 
-build();
+function drawMultipliers(){
+
+  const container = document.getElementById('multipliers');
+
+  const arr = MULTS[risk];
+
+  container.innerHTML = arr.map(m=>{
+
+    let cls='m2';
+
+    if(m>=10) cls='m4';
+    else if(m>=3) cls='m3';
+    else if(m>=1) cls='m1';
+    else cls='m0';
+
+    return `<div class="mult ${cls}">${m}x</div>`;
+
+  }).join('');
+
+}
 
 function draw(){
 
@@ -492,9 +550,9 @@ function draw(){
   pegs.forEach(p=>{
 
     ctx.beginPath();
-    ctx.arc(p.x,p.y,5,0,Math.PI*2);
+    ctx.arc(p.x,p.y,pegRadius,0,Math.PI*2);
 
-    ctx.fillStyle='#a0c4ff';
+    ctx.fillStyle='#9fd3ff';
     ctx.shadowBlur=15;
     ctx.shadowColor='#00F5FF';
 
@@ -502,28 +560,28 @@ function draw(){
 
   });
 
-  balls.forEach(ball=>{
+  balls.forEach(b=>{
 
     ctx.beginPath();
-    ctx.arc(ball.x,ball.y,radius,0,Math.PI*2);
+    ctx.arc(b.x,b.y,ballRadius,0,Math.PI*2);
 
     const g = ctx.createRadialGradient(
-      ball.x-2,
-      ball.y-2,
+      b.x-2,
+      b.y-2,
       1,
-      ball.x,
-      ball.y,
-      radius
+      b.x,
+      b.y,
+      ballRadius
     );
 
     g.addColorStop(0,'white');
     g.addColorStop(.4,'#FFD700');
     g.addColorStop(1,'#FF8C00');
 
-    ctx.fillStyle=g;
+    ctx.fillStyle = g;
 
-    ctx.shadowBlur=20;
-    ctx.shadowColor='#FFD700';
+    ctx.shadowBlur = 25;
+    ctx.shadowColor = '#FFD700';
 
     ctx.fill();
 
@@ -540,57 +598,76 @@ function update(){
     ball.x += ball.vx;
     ball.y += ball.vy;
 
-    pegs.forEach(peg=>{
+    pegs.forEach(p=>{
 
-      const dx = ball.x - peg.x;
-      const dy = ball.y - peg.y;
+      const dx = ball.x-p.x;
+      const dy = ball.y-p.y;
 
       const dist = Math.sqrt(dx*dx+dy*dy);
 
-      if(dist < 12){
+      if(dist < ballRadius+pegRadius){
 
-        ball.vx += (Math.random()-.5)*3;
-        ball.vy *= -.75;
+        playPeg();
+
+        ball.vx += (Math.random()-.5)*2.2;
+        ball.vy *= -.7;
 
       }
 
     });
 
-    if(ball.y > H-80){
+    if(ball.y > H-100 && !ball.done){
 
-      const slots = multipliers[risk];
+      ball.done = true;
 
-      const slot = Math.floor((ball.x/W)*slots.length);
+      const slots = MULTS[risk];
 
-      const mult = slots[Math.max(0,Math.min(slots.length-1,slot))];
+      const index = Math.max(
+        0,
+        Math.min(
+          slots.length-1,
+          Math.floor((ball.x/W)*slots.length)
+        )
+      );
+
+      const mult = slots[index];
 
       const gain = Math.floor(ball.bet*mult);
+
+      ball.result = gain;
+      ball.mult = mult;
 
       balance += gain;
 
       document.getElementById('balance').textContent = balance;
 
-      document.getElementById('lastWin').textContent =
-        (gain-ball.bet);
-
-      addHistory(mult);
+      document.getElementById('lastWin').textContent = gain-ball.bet;
 
       if(mult > bestMultiplier){
 
         bestMultiplier = mult;
 
-        document.getElementById('bestMulti').textContent =
-          mult+'x';
+        document.getElementById('bestMulti').textContent = mult+'x';
 
       }
 
-      ball.dead = true;
+      addHistory(mult);
+
+      playLand(mult);
 
     }
 
   });
 
-  balls = balls.filter(b=>!b.dead);
+  const alive = balls.filter(b=>!b.done);
+
+  if(balls.length > 0 && alive.length === 0){
+
+    showResults();
+
+    balls=[];
+
+  }
 
 }
 
@@ -599,35 +676,74 @@ function loop(){
   update();
   draw();
 
-  setTimeout(()=>{
-
-    requestAnimationFrame(loop);
-
-  },1000/120);
+  requestAnimationFrame(loop);
 
 }
 
-loop();
+function launchMulti(){
 
-function dropBall(){
+  initAudio();
 
-  const bet = parseInt(document.getElementById('betInput').value);
+  const bet = parseInt(document.getElementById('bet').value);
+  const count = parseInt(document.getElementById('multiBalls').value);
 
-  if(bet > balance || bet <= 0) return;
+  if(bet <= 0) return;
 
-  balance -= bet;
+  const total = bet*count;
+
+  if(total > balance) return;
+
+  balance -= total;
 
   document.getElementById('balance').textContent = balance;
 
-  balls.push({
+  document.getElementById('ballCount').textContent = count;
 
-    x:W/2,
-    y:30,
-    vx:(Math.random()-.5)*2,
-    vy:0,
-    bet
+  playDrop();
 
-  });
+  for(let i=0;i<count;i++){
+
+    setTimeout(()=>{
+
+      balls.push({
+        x:W/2+(Math.random()-.5)*50,
+        y:20,
+        vx:(Math.random()-.5)*2,
+        vy:0,
+        bet,
+        done:false
+      });
+
+    },i*120);
+
+  }
+
+}
+
+function showResults(){
+
+  const screen = document.getElementById('resultScreen');
+
+  const total = balls.reduce((a,b)=>a+b.result,0);
+
+  const spent = balls.reduce((a,b)=>a+b.bet,0);
+
+  const net = total-spent;
+
+  document.getElementById('resultTitle').textContent =
+  net >= 0 ? 'VICTOIRE' : 'PERDU';
+
+  document.getElementById('resultAmount').textContent =
+  (net >= 0 ? '+' : '') + net;
+
+  document.getElementById('resultAmount').style.color =
+  net >= 0 ? '#00FF88' : '#FF3A5C';
+
+  screen.classList.add('show');
+
+  setTimeout(()=>{
+    screen.classList.remove('show');
+  },2000);
 
 }
 
@@ -635,24 +751,30 @@ function setRisk(r,btn){
 
   risk = r;
 
-  document.querySelectorAll('.risk-btn')
+  document.querySelectorAll('.risk button')
   .forEach(b=>b.classList.remove('active'));
 
   btn.classList.add('active');
+
+  document.getElementById('riskLabel').textContent = r.toUpperCase();
+
+  drawMultipliers();
 
 }
 
 function quick(v){
 
-  const input = document.getElementById('betInput');
+  const el = document.getElementById('bet');
 
-  input.value = Math.floor(input.value*v);
+  el.value = Math.max(1,Math.floor(el.value*v));
 
 }
 
 function allIn(){
 
-  document.getElementById('betInput').value = balance;
+  const count = parseInt(document.getElementById('multiBalls').value);
+
+  document.getElementById('bet').value = Math.floor(balance/count);
 
 }
 
@@ -660,44 +782,104 @@ function addHistory(mult){
 
   history.unshift(mult);
 
-  if(history.length > 15) history.pop();
+  if(history.length > 20) history.pop();
 
   document.getElementById('history').innerHTML =
   history.map(h=>`
-    <div class="hist-item ${h>=1?'win':'loss'}">
+    <div class="hist ${h>=1?'win':'loss'}">
       ${h}x
     </div>
   `).join('');
 
 }
 
-let bestMultiplier = 0;
+resize();
+loop();
 
-document.addEventListener('keydown',(e)=>{
+// AUDIO
+
+let audioCtx;
+
+function initAudio(){
+
+  if(!audioCtx){
+    audioCtx = new(window.AudioContext||window.webkitAudioContext)();
+  }
+
+}
+
+function sound(freq,time,type='sine',vol=.08){
+
+  if(!audioCtx) return;
+
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.type = type;
+  osc.frequency.value = freq;
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  gain.gain.value = vol;
+
+  gain.gain.exponentialRampToValueAtTime(
+    .001,
+    audioCtx.currentTime+time
+  );
+
+  osc.start();
+  osc.stop(audioCtx.currentTime+time);
+
+}
+
+function playDrop(){
+  sound(300,.15,'sine',.1);
+}
+
+function playPeg(){
+  sound(900+Math.random()*300,.04,'triangle',.03);
+}
+
+function playLand(mult){
+
+  if(mult >= 10){
+
+    sound(523,.2,'square',.15);
+    setTimeout(()=>sound(784,.2,'square',.12),100);
+    setTimeout(()=>sound(1047,.3,'square',.15),200);
+
+  }
+  else if(mult >= 3){
+
+    sound(500,.15,'triangle',.1);
+    setTimeout(()=>sound(700,.15,'triangle',.08),80);
+
+  }
+  else{
+
+    sound(320,.08,'sine',.05);
+
+  }
+
+}
+
+// KEYBOARD
+
+document.addEventListener('keydown',e=>{
 
   if(e.code === 'Space'){
-
     e.preventDefault();
-
-    dropBall();
-
+    launchMulti();
   }
 
-  if(e.key === '1'){
-    document.querySelector('.low').click();
-  }
-
-  if(e.key === '2'){
-    document.querySelector('.med').click();
-  }
-
-  if(e.key === '3'){
-    document.querySelector('.high').click();
-  }
+  if(e.key === '1') document.querySelector('.low').click();
+  if(e.key === '2') document.querySelector('.med').click();
+  if(e.key === '3') document.querySelector('.high').click();
 
 });
 
 </script>
-
 </body>
 </html>
+```
