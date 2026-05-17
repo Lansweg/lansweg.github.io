@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>AssoPilot — Gestion d'association</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://js.stripe.com/v3/"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
 :root{
@@ -56,7 +55,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .divider{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px;margin:16px 0;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
 
-/* ── APP LAYOUT ── */
+/* ── APP ── */
 #app{display:none;height:100vh;overflow:hidden;}
 .layout{display:flex;height:100%;}
 .sidebar{width:var(--sidebar);flex-shrink:0;background:var(--ink);color:var(--white);display:flex;flex-direction:column;height:100vh;overflow-y:auto;transition:left .25s;}
@@ -83,8 +82,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .topbar{height:60px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:14px;flex-shrink:0;}
 .topbar-title{font-family:'Syne',sans-serif;font-weight:800;font-size:19px;flex:1;}
-
-/* ── BUTTONS ── */
 .btn{padding:8px 16px;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;white-space:nowrap;}
 .btn.primary{background:var(--ink);color:var(--white);}
 .btn.primary:hover{background:var(--sage2);}
@@ -94,11 +91,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .btn.sage:hover{background:var(--sage);}
 .btn.danger{background:rgba(214,64,69,0.1);color:var(--red);border:1px solid rgba(214,64,69,0.2);}
 .btn.sm{padding:6px 12px;font-size:12px;}
-
-/* ── CONTENT ── */
 .content{flex:1;overflow-y:auto;padding:24px;}
 .page{display:none;}
 .page.active{display:block;}
+
+/* ── KPI ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px;}
 .kpi{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden;}
 .kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
@@ -170,16 +167,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .ssec{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px;}
 .stitle{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* ── UPGRADE ── */
 .plan-box{background:var(--ink);color:var(--white);border-radius:16px;padding:24px;margin-bottom:16px;}
 .plan-title{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:4px;}
-.plan-desc{font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:18px;}
-.plan-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.popt{background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.15);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;}
-.popt:hover,.popt.selected{background:rgba(116,198,157,0.15);border-color:var(--sage3);}
-.popt-name{font-weight:700;font-size:14px;margin-bottom:4px;}
-.popt-price{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--sage3);}
-.popt-per{font-size:11px;color:rgba(255,255,255,0.4);}
-.popt-note{font-size:11px;color:var(--warm2);margin-top:4px;}
+.plan-desc{font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:20px;}
+.plan-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.popt{background:rgba(255,255,255,0.07);border:2px solid rgba(255,255,255,0.12);border-radius:14px;padding:20px;cursor:pointer;transition:all .2s;text-decoration:none;color:var(--white);display:block;}
+.popt:hover,.popt.selected{background:rgba(116,198,157,0.18);border-color:var(--sage3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(116,198,157,0.2);}
+.popt-badge{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--warm2);margin-bottom:8px;}
+.popt-name{font-weight:700;font-size:15px;margin-bottom:6px;}
+.popt-price{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--sage3);line-height:1;}
+.popt-per{font-size:12px;color:rgba(255,255,255,0.45);margin-top:3px;}
+.popt-note{font-size:11px;color:var(--warm2);margin-top:6px;font-weight:600;}
+.popt-cta{margin-top:14px;font-size:13px;font-weight:700;color:var(--sage3);display:flex;align-items:center;gap:5px;}
+
+/* ── MODALS ── */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);}
 .modal-bg.open{display:flex;}
 .modal{background:var(--white);border-radius:16px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.2);animation:mIn .25s cubic-bezier(.34,1.56,.64,1);}
@@ -189,6 +192,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .mc{background:var(--cream);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;}
 .mb{padding:18px 22px 22px;}
 .ma{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;}
+
+/* ── TOAST ── */
 .toast-wrap{position:fixed;bottom:20px;right:20px;z-index:500;display:flex;flex-direction:column;gap:8px;}
 .tn{background:var(--ink);color:var(--white);padding:11px 16px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,0.2);display:flex;align-items:center;gap:9px;animation:tIn .3s cubic-bezier(.34,1.56,.64,1);max-width:300px;}
 .tn.success{border-left:3px solid var(--sage3);}
@@ -210,14 +215,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   .kpi-grid{grid-template-columns:1fr 1fr;}
   .ckpi-grid{grid-template-columns:1fr;}
   .frow{grid-template-columns:1fr;}
+  .plan-opts{grid-template-columns:1fr;}
 }
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     AUTH
-══════════════════════════════════════ -->
+<!-- AUTH -->
 <div id="auth-screen" class="auth-screen">
   <div class="auth-box">
     <div class="auth-logo">Asso<span>Pilot</span><span class="dot"></span></div>
@@ -228,13 +232,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     </div>
     <div id="auth-err" class="auth-err"></div>
     <div id="auth-ok"  class="auth-ok"></div>
-
     <div id="tab-login">
       <div class="fg"><label class="fl">Email</label><input class="fi" id="l-em" type="email" placeholder="vous@exemple.fr"></div>
       <div class="fg"><label class="fl">Mot de passe</label><input class="fi" id="l-pw" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
       <button class="bf ink" id="btn-login" onclick="doLogin()">Se connecter</button>
     </div>
-
     <div id="tab-register" style="display:none">
       <div class="fg"><label class="fl">Nom complet</label><input class="fi" id="r-nm" placeholder="Marie Dupont"></div>
       <div class="fg"><label class="fl">Email</label><input class="fi" id="r-em" type="email" placeholder="vous@exemple.fr"></div>
@@ -244,9 +246,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     PICKER
-══════════════════════════════════════ -->
+<!-- PICKER -->
 <div id="picker-screen" style="display:none" class="picker-screen">
   <div class="picker-box">
     <div class="picker-title">Vos associations</div>
@@ -258,13 +258,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     APP
-══════════════════════════════════════ -->
+<!-- APP -->
 <div id="app">
   <div class="layout">
-
-    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
       <div class="sb-logo">Asso<span>Pilot</span><span class="dot"></span></div>
       <div class="sb-asso" onclick="showPicker()">
@@ -292,7 +288,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
       </div>
     </aside>
 
-    <!-- MAIN -->
     <div class="main">
       <div class="topbar">
         <button class="mtoggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
@@ -304,10 +299,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
         <!-- DASHBOARD -->
         <div class="page active" id="page-dashboard">
           <div class="kpi-grid">
-            <div class="kpi green"><div class="kpi-label">👥 Adhérents actifs</div><div class="kpi-num" id="k-adh">—</div><div class="kpi-sub">membres</div></div>
-            <div class="kpi warm"> <div class="kpi-label">⚠️ En retard</div>        <div class="kpi-num" id="k-ret">—</div><div class="kpi-sub">cotisations</div></div>
-            <div class="kpi blue"> <div class="kpi-label">💰 Solde trésorerie</div>  <div class="kpi-num" id="k-sol">—</div></div>
-            <div class="kpi yellow"><div class="kpi-label">🗓️ Événements</div>       <div class="kpi-num" id="k-ev">—</div><div class="kpi-sub">créés</div></div>
+            <div class="kpi green"> <div class="kpi-label">👥 Adhérents actifs</div>  <div class="kpi-num" id="k-adh">—</div><div class="kpi-sub">membres</div></div>
+            <div class="kpi warm">  <div class="kpi-label">⚠️ En retard</div>         <div class="kpi-num" id="k-ret">—</div><div class="kpi-sub">cotisations</div></div>
+            <div class="kpi blue">  <div class="kpi-label">💰 Solde trésorerie</div>  <div class="kpi-num" id="k-sol">—</div></div>
+            <div class="kpi yellow"><div class="kpi-label">🗓️ Événements</div>        <div class="kpi-num" id="k-ev">—</div><div class="kpi-sub">créés</div></div>
           </div>
           <div class="card"><div class="card-title">Activité récente</div><div id="dash-act"><div class="loader"><div class="sp"></div></div></div></div>
         </div>
@@ -335,12 +330,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
         <div class="page" id="page-documents">
           <div id="dlv">
             <div class="doc-grid">
-              <div class="doc-card" onclick="showDoc('ag')">      <div class="doc-icon">📋</div><div class="doc-name">Convocation AG</div>          <div class="doc-desc">Lettre de convocation officielle.</div> <span class="doc-chip">Auto-rempli</span></div>
-              <div class="doc-card" onclick="showDoc('pv')">      <div class="doc-icon">📝</div><div class="doc-name">PV d'AG</div>                 <div class="doc-desc">Procès-verbal conforme loi 1901.</div> <span class="doc-chip">Auto-rempli</span></div>
-              <div class="doc-card" onclick="showDoc('bilan')">   <div class="doc-icon">📊</div><div class="doc-name">Bilan moral &amp; financier</div><div class="doc-desc">Rapport annuel complet.</div>          <span class="doc-chip">Auto-rempli</span></div>
-              <div class="doc-card" onclick="showDoc('recu')">    <div class="doc-icon">🧾</div><div class="doc-name">Reçu de cotisation</div>      <div class="doc-desc">Reçu fiscal par adhérent.</div>        <span class="doc-chip">Auto-rempli</span></div>
-              <div class="doc-card" onclick="showDoc('statuts')"> <div class="doc-icon">📜</div><div class="doc-name">Statuts type</div>             <div class="doc-desc">Modèle statuts loi 1901.</div>          <span class="doc-chip">Modèle</span></div>
-              <div class="doc-card" onclick="showDoc('prefecture')"><div class="doc-icon">🏛️</div><div class="doc-name">Déclaration préfecture</div><div class="doc-desc">Cerfa 13971*03 pré-rempli.</div>       <span class="doc-chip">Modèle</span></div>
+              <div class="doc-card" onclick="showDoc('ag')">       <div class="doc-icon">📋</div><div class="doc-name">Convocation AG</div>           <div class="doc-desc">Lettre de convocation officielle.</div><span class="doc-chip">Auto-rempli</span></div>
+              <div class="doc-card" onclick="showDoc('pv')">       <div class="doc-icon">📝</div><div class="doc-name">PV d'AG</div>                  <div class="doc-desc">Procès-verbal conforme loi 1901.</div><span class="doc-chip">Auto-rempli</span></div>
+              <div class="doc-card" onclick="showDoc('bilan')">    <div class="doc-icon">📊</div><div class="doc-name">Bilan moral &amp; financier</div><div class="doc-desc">Rapport annuel complet.</div>          <span class="doc-chip">Auto-rempli</span></div>
+              <div class="doc-card" onclick="showDoc('recu')">     <div class="doc-icon">🧾</div><div class="doc-name">Reçu de cotisation</div>       <div class="doc-desc">Reçu fiscal par adhérent.</div>        <span class="doc-chip">Auto-rempli</span></div>
+              <div class="doc-card" onclick="showDoc('statuts')">  <div class="doc-icon">📜</div><div class="doc-name">Statuts type</div>              <div class="doc-desc">Modèle statuts loi 1901.</div>          <span class="doc-chip">Modèle</span></div>
+              <div class="doc-card" onclick="showDoc('prefecture')"><div class="doc-icon">🏛️</div><div class="doc-name">Déclaration préfecture</div> <div class="doc-desc">Cerfa 13971*03 pré-rempli.</div>        <span class="doc-chip">Modèle</span></div>
             </div>
           </div>
           <div id="dpv" style="display:none">
@@ -391,8 +386,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
                 <div class="fg"><label class="fl">Code postal</label><input class="fi" id="s-cp"></div>
               </div>
               <div class="frow">
-                <div class="fg"><label class="fl">Président(e)</label>   <input class="fi" id="s-pres"></div>
-                <div class="fg"><label class="fl">Trésorier(ière)</label><input class="fi" id="s-tres"></div>
+                <div class="fg"><label class="fl">Président(e)</label>    <input class="fi" id="s-pres"></div>
+                <div class="fg"><label class="fl">Trésorier(ière)</label> <input class="fi" id="s-tres"></div>
               </div>
               <div class="fg"><label class="fl">Secrétaire</label><input class="fi" id="s-sec"></div>
               <div class="fg"><label class="fl">Cotisation annuelle (€)</label><input class="fi" id="s-cotis" type="number"></div>
@@ -403,27 +398,37 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 
         <!-- UPGRADE -->
         <div class="page" id="page-upgrade">
-          <div style="max-width:520px">
+          <div style="max-width:560px">
             <div class="plan-box">
               <div class="plan-title">⭐ Passer au plan Pro</div>
-              <div class="plan-desc">Adhérents illimités, tous les documents, export PDF, support prioritaire.</div>
+              <div class="plan-desc">Choisissez votre formule et payez en toute sécurité via Stripe. Annulation en 1 clic, sans engagement.</div>
               <div class="plan-opts">
-                <div class="popt selected" id="opt-m" onclick="selPlan('monthly')">
+
+                <!-- MENSUEL -->
+                <a class="popt selected" id="opt-m" href="https://buy.stripe.com/test_cNi8wReD40xScrFgCW5wI00" target="_blank" rel="noopener">
+                  <div class="popt-badge">🔥 Le plus flexible</div>
                   <div class="popt-name">Mensuel</div>
                   <div class="popt-price">19€</div>
-                  <div class="popt-per">/mois</div>
-                </div>
-                <div class="popt" id="opt-y" onclick="selPlan('yearly')">
+                  <div class="popt-per">/mois · sans engagement</div>
+                  <div class="popt-cta">S'abonner maintenant →</div>
+                </a>
+
+                <!-- ANNUEL -->
+                <a class="popt" id="opt-y" href="https://buy.stripe.com/test_eVq5kF0MefsMgHV9au5wI01" target="_blank" rel="noopener">
+                  <div class="popt-badge">🎁 Économisez 49€</div>
                   <div class="popt-name">Annuel</div>
                   <div class="popt-price">179€</div>
-                  <div class="popt-per">/an</div>
-                  <div class="popt-note">🎁 Économisez 49€</div>
-                </div>
+                  <div class="popt-per">/an · soit 14,92€/mois</div>
+                  <div class="popt-note">✦ Meilleur rapport qualité/prix</div>
+                  <div class="popt-cta">S'abonner maintenant →</div>
+                </a>
+
               </div>
             </div>
+
             <div class="card">
-              <div class="card-title">Ce que vous débloquez</div>
-              <div style="display:flex;flex-direction:column;gap:10px;font-size:14px">
+              <div class="card-title">Ce que vous débloquez avec Pro</div>
+              <div style="display:flex;flex-direction:column;gap:10px;font-size:14px;margin-bottom:20px">
                 <div><span style="color:var(--sage2);font-weight:700">✓</span> Adhérents illimités <span style="color:var(--muted);font-size:12px">(gratuit = 25 max)</span></div>
                 <div><span style="color:var(--sage2);font-weight:700">✓</span> Tous les documents officiels + export PDF</div>
                 <div><span style="color:var(--sage2);font-weight:700">✓</span> Comptabilité complète + export Excel</div>
@@ -431,22 +436,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
                 <div><span style="color:var(--sage2);font-weight:700">✓</span> Plusieurs associations</div>
                 <div><span style="color:var(--sage2);font-weight:700">✓</span> Support par email sous 24h</div>
               </div>
-              <button class="bf sage" style="margin-top:20px" onclick="doCheckout()" id="btn-co">🚀 S'abonner maintenant</button>
-              <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">Paiement sécurisé par Stripe · Sans engagement · Annulation en 1 clic</p>
+              <div style="background:var(--cream);border-radius:10px;padding:14px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:10px">
+                <span style="font-size:20px">🔒</span>
+                <span>Paiement 100% sécurisé par <strong>Stripe</strong>. Vos données bancaires ne nous parviennent jamais. Annulation en 1 clic depuis votre espace Stripe.</span>
+              </div>
             </div>
           </div>
         </div>
 
-      </div><!-- /content -->
-    </div><!-- /main -->
-  </div><!-- /layout -->
-</div><!-- /app -->
+      </div>
+    </div>
+  </div>
+</div>
 
-<!-- ══════════════════════════════════════
-     MODALS
-══════════════════════════════════════ -->
-
-<!-- Nouvelle association -->
+<!-- MODALS -->
 <div class="modal-bg" id="m-new-asso">
   <div class="modal">
     <div class="mh"><div class="mt">Nouvelle association</div><button class="mc" onclick="closeM('m-new-asso')">✕</button></div>
@@ -465,7 +468,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   </div>
 </div>
 
-<!-- Adhérent -->
 <div class="modal-bg" id="m-adh">
   <div class="modal">
     <div class="mh"><div class="mt">Nouvel adhérent</div><button class="mc" onclick="closeM('m-adh')">✕</button></div>
@@ -493,7 +495,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   </div>
 </div>
 
-<!-- Transaction -->
 <div class="modal-bg" id="m-trans">
   <div class="modal">
     <div class="mh"><div class="mt">Nouvelle opération</div><button class="mc" onclick="closeM('m-trans')">✕</button></div>
@@ -520,7 +521,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   </div>
 </div>
 
-<!-- Événement -->
 <div class="modal-bg" id="m-ev">
   <div class="modal">
     <div class="mh"><div class="mt">Nouvel événement</div><button class="mc" onclick="closeM('m-ev')">✕</button></div>
@@ -547,195 +547,147 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 
 <script>
 // ══════════════════════════════════════════════════════════════
-//  ⚙️  CONFIG — Modifiez uniquement cette section
-//  • SUPA_URL  : Project URL (Supabase > Settings > API)
-//  • SUPA_KEY  : anon public key (safe côté client, sécurisé par les RLS)
-//  • STRIPE_PK : publishable key (safe côté client par conception Stripe)
-//  • PRICE_*   : IDs des prix Stripe (Stripe > Product catalog > Price)
+//  ⚙️  CONFIG
+//  SUPA_KEY  = anon public key (sécurisé par les RLS Supabase)
+//  Les Payment Links Stripe sont de simples URLs publiques
 // ══════════════════════════════════════════════════════════════
 const CFG = {
-  SUPA_URL   : 'https://jgazqvjxeluyhjhvkqmd.supabase.co',
-  SUPA_KEY   : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpnYXpxdmp4ZWx1eWhqaHZrcW1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3ODI0NzUsImV4cCI6MjA5NDM1ODQ3NX0.UVK43dNGcJBlgH1YnohPlR5XvcyYozf-MLoIv2OvY3Y',
-  STRIPE_PK  : 'pk_test_51TX6PYRFt1VtaecjybtUavJR7vl2gWZZXe2c6ghjfEGZuQhV83WVugN9yAk2ADKnDk21TEAOfaeDVmgLmoV84BOJ00H0W73HET',
-  PRICE_M    : 'price_1TX7NNRFt1VtaecjjIjFeTbI',   // mensuel 19€
-  PRICE_Y    : 'price_1TX7NmRFt1VtaecjxL77a9Qs',   // annuel 179€
+  SUPA_URL : 'https://jgazqvjxeluyhjhvkqmd.supabase.co',
+  SUPA_KEY : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpnYXpxdmp4ZWx1eWhqaHZrcW1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3ODI0NzUsImV4cCI6MjA5NDM1ODQ3NX0.UVK43dNGcJBlgH1YnohPlR5XvcyYozf-MLoIv2OvY3Y',
 };
 // ══════════════════════════════════════════════════════════════
 
 const { createClient } = supabase;
-const sb     = createClient(CFG.SUPA_URL, CFG.SUPA_KEY);
-const stripe = Stripe(CFG.STRIPE_PK);
+const sb = createClient(CFG.SUPA_URL, CFG.SUPA_KEY);
 
-// ── État global ──
 let CU = null, CP = null, CA = null;
 let allAdh = [], allTrans = [];
-let adhF = 'tous', ctF = 'all', splId = 'monthly';
+let adhF = 'tous', ctF = 'all';
 const COLORS = ['#2D6A4F','#E76F51','#3A70C4','#F4B942','#9B30FF','#D64045','#40916C'];
 const PAGES  = { dashboard:'Tableau de bord', adherents:'Adhérents', documents:'Documents officiels', compta:'Comptabilité', events:'Événements', settings:'Paramètres', upgrade:'Passer Pro ⭐' };
 
-// ── Utilitaires ──
-const g   = id => document.getElementById(id);
-const v   = id => g(id)?.value?.trim() ?? '';
-const show = id => { if(g(id)) g(id).style.display = ''; };
-const hide = id => { if(g(id)) g(id).style.display = 'none'; };
-const fmt  = n  => Math.round(Number(n)||0).toLocaleString('fr-FR');
-const fmtD = d  => d ? new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}) : '—';
-const setB = (id,t,d) => { const b=g(id); if(b){b.textContent=t;b.disabled=d;} };
+const g    = id => document.getElementById(id);
+const v    = id => g(id)?.value?.trim() ?? '';
+const show  = id => { if(g(id)) g(id).style.display=''; };
+const hide  = id => { if(g(id)) g(id).style.display='none'; };
+const fmt   = n  => Math.round(Number(n)||0).toLocaleString('fr-FR');
+const fmtD  = d  => d ? new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}) : '—';
+const setB  = (id,t,d) => { const b=g(id); if(b){b.textContent=t;b.disabled=d;} };
 
-// ── Toast ──
 function toast(msg, icon='ℹ️', type='info') {
   const el = document.createElement('div');
   el.className = `tn ${type}`;
   el.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
   g('toasts').appendChild(el);
-  setTimeout(() => { el.style.cssText='opacity:0;transform:translateX(20px);transition:all .3s'; setTimeout(()=>el.remove(),300); }, 3500);
+  setTimeout(()=>{ el.style.cssText='opacity:0;transform:translateX(20px);transition:all .3s'; setTimeout(()=>el.remove(),300); }, 3500);
 }
 
-// ── Auth messages ──
 const authErr = msg => { g('auth-err').textContent=msg; g('auth-err').style.display='block'; g('auth-ok').style.display='none'; };
 const authOk  = msg => { g('auth-ok').textContent=msg;  g('auth-ok').style.display='block';  g('auth-err').style.display='none'; };
 const authClr = ()  => { g('auth-err').style.display='none'; g('auth-ok').style.display='none'; };
 
-// ── Modals ──
 function openM(id) {
   g(id)?.classList.add('open');
-  g(id)?.querySelectorAll('input[type=date]').forEach(d => { if(!d.value) d.value = new Date().toISOString().split('T')[0]; });
+  g(id)?.querySelectorAll('input[type=date]').forEach(d=>{ if(!d.value) d.value=new Date().toISOString().split('T')[0]; });
 }
 function closeM(id) { g(id)?.classList.remove('open'); }
-document.querySelectorAll('.modal-bg').forEach(m => m.addEventListener('click', e => { if(e.target===m) m.classList.remove('open'); }));
+document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
 
-// ══════════════════════════════════════════════════════════════
-//  INITIALISATION
-// ══════════════════════════════════════════════════════════════
-(async () => {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) { CU = session.user; await loadProfile(); showPicker(); }
-
-  sb.auth.onAuthStateChange(async (ev, sess) => {
-    if (ev === 'SIGNED_IN' && sess)  { CU = sess.user; await loadProfile(); showPicker(); }
-    if (ev === 'SIGNED_OUT')          { CU = CP = CA = null; show('auth-screen'); hide('picker-screen'); hide('app'); }
+// ── INIT ──
+(async()=>{
+  const {data:{session}} = await sb.auth.getSession();
+  if(session){ CU=session.user; await loadProfile(); showPicker(); }
+  sb.auth.onAuthStateChange(async(ev,sess)=>{
+    if(ev==='SIGNED_IN'&&sess){ CU=sess.user; await loadProfile(); showPicker(); }
+    if(ev==='SIGNED_OUT'){ CU=CP=CA=null; show('auth-screen'); hide('picker-screen'); hide('app'); }
   });
-
-  // Retour paiement Stripe
   const p = new URLSearchParams(location.search);
-  if (p.get('payment') === 'success') setTimeout(() => toast('Abonnement activé ! Bienvenue en Pro ⭐','🎉','success'), 800);
-  if (p.get('payment') === 'cancel')  setTimeout(() => toast('Paiement annulé.','ℹ️'), 400);
+  if(p.get('payment')==='success') setTimeout(()=>toast('Abonnement activé ! Bienvenue en Pro ⭐','🎉','success'),800);
+  if(p.get('payment')==='cancel')  setTimeout(()=>toast('Paiement annulé.','ℹ️'),400);
 })();
 
 async function loadProfile() {
-  const { data } = await sb.from('profiles').select('*').eq('id', CU.id).single();
-  CP = data;
-  if (!CP) return;
-  const n = CP.full_name || CP.email.split('@')[0];
+  const {data} = await sb.from('profiles').select('*').eq('id',CU.id).single();
+  CP = data; if(!CP) return;
+  const n = CP.full_name||CP.email.split('@')[0];
   g('uname').textContent = n;
   g('uav').textContent   = n[0].toUpperCase();
-  g('uplan').textContent  = CP.plan === 'pro' ? '⭐ Plan Pro' : 'Plan Gratuit';
+  g('uplan').textContent  = CP.plan==='pro' ? '⭐ Plan Pro' : 'Plan Gratuit';
 }
 
-// ══════════════════════════════════════════════════════════════
-//  AUTH
-// ══════════════════════════════════════════════════════════════
-function switchTab(tab, btn) {
-  document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+// ── AUTH ──
+function switchTab(tab,btn) {
+  document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  show('tab-'+tab); hide(tab==='login' ? 'tab-register' : 'tab-login'); authClr();
+  show('tab-'+tab); hide(tab==='login'?'tab-register':'tab-login'); authClr();
 }
-
 async function doLogin() {
-  const em = v('l-em'), pw = v('l-pw');
-  if (!em || !pw) { authErr('Remplis tous les champs.'); return; }
+  const em=v('l-em'),pw=v('l-pw');
+  if(!em||!pw){authErr('Remplis tous les champs.');return;}
   setB('btn-login','⏳ Connexion…',true);
-  const { error } = await sb.auth.signInWithPassword({ email:em, password:pw });
+  const {error} = await sb.auth.signInWithPassword({email:em,password:pw});
   setB('btn-login','Se connecter',false);
-  if (error) authErr(error.message.includes('Invalid') ? 'Email ou mot de passe incorrect.' : error.message);
+  if(error) authErr(error.message.includes('Invalid')?'Email ou mot de passe incorrect.':error.message);
 }
-
 async function doRegister() {
-  const nm = v('r-nm'), em = v('r-em'), pw = v('r-pw');
-  if (!nm || !em || !pw) { authErr('Remplis tous les champs.'); return; }
-  if (pw.length < 8)     { authErr('Mot de passe trop court (8 caractères minimum).'); return; }
+  const nm=v('r-nm'),em=v('r-em'),pw=v('r-pw');
+  if(!nm||!em||!pw){authErr('Remplis tous les champs.');return;}
+  if(pw.length<8){authErr('Mot de passe trop court (8 caractères minimum).');return;}
   setB('btn-reg','⏳ Création…',true);
-  const { error } = await sb.auth.signUp({ email:em, password:pw, options:{ data:{ full_name:nm } } });
+  const {error} = await sb.auth.signUp({email:em,password:pw,options:{data:{full_name:nm}}});
   setB('btn-reg','Créer mon compte gratuit',false);
-  if (error) authErr(error.message);
-  else       authOk('Compte créé ! Vérifie ton email pour confirmer, puis connecte-toi.');
+  if(error) authErr(error.message);
+  else authOk('Compte créé ! Vérifie ton email pour confirmer, puis connecte-toi.');
 }
-
 async function doLogout() { await sb.auth.signOut(); }
 
-// ══════════════════════════════════════════════════════════════
-//  PICKER — Sélection d'association
-// ══════════════════════════════════════════════════════════════
+// ── PICKER ──
 async function showPicker() {
   hide('app'); hide('auth-screen');
-  g('picker-screen').style.display = 'flex';
+  g('picker-screen').style.display='flex';
   const el = g('asso-picker');
-  el.innerHTML = '<div class="loader"><div class="sp"></div> Chargement…</div>';
-
-  const { data: owned  } = await sb.from('associations').select('*').eq('owner_id', CU.id);
-  const { data: member } = await sb.from('asso_members').select('*,associations(*)').eq('user_id', CU.id);
-
-  const all  = [...(owned||[]).map(a=>({...a,role:'owner'})), ...(member||[]).filter(m=>m.associations).map(m=>({...m.associations,role:m.role}))];
+  el.innerHTML='<div class="loader"><div class="sp"></div> Chargement…</div>';
+  const {data:owned}  = await sb.from('associations').select('*').eq('owner_id',CU.id);
+  const {data:member} = await sb.from('asso_members').select('*,associations(*)').eq('user_id',CU.id);
+  const all  = [...(owned||[]).map(a=>({...a,role:'owner'})),...(member||[]).filter(m=>m.associations).map(m=>({...m.associations,role:m.role}))];
   const seen = new Set();
-  const uq   = all.filter(a => { if(seen.has(a.id)) return false; seen.add(a.id); return true; });
-
-  if (!uq.length) {
-    el.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:14px;padding:20px">Aucune association.<br>Créez-en une ci-dessous !</div>';
-    return;
-  }
-  el.innerHTML = uq.map(a => `
+  const uq   = all.filter(a=>{ if(seen.has(a.id))return false; seen.add(a.id); return true; });
+  if(!uq.length){el.innerHTML='<div style="text-align:center;color:var(--muted);font-size:14px;padding:20px">Aucune association.<br>Créez-en une ci-dessous !</div>';return;}
+  el.innerHTML=uq.map(a=>`
     <div class="asso-item" onclick="selAsso('${a.id}')">
       <div class="asso-av">${(a.name||'?')[0].toUpperCase()}</div>
-      <div class="asso-info">
-        <div class="asso-iname">${a.name}</div>
-        <div class="asso-irole">${a.city||''} · ${a.role==='owner'?'Propriétaire':a.role==='admin'?'Admin':'Membre'}</div>
-      </div>
+      <div class="asso-info"><div class="asso-iname">${a.name}</div><div class="asso-irole">${a.city||''} · ${a.role==='owner'?'Propriétaire':a.role==='admin'?'Admin':'Membre'}</div></div>
       <span class="plan-chip">${CP?.plan==='pro'?'Pro':'Gratuit'}</span>
     </div>`).join('');
 }
-
 async function selAsso(id) {
-  const { data, error } = await sb.from('associations').select('*').eq('id',id).single();
-  if (error || !data) { toast('Erreur chargement','❌','error'); return; }
-  CA = data;
-  g('sw-name').textContent = CA.name;
-  g('picker-screen').style.display = 'none';
-  g('app').style.display = 'block';
-  fillSettings();
-  await loadDash();
-}
-
-async function createAsso() {
-  const name = v('na-nm');
-  if (!name) { toast('Le nom est obligatoire','⚠️'); return; }
-  const { data, error } = await sb.from('associations').insert({
-    name, city: v('na-ct'), president: v('na-pr'),
-    cotisation_amount: parseFloat(v('na-co'))||25,
-    owner_id: CU.id
-  }).select().single();
-  if (error) { toast('Erreur: '+error.message,'❌','error'); return; }
-  CA = data; closeM('m-new-asso');
-  toast(name+' créée !','✅','success');
-  g('sw-name').textContent = CA.name;
-  g('picker-screen').style.display = 'none';
-  g('app').style.display = 'block';
+  const {data,error} = await sb.from('associations').select('*').eq('id',id).single();
+  if(error||!data){toast('Erreur chargement','❌','error');return;}
+  CA=data; g('sw-name').textContent=CA.name;
+  g('picker-screen').style.display='none'; g('app').style.display='block';
   fillSettings(); await loadDash();
-  ['na-nm','na-ct','na-pr'].forEach(id => { if(g(id)) g(id).value=''; });
-  g('na-co').value = '25';
+}
+async function createAsso() {
+  const name=v('na-nm'); if(!name){toast('Le nom est obligatoire','⚠️');return;}
+  const {data,error} = await sb.from('associations').insert({name,city:v('na-ct'),president:v('na-pr'),cotisation_amount:parseFloat(v('na-co'))||25,owner_id:CU.id}).select().single();
+  if(error){toast('Erreur: '+error.message,'❌','error');return;}
+  CA=data; closeM('m-new-asso'); toast(name+' créée !','✅','success');
+  g('sw-name').textContent=CA.name;
+  g('picker-screen').style.display='none'; g('app').style.display='block';
+  fillSettings(); await loadDash();
+  ['na-nm','na-ct','na-pr'].forEach(id=>{if(g(id))g(id).value='';});
+  g('na-co').value='25';
 }
 
-// ══════════════════════════════════════════════════════════════
-//  DASHBOARD
-// ══════════════════════════════════════════════════════════════
+// ── DASHBOARD ──
 async function loadDash() {
-  if (!CA) return;
-  const [{ data:adh }, { data:trans }, { data:evs }] = await Promise.all([
+  if(!CA) return;
+  const [{data:adh},{data:trans},{data:evs}] = await Promise.all([
     sb.from('adherents').select('*').eq('asso_id',CA.id),
     sb.from('transactions').select('*').eq('asso_id',CA.id),
     sb.from('events').select('*').eq('asso_id',CA.id)
   ]);
-  allAdh   = adh   || [];
-  allTrans = trans || [];
+  allAdh=adh||[]; allTrans=trans||[];
   g('k-adh').textContent = allAdh.filter(a=>a.status==='actif').length;
   g('k-ret').textContent = allAdh.filter(a=>a.status==='retard').length;
   const inc = allTrans.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount||0),0);
@@ -743,30 +695,24 @@ async function loadDash() {
   g('k-sol').textContent = fmt(inc-exp)+'€';
   g('k-ev').textContent  = (evs||[]).length;
   const acts = [
-    ...allAdh.slice(0,3).map(a => ({ ic:'👤', tx:`<strong>${a.first_name} ${a.last_name}</strong> — ${a.status}`, dt:a.created_at })),
-    ...allTrans.slice(0,2).map(t => ({ ic:t.type==='income'?'💚':'🔴', tx:`${t.label} ${t.type==='income'?'+':'-'}${t.amount}€`, dt:t.created_at }))
+    ...allAdh.slice(0,3).map(a=>({ic:'👤',tx:`<strong>${a.first_name} ${a.last_name}</strong> — ${a.status}`,dt:a.created_at})),
+    ...allTrans.slice(0,2).map(t=>({ic:t.type==='income'?'💚':'🔴',tx:`${t.label} ${t.type==='income'?'+':'-'}${t.amount}€`,dt:t.created_at}))
   ];
   g('dash-act').innerHTML = acts.length
     ? acts.map(a=>`<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px"><span style="font-size:16px">${a.ic}</span><div style="flex:1">${a.tx}</div><span style="color:var(--muted);font-size:11px;white-space:nowrap">${fmtD(a.dt)}</span></div>`).join('')
     : '<div class="empty"><div class="empty-ic">📭</div><p>Aucune activité encore.</p></div>';
 }
 
-// ══════════════════════════════════════════════════════════════
-//  ADHÉRENTS
-// ══════════════════════════════════════════════════════════════
+// ── ADHÉRENTS ──
 async function loadAdh() {
-  const { data } = await sb.from('adherents').select('*').eq('asso_id',CA.id).order('created_at',{ascending:false});
-  allAdh = data || []; renderAdh();
+  const {data} = await sb.from('adherents').select('*').eq('asso_id',CA.id).order('created_at',{ascending:false});
+  allAdh=data||[]; renderAdh();
 }
-
 function renderAdh(list) {
-  const data = list !== undefined ? list : allAdh.filter(a => adhF==='tous' || a.status===adhF);
+  const data = list!==undefined ? list : allAdh.filter(a=>adhF==='tous'||a.status===adhF);
   const tb   = g('adh-tb');
-  if (!data.length) {
-    tb.innerHTML = `<tr><td colspan="5"><div class="empty"><div class="empty-ic">👥</div><h3>Aucun adhérent</h3><p>Ajoutez votre premier membre.</p></div></td></tr>`;
-    return;
-  }
-  tb.innerHTML = data.map(a => {
+  if(!data.length){tb.innerHTML=`<tr><td colspan="5"><div class="empty"><div class="empty-ic">👥</div><h3>Aucun adhérent</h3><p>Ajoutez votre premier membre.</p></div></td></tr>`;return;}
+  tb.innerHTML=data.map(a=>{
     const init = ((a.first_name||'?')[0]+(a.last_name||'?')[0]).toUpperCase();
     const col  = COLORS[(a.first_name||'').charCodeAt(0)%COLORS.length];
     return `<tr>
@@ -778,298 +724,148 @@ function renderAdh(list) {
     </tr>`;
   }).join('');
 }
-
 function filterAdh(q) { const s=q.toLowerCase(); renderAdh(allAdh.filter(a=>(a.first_name+' '+a.last_name+(a.email||'')).toLowerCase().includes(s))); }
-function setAF(f,btn)  { adhF=f; document.querySelectorAll('#page-adherents .chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); renderAdh(); }
-
+function setAF(f,btn) { adhF=f; document.querySelectorAll('#page-adherents .chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); renderAdh(); }
 async function addAdh() {
-  const fn = v('a-fn'), ln = v('a-ln');
-  if (!fn||!ln) { toast('Prénom et nom requis','⚠️'); return; }
-  const paid = g('a-pd').value === 'true';
-  const { error } = await sb.from('adherents').insert({
-    asso_id:CA.id, first_name:fn, last_name:ln,
-    email:v('a-em')||null, phone:v('a-tel')||null, birthdate:v('a-bd')||null,
-    cotisation_paid:paid, cotisation_year:parseInt(v('a-yr'))||new Date().getFullYear(),
-    status:paid?'actif':'retard', cotisation_amount:CA.cotisation_amount||25
+  const fn=v('a-fn'),ln=v('a-ln');
+  if(!fn||!ln){toast('Prénom et nom requis','⚠️');return;}
+  const paid=g('a-pd').value==='true';
+  const {error} = await sb.from('adherents').insert({
+    asso_id:CA.id,first_name:fn,last_name:ln,
+    email:v('a-em')||null,phone:v('a-tel')||null,birthdate:v('a-bd')||null,
+    cotisation_paid:paid,cotisation_year:parseInt(v('a-yr'))||new Date().getFullYear(),
+    status:paid?'actif':'retard',cotisation_amount:CA.cotisation_amount||25
   });
-  if (error) { toast('Erreur: '+error.message,'❌','error'); return; }
+  if(error){toast('Erreur: '+error.message,'❌','error');return;}
   closeM('m-adh'); toast(fn+' '+ln+' ajouté(e) ✓','✅','success');
   ['a-fn','a-ln','a-em','a-tel','a-bd'].forEach(id=>{if(g(id))g(id).value='';});
   await loadAdh();
 }
-
 async function delAdh(id) {
-  if (!confirm('Supprimer cet adhérent ?')) return;
+  if(!confirm('Supprimer cet adhérent ?'))return;
   await sb.from('adherents').delete().eq('id',id);
   toast('Adhérent supprimé','🗑️'); await loadAdh();
 }
-
 function exportCSV() {
-  const rows = [['Prénom','Nom','Email','Téléphone','Cotisation','Statut'], ...allAdh.map(a=>[a.first_name,a.last_name,a.email||'',a.phone||'',a.cotisation_paid?'Payée':'En attente',a.status])];
-  const a2 = document.createElement('a');
-  a2.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(r=>r.join(';')).join('\n'));
-  a2.download = `adherents_${CA.name}_${new Date().getFullYear()}.csv`; a2.click();
+  const rows=[['Prénom','Nom','Email','Téléphone','Cotisation','Statut'],...allAdh.map(a=>[a.first_name,a.last_name,a.email||'',a.phone||'',a.cotisation_paid?'Payée':'En attente',a.status])];
+  const a2=document.createElement('a');
+  a2.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(r=>r.join(';')).join('\n'));
+  a2.download=`adherents_${CA.name}_${new Date().getFullYear()}.csv`; a2.click();
   toast('Export CSV téléchargé','📥');
 }
 
-// ══════════════════════════════════════════════════════════════
-//  DOCUMENTS
-// ══════════════════════════════════════════════════════════════
-const asso  = () => CA || {};
+// ── DOCUMENTS ──
+const asso  = () => CA||{};
 const today = () => new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
-
-const DOCS = {
-  ag: () => `<h3>CONVOCATION À L'ASSEMBLÉE GÉNÉRALE</h3>
-<p class="dcc">${asso().name} · ${today()}</p>
-<div class="ds"><strong>Madame, Monsieur,</strong><br>Nous vous convoquons à l'AG de l'association <strong>${asso().name}</strong> le <strong>____ à __h__</strong> à <strong>${asso().city||'___'}</strong>.</div>
-<div class="dhr"></div>
-<div class="ds"><strong>Ordre du jour :</strong><br>1. Rapport moral — ${asso().president||'___'}<br>2. Rapport financier — ${asso().treasurer||'___'}<br>3. Approbation des comptes<br>4. Questions diverses</div>
-<div class="dhr"></div>
-<div style="text-align:right;margin-top:16px"><em>Le Président,</em><br><strong>${asso().president||'___'}</strong></div>`,
-
-  pv: () => `<h3>PROCÈS-VERBAL D'ASSEMBLÉE GÉNÉRALE</h3>
-<p class="dcc">${asso().name} · Loi du 1er juillet 1901</p>
-<div class="ds"><strong>Date :</strong> ${today()} · <strong>Lieu :</strong> ${asso().city||'___'}</div>
-<div class="ds"><strong>Membres présents :</strong> ${allAdh.filter(x=>x.status==='actif').slice(0,5).map(x=>x.first_name+' '+x.last_name).join(', ')||'___'}</div>
-<div class="ds"><strong>Quorum :</strong> ${allAdh.filter(x=>x.cotisation_paid).length} membres à jour sur ${allAdh.length}.</div>
-<div class="dhr"></div>
-<div class="ds"><strong>1. Rapport moral</strong><br>${asso().president||'___'} présente le bilan de l'exercice.</div>
-<div class="ds"><strong>2. Rapport financier</strong><br>Recettes : ${fmt(allTrans.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount||0),0))}€ — Dépenses : ${fmt(allTrans.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount||0),0))}€</div>
-<div class="dhr"></div>
-<div style="display:flex;justify-content:space-between;margin-top:16px;font-size:13px">
-  <div><em>Le Secrétaire</em><br><br>${asso().secretary||'_______________'}</div>
-  <div style="text-align:right"><em>Le Président</em><br><br>${asso().president||'_______________'}</div>
-</div>`,
-
-  bilan: () => {
-    const inc = allTrans.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount||0),0);
-    const exp = allTrans.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount||0),0);
-    return `<h3>BILAN MORAL &amp; FINANCIER</h3>
-<p class="dcc">${asso().name} · Exercice ${new Date().getFullYear()}</p>
-<div class="ds"><strong>I. BILAN MORAL</strong><br>${allAdh.length} adhérents dont ${allAdh.filter(x=>x.status==='actif').length} actifs.</div>
-<div class="ds"><strong>II. BILAN FINANCIER</strong>
-<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px">
-<tr style="background:var(--cream2)"><th style="text-align:left;padding:7px;border:1px solid var(--border)">Poste</th><th style="text-align:right;padding:7px;border:1px solid var(--border)">Montant</th></tr>
-${allTrans.filter(t=>t.type==='income').map(t=>`<tr><td style="padding:7px;border:1px solid var(--border)">${t.label}</td><td style="text-align:right;padding:7px;border:1px solid var(--border)">+${t.amount}€</td></tr>`).join('')}
-<tr style="font-weight:700;background:var(--cream2)"><td style="padding:7px;border:1px solid var(--border)">TOTAL RECETTES</td><td style="text-align:right;padding:7px;border:1px solid var(--border);color:var(--sage2)">+${fmt(inc)}€</td></tr>
-${allTrans.filter(t=>t.type==='expense').map(t=>`<tr><td style="padding:7px;border:1px solid var(--border)">${t.label}</td><td style="text-align:right;padding:7px;border:1px solid var(--border)">-${t.amount}€</td></tr>`).join('')}
-<tr style="font-weight:700;background:var(--cream2)"><td style="padding:7px;border:1px solid var(--border)">TOTAL DÉPENSES</td><td style="text-align:right;padding:7px;border:1px solid var(--border);color:var(--red)">-${fmt(exp)}€</td></tr>
-</table>
-<div style="text-align:right;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-top:10px;color:var(--sage2)">SOLDE NET : ${fmt(inc-exp)}€</div></div>`;
+const DOCS  = {
+  ag:()=>`<h3>CONVOCATION À L'ASSEMBLÉE GÉNÉRALE</h3><p class="dcc">${asso().name} · ${today()}</p><div class="ds"><strong>Madame, Monsieur,</strong><br>Nous vous convoquons à l'AG de l'association <strong>${asso().name}</strong> le <strong>____ à __h__</strong> à <strong>${asso().city||'___'}</strong>.</div><div class="dhr"></div><div class="ds"><strong>Ordre du jour :</strong><br>1. Rapport moral — ${asso().president||'___'}<br>2. Rapport financier — ${asso().treasurer||'___'}<br>3. Approbation des comptes<br>4. Questions diverses</div><div class="dhr"></div><div style="text-align:right;margin-top:16px"><em>Le Président,</em><br><strong>${asso().president||'___'}</strong></div>`,
+  pv:()=>`<h3>PROCÈS-VERBAL D'ASSEMBLÉE GÉNÉRALE</h3><p class="dcc">${asso().name} · Loi du 1er juillet 1901</p><div class="ds"><strong>Date :</strong> ${today()} · <strong>Lieu :</strong> ${asso().city||'___'}</div><div class="ds"><strong>Membres présents :</strong> ${allAdh.filter(x=>x.status==='actif').slice(0,5).map(x=>x.first_name+' '+x.last_name).join(', ')||'___'}</div><div class="ds"><strong>Quorum :</strong> ${allAdh.filter(x=>x.cotisation_paid).length} membres à jour sur ${allAdh.length}.</div><div class="dhr"></div><div class="ds"><strong>1. Rapport moral</strong><br>${asso().president||'___'} présente le bilan de l'exercice.</div><div class="ds"><strong>2. Rapport financier</strong><br>Recettes : ${fmt(allTrans.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount||0),0))}€ — Dépenses : ${fmt(allTrans.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount||0),0))}€</div><div class="dhr"></div><div style="display:flex;justify-content:space-between;margin-top:16px;font-size:13px"><div><em>Le Secrétaire</em><br><br>${asso().secretary||'_______________'}</div><div style="text-align:right"><em>Le Président</em><br><br>${asso().president||'_______________'}</div></div>`,
+  bilan:()=>{
+    const inc=allTrans.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount||0),0);
+    const exp=allTrans.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount||0),0);
+    return `<h3>BILAN MORAL &amp; FINANCIER</h3><p class="dcc">${asso().name} · Exercice ${new Date().getFullYear()}</p><div class="ds"><strong>I. BILAN MORAL</strong><br>${allAdh.length} adhérents dont ${allAdh.filter(x=>x.status==='actif').length} actifs.</div><div class="ds"><strong>II. BILAN FINANCIER</strong><table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px"><tr style="background:var(--cream2)"><th style="text-align:left;padding:7px;border:1px solid var(--border)">Poste</th><th style="text-align:right;padding:7px;border:1px solid var(--border)">Montant</th></tr>${allTrans.filter(t=>t.type==='income').map(t=>`<tr><td style="padding:7px;border:1px solid var(--border)">${t.label}</td><td style="text-align:right;padding:7px;border:1px solid var(--border)">+${t.amount}€</td></tr>`).join('')}<tr style="font-weight:700;background:var(--cream2)"><td style="padding:7px;border:1px solid var(--border)">TOTAL RECETTES</td><td style="text-align:right;padding:7px;border:1px solid var(--border);color:var(--sage2)">+${fmt(inc)}€</td></tr>${allTrans.filter(t=>t.type==='expense').map(t=>`<tr><td style="padding:7px;border:1px solid var(--border)">${t.label}</td><td style="text-align:right;padding:7px;border:1px solid var(--border)">-${t.amount}€</td></tr>`).join('')}<tr style="font-weight:700;background:var(--cream2)"><td style="padding:7px;border:1px solid var(--border)">TOTAL DÉPENSES</td><td style="text-align:right;padding:7px;border:1px solid var(--border);color:var(--red)">-${fmt(exp)}€</td></tr></table><div style="text-align:right;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;margin-top:10px;color:var(--sage2)">SOLDE NET : ${fmt(inc-exp)}€</div></div>`;
   },
-
-  recu: () => `<h3>REÇU DE COTISATION</h3>
-<p class="dcc">${asso().name} · Exercice ${new Date().getFullYear()}</p>
-<div class="ds"><strong>Reçu le :</strong> ${today()}</div>
-<div class="ds"><strong>De :</strong> _____________________ (Adhérent n°____)</div>
-<div class="ds"><strong>Somme :</strong> <strong style="font-size:16px">${asso().cotisation_amount||25},00 €</strong></div>
-<div class="ds"><strong>Au titre de :</strong> Cotisation annuelle ${new Date().getFullYear()}</div>
-<div class="dhr"></div>
-<div style="display:flex;justify-content:space-between;margin-top:16px;font-size:13px">
-  <div><em>Signature adhérent</em><br><br>_______________</div>
-  <div style="text-align:right"><em>Le Trésorier</em><br><br>${asso().treasurer||'_______________'}</div>
-</div>`,
-
-  statuts: () => `<h3>STATUTS TYPE — LOI 1901</h3>
-<div class="ds"><strong>ART. 1 — DÉNOMINATION</strong><br>Association : <strong>${asso().name}</strong></div>
-<div class="ds"><strong>ART. 2 — OBJET</strong><br>_______________________________________________</div>
-<div class="ds"><strong>ART. 3 — SIÈGE</strong><br>${asso().address||'___'}, ${asso().postal_code||''} ${asso().city||''}</div>
-<div class="ds"><strong>ART. 4 — DURÉE</strong><br>Illimitée.</div>
-<div class="ds"><em>(Modèle complet disponible en plan Pro)</em></div>`,
-
-  prefecture: () => `<h3>DÉCLARATION PRÉFECTURE — CERFA 13971*03</h3>
-<div class="ds"><strong>Titre :</strong> ${asso().name}</div>
-<div class="ds"><strong>Siège :</strong> ${asso().address||'___'}, ${asso().postal_code||''} ${asso().city||''}</div>
-<table style="width:100%;border-collapse:collapse;font-size:12px">
-<tr style="background:var(--cream2)"><th style="padding:7px;border:1px solid var(--border);text-align:left">Fonction</th><th style="padding:7px;border:1px solid var(--border);text-align:left">Nom</th></tr>
-<tr><td style="padding:7px;border:1px solid var(--border)">Président(e)</td>  <td style="padding:7px;border:1px solid var(--border)">${asso().president||'___'}</td></tr>
-<tr><td style="padding:7px;border:1px solid var(--border)">Trésorier(ière)</td><td style="padding:7px;border:1px solid var(--border)">${asso().treasurer||'___'}</td></tr>
-<tr><td style="padding:7px;border:1px solid var(--border)">Secrétaire</td>    <td style="padding:7px;border:1px solid var(--border)">${asso().secretary||'___'}</td></tr>
-</table>`
+  recu:()=>`<h3>REÇU DE COTISATION</h3><p class="dcc">${asso().name} · Exercice ${new Date().getFullYear()}</p><div class="ds"><strong>Reçu le :</strong> ${today()}</div><div class="ds"><strong>De :</strong> _____________________ (Adhérent n°____)</div><div class="ds"><strong>Somme :</strong> <strong style="font-size:16px">${asso().cotisation_amount||25},00 €</strong></div><div class="ds"><strong>Au titre de :</strong> Cotisation annuelle ${new Date().getFullYear()}</div><div class="dhr"></div><div style="display:flex;justify-content:space-between;margin-top:16px;font-size:13px"><div><em>Signature adhérent</em><br><br>_______________</div><div style="text-align:right"><em>Le Trésorier</em><br><br>${asso().treasurer||'_______________'}</div></div>`,
+  statuts:()=>`<h3>STATUTS TYPE — LOI 1901</h3><div class="ds"><strong>ART. 1 — DÉNOMINATION</strong><br>Association : <strong>${asso().name}</strong></div><div class="ds"><strong>ART. 2 — OBJET</strong><br>_______________________________________________</div><div class="ds"><strong>ART. 3 — SIÈGE</strong><br>${asso().address||'___'}, ${asso().postal_code||''} ${asso().city||''}</div><div class="ds"><strong>ART. 4 — DURÉE</strong><br>Illimitée.</div><div class="ds"><em>(Modèle complet disponible en plan Pro)</em></div>`,
+  prefecture:()=>`<h3>DÉCLARATION PRÉFECTURE — CERFA 13971*03</h3><div class="ds"><strong>Titre :</strong> ${asso().name}</div><div class="ds"><strong>Siège :</strong> ${asso().address||'___'}, ${asso().postal_code||''} ${asso().city||''}</div><table style="width:100%;border-collapse:collapse;font-size:12px"><tr style="background:var(--cream2)"><th style="padding:7px;border:1px solid var(--border);text-align:left">Fonction</th><th style="padding:7px;border:1px solid var(--border);text-align:left">Nom</th></tr><tr><td style="padding:7px;border:1px solid var(--border)">Président(e)</td><td style="padding:7px;border:1px solid var(--border)">${asso().president||'___'}</td></tr><tr><td style="padding:7px;border:1px solid var(--border)">Trésorier(ière)</td><td style="padding:7px;border:1px solid var(--border)">${asso().treasurer||'___'}</td></tr><tr><td style="padding:7px;border:1px solid var(--border)">Secrétaire</td><td style="padding:7px;border:1px solid var(--border)">${asso().secretary||'___'}</td></tr></table>`
 };
-
 function showDoc(type) {
-  g('dlv').style.display = 'none';
-  g('dpv').style.display = '';
-  g('dc').innerHTML = (DOCS[type] ? DOCS[type]() : '<p>Non disponible.</p>') +
-    `<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
-      <button class="btn secondary" onclick="window.print()">🖨️ Imprimer</button>
-      <button class="btn sage" onclick="toast('Export PDF disponible en plan Pro','⭐')">↓ PDF</button>
-    </div>`;
+  g('dlv').style.display='none'; g('dpv').style.display='';
+  g('dc').innerHTML=(DOCS[type]?DOCS[type]():'<p>Non disponible.</p>')+
+    `<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px"><button class="btn secondary" onclick="window.print()">🖨️ Imprimer</button><button class="btn sage" onclick="toast('Export PDF disponible en plan Pro','⭐')">↓ PDF</button></div>`;
 }
 
-// ══════════════════════════════════════════════════════════════
-//  COMPTABILITÉ
-// ══════════════════════════════════════════════════════════════
+// ── COMPTABILITÉ ──
 async function loadCompta() {
-  const { data } = await sb.from('transactions').select('*').eq('asso_id',CA.id).order('transaction_date',{ascending:false});
-  allTrans = data || []; renderCompta();
+  const {data} = await sb.from('transactions').select('*').eq('asso_id',CA.id).order('transaction_date',{ascending:false});
+  allTrans=data||[]; renderCompta();
 }
-
 function renderCompta() {
-  const list = ctF === 'all' ? allTrans : allTrans.filter(t=>t.type===ctF);
+  const list = ctF==='all' ? allTrans : allTrans.filter(t=>t.type===ctF);
   const inc  = allTrans.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount||0),0);
   const exp  = allTrans.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount||0),0);
-  g('ck-i').textContent = '+'+fmt(inc)+'€';
-  g('ck-e').textContent = '-'+fmt(exp)+'€';
-  g('ck-s').textContent = fmt(inc-exp)+'€';
-  const el = g('trl');
-  if (!list.length) { el.innerHTML = '<div class="empty"><div class="empty-ic">💰</div><h3>Aucune opération</h3><p>Ajoutez votre première opération.</p></div>'; return; }
-  el.innerHTML = list.map(t => {
-    const isI = t.type === 'income';
-    const d   = t.transaction_date ? new Date(t.transaction_date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}) : '—';
-    return `<div class="tri">
-      <div class="tri-cat" style="background:${isI?'rgba(64,145,108,0.1)':'rgba(214,64,69,0.1)'}">${(t.category||'💼').split(' ')[0]}</div>
-      <div class="tri-info"><div class="tri-lbl">${t.label}</div><div class="tri-dt">${d} · ${t.category||''}</div></div>
-      <div class="tri-amt ${isI?'inc':'exp'}">${isI?'+':'-'}${t.amount}€</div>
-      <button class="btn danger sm" style="margin-left:8px" onclick="delTrans('${t.id}')">✕</button>
-    </div>`;
+  g('ck-i').textContent='+'+fmt(inc)+'€';
+  g('ck-e').textContent='-'+fmt(exp)+'€';
+  g('ck-s').textContent=fmt(inc-exp)+'€';
+  const el=g('trl');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-ic">💰</div><h3>Aucune opération</h3><p>Ajoutez votre première opération.</p></div>';return;}
+  el.innerHTML=list.map(t=>{
+    const isI=t.type==='income';
+    const d=t.transaction_date?new Date(t.transaction_date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}):'—';
+    return `<div class="tri"><div class="tri-cat" style="background:${isI?'rgba(64,145,108,0.1)':'rgba(214,64,69,0.1)'}">${(t.category||'💼').split(' ')[0]}</div><div class="tri-info"><div class="tri-lbl">${t.label}</div><div class="tri-dt">${d} · ${t.category||''}</div></div><div class="tri-amt ${isI?'inc':'exp'}">${isI?'+':'-'}${t.amount}€</div><button class="btn danger sm" style="margin-left:8px" onclick="delTrans('${t.id}')">✕</button></div>`;
   }).join('');
 }
-
 function setCT(f,btn) { ctF=f; document.querySelectorAll('#page-compta .chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); renderCompta(); }
-
 async function addTrans() {
-  const lbl = v('t-lb'), amt = parseFloat(v('t-am'));
-  if (!lbl||!amt) { toast('Libellé et montant requis','⚠️'); return; }
-  const { error } = await sb.from('transactions').insert({
-    asso_id:CA.id, created_by:CU.id, type:v('t-ty'),
-    label:lbl, amount:amt,
-    transaction_date: v('t-dt') || new Date().toISOString().split('T')[0],
-    category: v('t-cat')
-  });
-  if (error) { toast('Erreur: '+error.message,'❌','error'); return; }
+  const lbl=v('t-lb'),amt=parseFloat(v('t-am'));
+  if(!lbl||!amt){toast('Libellé et montant requis','⚠️');return;}
+  const {error} = await sb.from('transactions').insert({asso_id:CA.id,created_by:CU.id,type:v('t-ty'),label:lbl,amount:amt,transaction_date:v('t-dt')||new Date().toISOString().split('T')[0],category:v('t-cat')});
+  if(error){toast('Erreur: '+error.message,'❌','error');return;}
   closeM('m-trans'); toast('Opération enregistrée ✓','✅','success');
   ['t-lb','t-am'].forEach(id=>{if(g(id))g(id).value='';});
   await loadCompta();
 }
-
 async function delTrans(id) {
-  if (!confirm('Supprimer cette opération ?')) return;
+  if(!confirm('Supprimer cette opération ?'))return;
   await sb.from('transactions').delete().eq('id',id);
   toast('Opération supprimée','🗑️'); await loadCompta();
 }
 
-// ══════════════════════════════════════════════════════════════
-//  ÉVÉNEMENTS
-// ══════════════════════════════════════════════════════════════
+// ── ÉVÉNEMENTS ──
 async function loadEvents() {
-  const { data } = await sb.from('events').select('*,event_registrations(count)').eq('asso_id',CA.id).order('event_date');
+  const {data} = await sb.from('events').select('*,event_registrations(count)').eq('asso_id',CA.id).order('event_date');
   renderEvs(data||[]);
 }
-
 function renderEvs(evs) {
-  const grid = g('evg');
-  if (!evs.length) {
-    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-ic">🗓️</div><h3>Aucun événement</h3><p>Créez votre premier événement.</p><button class="btn primary" onclick="openM(\'m-ev\')">+ Créer</button></div>';
-    return;
-  }
-  grid.innerHTML = evs.map(e => {
-    const ins = e.event_registrations?.[0]?.count || 0;
-    const pct = e.max_places ? Math.round(ins/e.max_places*100) : 0;
-    const d   = e.event_date ? new Date(e.event_date).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}) : '—';
-    return `<div class="ev-card">
-      <div class="ev-band" style="background:${e.color||'#40916C'}"></div>
-      <div class="ev-body">
-        <div class="ev-date">📅 ${d}${e.event_time?' · '+e.event_time:''}</div>
-        <div class="ev-name">${e.name}</div>
-        <div class="ev-desc">${e.description||''}</div>
-        <div style="display:flex;gap:14px;margin-bottom:10px;font-size:11px;color:var(--muted)">
-          <span>📍 <strong>${e.location||'—'}</strong></span>
-          <span>👥 <strong>${ins}/${e.max_places||'∞'}</strong></span>
-        </div>
-        <div class="pbar"><div class="pfill" style="width:${pct}%;background:${e.color||'#40916C'}"></div></div>
-        <div style="display:flex;gap:8px">
-          <button class="btn secondary sm" onclick="toast('Lien copié !','🔗')">🔗 Partager</button>
-          <button class="btn danger sm" onclick="delEv('${e.id}')">✕</button>
-        </div>
-      </div>
-    </div>`;
+  const grid=g('evg');
+  if(!evs.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-ic">🗓️</div><h3>Aucun événement</h3><p>Créez votre premier événement.</p><button class="btn primary" onclick="openM(\'m-ev\')">+ Créer</button></div>';return;}
+  grid.innerHTML=evs.map(e=>{
+    const ins=e.event_registrations?.[0]?.count||0;
+    const pct=e.max_places?Math.round(ins/e.max_places*100):0;
+    const d=e.event_date?new Date(e.event_date).toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'}):'—';
+    return `<div class="ev-card"><div class="ev-band" style="background:${e.color||'#40916C'}"></div><div class="ev-body"><div class="ev-date">📅 ${d}${e.event_time?' · '+e.event_time:''}</div><div class="ev-name">${e.name}</div><div class="ev-desc">${e.description||''}</div><div style="display:flex;gap:14px;margin-bottom:10px;font-size:11px;color:var(--muted)"><span>📍 <strong>${e.location||'—'}</strong></span><span>👥 <strong>${ins}/${e.max_places||'∞'}</strong></span></div><div class="pbar"><div class="pfill" style="width:${pct}%;background:${e.color||'#40916C'}"></div></div><div style="display:flex;gap:8px"><button class="btn secondary sm" onclick="toast('Lien copié !','🔗')">🔗 Partager</button><button class="btn danger sm" onclick="delEv('${e.id}')">✕</button></div></div></div>`;
   }).join('');
 }
-
 async function addEv() {
-  const nm = v('e-nm'), dt = v('e-dt');
-  if (!nm||!dt) { toast('Nom et date requis','⚠️'); return; }
-  const { error } = await sb.from('events').insert({
-    asso_id:CA.id, name:nm, description:v('e-ds')||null,
-    event_date:dt, event_time:v('e-tm')||null, location:v('e-lo')||null,
-    max_places:parseInt(v('e-pl'))||30,
-    color:COLORS[Math.floor(Math.random()*COLORS.length)]
-  });
-  if (error) { toast('Erreur: '+error.message,'❌','error'); return; }
+  const nm=v('e-nm'),dt=v('e-dt');
+  if(!nm||!dt){toast('Nom et date requis','⚠️');return;}
+  const {error} = await sb.from('events').insert({asso_id:CA.id,name:nm,description:v('e-ds')||null,event_date:dt,event_time:v('e-tm')||null,location:v('e-lo')||null,max_places:parseInt(v('e-pl'))||30,color:COLORS[Math.floor(Math.random()*COLORS.length)]});
+  if(error){toast('Erreur: '+error.message,'❌','error');return;}
   closeM('m-ev'); toast(nm+' créé ✓','✅','success');
   ['e-nm','e-ds','e-dt','e-lo','e-pl'].forEach(id=>{if(g(id))g(id).value='';});
   await loadEvents();
 }
-
 async function delEv(id) {
-  if (!confirm('Supprimer cet événement ?')) return;
+  if(!confirm('Supprimer cet événement ?'))return;
   await sb.from('events').delete().eq('id',id);
   toast('Événement supprimé','🗑️'); await loadEvents();
 }
 
-// ══════════════════════════════════════════════════════════════
-//  PARAMÈTRES
-// ══════════════════════════════════════════════════════════════
+// ── PARAMÈTRES ──
 function fillSettings() {
-  if (!CA) return;
-  const map = { 's-name':'name', 's-rna':'rna', 's-date':'founded_date', 's-addr':'address', 's-city':'city', 's-cp':'postal_code', 's-pres':'president', 's-tres':'treasurer', 's-sec':'secretary', 's-cotis':'cotisation_amount' };
-  Object.entries(map).forEach(([id,k]) => { const el=g(id); if(el&&CA[k]!=null) el.value=CA[k]; });
+  if(!CA) return;
+  const map={'s-name':'name','s-rna':'rna','s-date':'founded_date','s-addr':'address','s-city':'city','s-cp':'postal_code','s-pres':'president','s-tres':'treasurer','s-sec':'secretary','s-cotis':'cotisation_amount'};
+  Object.entries(map).forEach(([id,k])=>{ const el=g(id); if(el&&CA[k]!=null) el.value=CA[k]; });
 }
-
 async function saveSettings() {
-  const upd = {
-    name:v('s-name'), rna:v('s-rna'), founded_date:v('s-date')||null,
-    address:v('s-addr'), city:v('s-city'), postal_code:v('s-cp'),
-    president:v('s-pres'), treasurer:v('s-tres'), secretary:v('s-sec'),
-    cotisation_amount:parseFloat(v('s-cotis'))||25, updated_at:new Date().toISOString()
-  };
-  const { data, error } = await sb.from('associations').update(upd).eq('id',CA.id).select().single();
-  if (error) { toast('Erreur: '+error.message,'❌','error'); return; }
-  CA = data;
-  g('sw-name').textContent = CA.name;
+  const upd={name:v('s-name'),rna:v('s-rna'),founded_date:v('s-date')||null,address:v('s-addr'),city:v('s-city'),postal_code:v('s-cp'),president:v('s-pres'),treasurer:v('s-tres'),secretary:v('s-sec'),cotisation_amount:parseFloat(v('s-cotis'))||25,updated_at:new Date().toISOString()};
+  const {data,error} = await sb.from('associations').update(upd).eq('id',CA.id).select().single();
+  if(error){toast('Erreur: '+error.message,'❌','error');return;}
+  CA=data; g('sw-name').textContent=CA.name;
   toast('Paramètres enregistrés ✓','✅','success');
 }
 
-// ══════════════════════════════════════════════════════════════
-//  PAIEMENT STRIPE
-// ══════════════════════════════════════════════════════════════
-function selPlan(p) {
-  splId = p;
-  g('opt-m').classList.toggle('selected', p==='monthly');
-  g('opt-y').classList.toggle('selected', p==='yearly');
-}
-
-async function doCheckout() {
-  const btn = g('btn-co');
-  btn.textContent = '⏳ Redirection vers Stripe…'; btn.disabled = true;
-  try {
-    const { error } = await stripe.redirectToCheckout({
-      lineItems    : [{ price: splId==='monthly' ? CFG.PRICE_M : CFG.PRICE_Y, quantity:1 }],
-      mode         : 'subscription',
-      successUrl   : location.origin + location.pathname + '?payment=success',
-      cancelUrl    : location.origin + location.pathname + '?payment=cancel',
-      customerEmail: CU?.email
-    });
-    if (error) toast('Erreur Stripe: '+error.message,'❌','error');
-  } catch(e) { toast('Erreur: '+e.message,'❌','error'); }
-  btn.textContent = "🚀 S'abonner maintenant"; btn.disabled = false;
-}
-
-// ══════════════════════════════════════════════════════════════
-//  NAVIGATION
-// ══════════════════════════════════════════════════════════════
+// ── NAVIGATION ──
 async function goTo(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   g('page-'+page).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page===page));
-  g('ttitle').textContent = PAGES[page] || page;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
+  g('ttitle').textContent=PAGES[page]||page;
   g('sidebar').classList.remove('open');
-  if (page==='documents') { g('dlv').style.display=''; g('dpv').style.display='none'; }
-  if (page==='adherents' && CA) await loadAdh();
-  if (page==='compta'    && CA) await loadCompta();
-  if (page==='events'    && CA) await loadEvents();
+  if(page==='documents'){ g('dlv').style.display=''; g('dpv').style.display='none'; }
+  if(page==='adherents'&&CA) await loadAdh();
+  if(page==='compta'   &&CA) await loadCompta();
+  if(page==='events'   &&CA) await loadEvents();
 }
 </script>
 </body>
