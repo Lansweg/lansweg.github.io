@@ -89,6 +89,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .btn.secondary:hover{background:var(--cream2);}
 .btn.sage{background:var(--sage2);color:var(--white);}
 .btn.sage:hover{background:var(--sage);}
+.btn.warn{background:rgba(244,185,66,0.15);color:#B45309;border:1px solid rgba(244,185,66,0.3);}
+.btn.warn:hover{background:rgba(244,185,66,0.25);}
 .btn.danger{background:rgba(214,64,69,0.1);color:var(--red);border:1px solid rgba(214,64,69,0.2);}
 .btn.sm{padding:6px 12px;font-size:12px;}
 .content{flex:1;overflow-y:auto;padding:24px;}
@@ -114,6 +116,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .tbl td{padding:12px 14px;font-size:13px;border-bottom:1px solid var(--border);}
 .tbl tr:last-child td{border-bottom:none;}
 .tbl tr:hover td{background:var(--cream);}
+/* Ligne en retard surlignée */
+.tbl tr.row-retard td{background:rgba(244,185,66,0.06);}
+.tbl tr.row-retard:hover td{background:rgba(244,185,66,0.12);}
 .av-sm{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:var(--white);flex-shrink:0;}
 .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
 .badge.actif{background:rgba(64,145,108,0.1);color:var(--sage2);}
@@ -168,6 +173,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .stitle{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border);}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 
+/* ── ALERTE RELANCE ── */
+.relance-banner{background:linear-gradient(135deg,rgba(244,185,66,0.12),rgba(231,111,81,0.08));border:1px solid rgba(244,185,66,0.35);border-radius:var(--r);padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px;}
+.relance-banner-ic{font-size:22px;flex-shrink:0;}
+.relance-banner-txt{flex:1;}
+.relance-banner-title{font-weight:700;font-size:14px;color:#92400E;margin-bottom:2px;}
+.relance-banner-sub{font-size:12px;color:#B45309;}
+
 /* ── UPGRADE ── */
 .plan-box{background:var(--ink);color:var(--white);border-radius:16px;padding:24px;margin-bottom:16px;}
 .plan-title{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:4px;}
@@ -193,6 +205,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .mb{padding:18px 22px 22px;}
 .ma{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;}
 
+/* ── MODAL RELANCE ── */
+.relance-preview{background:var(--cream);border:1px solid var(--border);border-radius:10px;padding:16px;font-size:13px;line-height:1.7;white-space:pre-wrap;font-family:'DM Sans',sans-serif;color:var(--text);margin-top:12px;max-height:260px;overflow-y:auto;}
+
 /* ── TOAST ── */
 .toast-wrap{position:fixed;bottom:20px;right:20px;z-index:500;display:flex;flex-direction:column;gap:8px;}
 .tn{background:var(--ink);color:var(--white);padding:11px 16px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,0.2);display:flex;align-items:center;gap:9px;animation:tIn .3s cubic-bezier(.34,1.56,.64,1);max-width:300px;}
@@ -207,6 +222,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .empty h3{font-family:'Syne',sans-serif;font-size:17px;color:var(--text);margin-bottom:5px;}
 .empty p{font-size:13px;margin-bottom:16px;}
 .mtoggle{display:none;background:none;border:none;font-size:22px;cursor:pointer;padding:4px;}
+
+/* ── BULK ACTIONS BAR ── */
+.bulk-bar{background:var(--ink);color:var(--white);padding:10px 16px;border-radius:10px;display:none;align-items:center;gap:12px;margin-bottom:12px;font-size:13px;}
+.bulk-bar.visible{display:flex;}
+
+/* ── CHECKBOX ── */
+.cb{width:16px;height:16px;accent-color:var(--sage2);cursor:pointer;}
+
 @media(max-width:768px){
   .sidebar{position:fixed;left:calc(-1 * var(--sidebar));top:0;bottom:0;z-index:100;}
   .sidebar.open{left:0;}
@@ -304,6 +327,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
             <div class="kpi blue">  <div class="kpi-label">💰 Solde trésorerie</div>  <div class="kpi-num" id="k-sol">—</div></div>
             <div class="kpi yellow"><div class="kpi-label">🗓️ Événements</div>        <div class="kpi-num" id="k-ev">—</div><div class="kpi-sub">créés</div></div>
           </div>
+          <!-- Alerte relances si des membres sont en retard -->
+          <div id="dash-relance-banner" style="display:none" class="relance-banner">
+            <div class="relance-banner-ic">⚠️</div>
+            <div class="relance-banner-txt">
+              <div class="relance-banner-title" id="dash-relance-title">Membres en retard de cotisation</div>
+              <div class="relance-banner-sub" id="dash-relance-sub"></div>
+            </div>
+            <button class="btn warn sm" onclick="goTo('adherents');setTimeout(()=>setAFbyEl('retard'),200)">Voir & Relancer →</button>
+          </div>
           <div class="card"><div class="card-title">Activité récente</div><div id="dash-act"><div class="loader"><div class="sp"></div></div></div></div>
         </div>
 
@@ -315,14 +347,26 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
             <button class="btn secondary" onclick="exportCSV()">↓ CSV</button>
           </div>
           <div class="chips">
-            <span class="chip active" onclick="setAF('tous',this)">Tous</span>
-            <span class="chip" onclick="setAF('actif',this)">✓ Actifs</span>
-            <span class="chip" onclick="setAF('retard',this)">⚠ En retard</span>
-            <span class="chip" onclick="setAF('inactif',this)">— Inactifs</span>
+            <span class="chip active" id="chip-tous"    onclick="setAF('tous',this)">Tous</span>
+            <span class="chip"        id="chip-actif"   onclick="setAF('actif',this)">✓ Actifs</span>
+            <span class="chip"        id="chip-retard"  onclick="setAF('retard',this)">⚠ En retard</span>
+            <span class="chip"        id="chip-inactif" onclick="setAF('inactif',this)">— Inactifs</span>
           </div>
+
+          <!-- Barre d'actions groupées -->
+          <div class="bulk-bar" id="bulk-bar">
+            <span id="bulk-count">0 sélectionné(s)</span>
+            <div style="flex:1"></div>
+            <button class="btn warn sm" onclick="bulkRelance()">📧 Relancer la sélection</button>
+            <button class="btn secondary sm" onclick="clearBulk()">✕ Annuler</button>
+          </div>
+
           <div class="tw"><table class="tbl">
-            <thead><tr><th>Membre</th><th>Contact</th><th>Cotisation</th><th>Statut</th><th></th></tr></thead>
-            <tbody id="adh-tb"><tr><td colspan="5"><div class="loader"><div class="sp"></div></div></td></tr></tbody>
+            <thead><tr>
+              <th style="width:36px"><input type="checkbox" class="cb" id="cb-all" onchange="toggleAllCb(this.checked)"></th>
+              <th>Membre</th><th>Contact</th><th>Cotisation</th><th>Statut</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="adh-tb"><tr><td colspan="6"><div class="loader"><div class="sp"></div></div></td></tr></tbody>
           </table></div>
         </div>
 
@@ -403,8 +447,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
               <div class="plan-title">⭐ Passer au plan Pro</div>
               <div class="plan-desc">Choisissez votre formule et payez en toute sécurité via Stripe. Annulation en 1 clic, sans engagement.</div>
               <div class="plan-opts">
-
-                <!-- MENSUEL -->
                 <a class="popt selected" id="opt-m" href="https://buy.stripe.com/test_cNi8wReD40xScrFgCW5wI00" target="_blank" rel="noopener">
                   <div class="popt-badge">🔥 Le plus flexible</div>
                   <div class="popt-name">Mensuel</div>
@@ -412,8 +454,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
                   <div class="popt-per">/mois · sans engagement</div>
                   <div class="popt-cta">S'abonner maintenant →</div>
                 </a>
-
-                <!-- ANNUEL -->
                 <a class="popt" id="opt-y" href="https://buy.stripe.com/test_eVq5kF0MefsMgHV9au5wI01" target="_blank" rel="noopener">
                   <div class="popt-badge">🎁 Économisez 49€</div>
                   <div class="popt-name">Annuel</div>
@@ -422,10 +462,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
                   <div class="popt-note">✦ Meilleur rapport qualité/prix</div>
                   <div class="popt-cta">S'abonner maintenant →</div>
                 </a>
-
               </div>
             </div>
-
             <div class="card">
               <div class="card-title">Ce que vous débloquez avec Pro</div>
               <div style="display:flex;flex-direction:column;gap:10px;font-size:14px;margin-bottom:20px">
@@ -449,7 +487,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   </div>
 </div>
 
-<!-- MODALS -->
+<!-- ════════════════════════════════ MODALS ════════════════════════════════ -->
+
+<!-- Nouvelle association -->
 <div class="modal-bg" id="m-new-asso">
   <div class="modal">
     <div class="mh"><div class="mt">Nouvelle association</div><button class="mc" onclick="closeM('m-new-asso')">✕</button></div>
@@ -468,6 +508,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   </div>
 </div>
 
+<!-- Nouvel adhérent -->
 <div class="modal-bg" id="m-adh">
   <div class="modal">
     <div class="mh"><div class="mt">Nouvel adhérent</div><button class="mc" onclick="closeM('m-adh')">✕</button></div>
@@ -495,6 +536,69 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   </div>
 </div>
 
+<!-- ✏️ ÉDITER ADHÉRENT (NOUVEAU) -->
+<div class="modal-bg" id="m-edit-adh">
+  <div class="modal">
+    <div class="mh"><div class="mt">✏️ Modifier l'adhérent</div><button class="mc" onclick="closeM('m-edit-adh')">✕</button></div>
+    <div class="mb">
+      <input type="hidden" id="edit-id">
+      <div class="frow">
+        <div class="fg"><label class="fl">Prénom *</label><input class="fi" id="edit-fn"></div>
+        <div class="fg"><label class="fl">Nom *</label><input class="fi" id="edit-ln"></div>
+      </div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="edit-em" type="email"></div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Téléphone</label><input class="fi" id="edit-tel"></div>
+        <div class="fg"><label class="fl">Date de naissance</label><input class="fi" id="edit-bd" type="date"></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Cotisation payée ?</label>
+          <select class="fi" id="edit-pd">
+            <option value="true">✓ Payée</option>
+            <option value="false">✗ En attente</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Statut</label>
+          <select class="fi" id="edit-st">
+            <option value="actif">Actif</option>
+            <option value="retard">En retard</option>
+            <option value="inactif">Inactif</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Note interne</label>
+        <input class="fi" id="edit-note" placeholder="Ex : a changé de numéro, contacté le…">
+      </div>
+      <div class="ma">
+        <button class="btn secondary" onclick="closeM('m-edit-adh')">Annuler</button>
+        <button class="btn sage" onclick="saveEditAdh()">💾 Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 📧 RELANCE COTISATION (NOUVEAU) -->
+<div class="modal-bg" id="m-relance">
+  <div class="modal" style="max-width:560px">
+    <div class="mh"><div class="mt">📧 Email de relance</div><button class="mc" onclick="closeM('m-relance')">✕</button></div>
+    <div class="mb">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Destinataire : <strong id="relance-dest">—</strong></div>
+      <div class="fg"><label class="fl">Objet</label><input class="fi" id="relance-subject"></div>
+      <div class="fg"><label class="fl">Message</label>
+        <textarea class="fi relance-preview" id="relance-body" style="min-height:220px;resize:vertical;white-space:pre-wrap"></textarea>
+      </div>
+      <div style="background:var(--cream);border-radius:9px;padding:11px 14px;font-size:12px;color:var(--muted);margin-bottom:4px">
+        💡 Cliquez sur <strong>Ouvrir dans le client mail</strong> pour envoyer directement, ou <strong>Copier</strong> pour coller dans votre outil favori.
+      </div>
+      <div class="ma">
+        <button class="btn secondary" onclick="copyRelance()">📋 Copier le texte</button>
+        <button class="btn sage" onclick="openMailto()">✉️ Ouvrir dans le client mail</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Nouvelle transaction -->
 <div class="modal-bg" id="m-trans">
   <div class="modal">
     <div class="mh"><div class="mt">Nouvelle opération</div><button class="mc" onclick="closeM('m-trans')">✕</button></div>
@@ -521,6 +625,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
   </div>
 </div>
 
+<!-- Nouvel événement -->
 <div class="modal-bg" id="m-ev">
   <div class="modal">
     <div class="mh"><div class="mt">Nouvel événement</div><button class="mc" onclick="closeM('m-ev')">✕</button></div>
@@ -548,8 +653,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 <script>
 // ══════════════════════════════════════════════════════════════
 //  ⚙️  CONFIG
-//  SUPA_KEY  = anon public key (sécurisé par les RLS Supabase)
-//  Les Payment Links Stripe sont de simples URLs publiques
 // ══════════════════════════════════════════════════════════════
 const CFG = {
   SUPA_URL : 'https://jgazqvjxeluyhjhvkqmd.supabase.co',
@@ -566,13 +669,11 @@ let adhF = 'tous', ctF = 'all';
 const COLORS = ['#2D6A4F','#E76F51','#3A70C4','#F4B942','#9B30FF','#D64045','#40916C'];
 const PAGES  = { dashboard:'Tableau de bord', adherents:'Adhérents', documents:'Documents officiels', compta:'Comptabilité', events:'Événements', settings:'Paramètres', upgrade:'Passer Pro ⭐' };
 
-const g    = id => document.getElementById(id);
-const v    = id => g(id)?.value?.trim() ?? '';
-const show  = id => { if(g(id)) g(id).style.display=''; };
-const hide  = id => { if(g(id)) g(id).style.display='none'; };
-const fmt   = n  => Math.round(Number(n)||0).toLocaleString('fr-FR');
-const fmtD  = d  => d ? new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}) : '—';
-const setB  = (id,t,d) => { const b=g(id); if(b){b.textContent=t;b.disabled=d;} };
+const g   = id => document.getElementById(id);
+const v   = id => g(id)?.value?.trim() ?? '';
+const fmt = n  => Math.round(Number(n)||0).toLocaleString('fr-FR');
+const fmtD = d => d ? new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}) : '—';
+const setB = (id,t,d) => { const b=g(id); if(b){b.textContent=t;b.disabled=d;} };
 
 function toast(msg, icon='ℹ️', type='info') {
   const el = document.createElement('div');
@@ -605,6 +706,9 @@ document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>
   if(p.get('payment')==='success') setTimeout(()=>toast('Abonnement activé ! Bienvenue en Pro ⭐','🎉','success'),800);
   if(p.get('payment')==='cancel')  setTimeout(()=>toast('Paiement annulé.','ℹ️'),400);
 })();
+
+function show(id){ if(g(id)) g(id).style.display=''; }
+function hide(id){ if(g(id)) g(id).style.display='none'; }
 
 async function loadProfile() {
   const {data} = await sb.from('profiles').select('*').eq('id',CU.id).single();
@@ -688,12 +792,25 @@ async function loadDash() {
     sb.from('events').select('*').eq('asso_id',CA.id)
   ]);
   allAdh=adh||[]; allTrans=trans||[];
-  g('k-adh').textContent = allAdh.filter(a=>a.status==='actif').length;
-  g('k-ret').textContent = allAdh.filter(a=>a.status==='retard').length;
+  const nbActif = allAdh.filter(a=>a.status==='actif').length;
+  const nbRetard= allAdh.filter(a=>a.status==='retard').length;
+  g('k-adh').textContent = nbActif;
+  g('k-ret').textContent = nbRetard;
   const inc = allTrans.filter(t=>t.type==='income').reduce((s,t)=>s+parseFloat(t.amount||0),0);
   const exp = allTrans.filter(t=>t.type==='expense').reduce((s,t)=>s+parseFloat(t.amount||0),0);
   g('k-sol').textContent = fmt(inc-exp)+'€';
   g('k-ev').textContent  = (evs||[]).length;
+
+  // Bannière relance
+  if(nbRetard>0){
+    g('dash-relance-banner').style.display='flex';
+    g('dash-relance-title').textContent = `${nbRetard} membre${nbRetard>1?'s':''} en retard de cotisation`;
+    const montant = nbRetard*(CA.cotisation_amount||25);
+    g('dash-relance-sub').textContent = `${fmt(montant)}€ de cotisations en attente · Envoyez des relances depuis l'onglet Adhérents`;
+  } else {
+    g('dash-relance-banner').style.display='none';
+  }
+
   const acts = [
     ...allAdh.slice(0,3).map(a=>({ic:'👤',tx:`<strong>${a.first_name} ${a.last_name}</strong> — ${a.status}`,dt:a.created_at})),
     ...allTrans.slice(0,2).map(t=>({ic:t.type==='income'?'💚':'🔴',tx:`${t.label} ${t.type==='income'?'+':'-'}${t.amount}€`,dt:t.created_at}))
@@ -711,21 +828,35 @@ async function loadAdh() {
 function renderAdh(list) {
   const data = list!==undefined ? list : allAdh.filter(a=>adhF==='tous'||a.status===adhF);
   const tb   = g('adh-tb');
-  if(!data.length){tb.innerHTML=`<tr><td colspan="5"><div class="empty"><div class="empty-ic">👥</div><h3>Aucun adhérent</h3><p>Ajoutez votre premier membre.</p></div></td></tr>`;return;}
+  if(!data.length){tb.innerHTML=`<tr><td colspan="6"><div class="empty"><div class="empty-ic">👥</div><h3>Aucun adhérent</h3><p>Ajoutez votre premier membre.</p></div></td></tr>`;return;}
   tb.innerHTML=data.map(a=>{
     const init = ((a.first_name||'?')[0]+(a.last_name||'?')[0]).toUpperCase();
     const col  = COLORS[(a.first_name||'').charCodeAt(0)%COLORS.length];
-    return `<tr>
-      <td><div style="display:flex;align-items:center;gap:10px"><div class="av-sm" style="background:${col}">${init}</div><strong>${a.first_name} ${a.last_name}</strong></div></td>
-      <td style="color:var(--muted)">${a.email||'—'}<br><span style="font-size:11px">${a.phone||''}</span></td>
+    const isRetard = a.status==='retard';
+    return `<tr class="${isRetard?'row-retard':''}">
+      <td><input type="checkbox" class="cb adh-cb" data-id="${a.id}" data-email="${a.email||''}" data-name="${a.first_name} ${a.last_name}" onchange="updateBulk()"></td>
+      <td><div style="display:flex;align-items:center;gap:10px"><div class="av-sm" style="background:${col}">${init}</div><div><strong>${a.first_name} ${a.last_name}</strong>${a.notes?`<br><span style="font-size:11px;color:var(--muted)">${a.notes}</span>`:''}${isRetard?'<br><span style="font-size:10px;color:#B45309;font-weight:600">⚠ Cotisation en attente</span>':''}</div></div></td>
+      <td style="color:var(--muted)">${a.email?`<a href="mailto:${a.email}" style="color:var(--sage2);text-decoration:none">${a.email}</a>`:'—'}<br><span style="font-size:11px">${a.phone||''}</span></td>
       <td>${a.cotisation_paid?'<span style="color:var(--sage2);font-weight:600">✓ Payée</span>':'<span style="color:var(--warm);font-weight:600">⚠ En attente</span>'}</td>
       <td><span class="badge ${a.status}">${a.status==='actif'?'Actif':a.status==='retard'?'En retard':'Inactif'}</span></td>
-      <td><button class="btn danger sm" onclick="delAdh('${a.id}')">✕</button></td>
+      <td>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn secondary sm" title="Modifier" onclick="openEditAdh('${a.id}')">✏️</button>
+          ${isRetard ? `<button class="btn warn sm" title="Envoyer une relance" onclick="openRelance('${a.id}')">📧</button>` : ''}
+          <button class="btn danger sm" onclick="delAdh('${a.id}')">✕</button>
+        </div>
+      </td>
     </tr>`;
   }).join('');
 }
 function filterAdh(q) { const s=q.toLowerCase(); renderAdh(allAdh.filter(a=>(a.first_name+' '+a.last_name+(a.email||'')).toLowerCase().includes(s))); }
-function setAF(f,btn) { adhF=f; document.querySelectorAll('#page-adherents .chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); renderAdh(); }
+function setAF(f,btn) { adhF=f; document.querySelectorAll('#page-adherents .chip').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); renderAdh(); clearBulk(); }
+function setAFbyEl(f) {
+  adhF=f;
+  document.querySelectorAll('#page-adherents .chip').forEach(c=>c.classList.remove('active'));
+  g('chip-'+f)?.classList.add('active');
+  renderAdh(); clearBulk();
+}
 async function addAdh() {
   const fn=v('a-fn'),ln=v('a-ln');
   if(!fn||!ln){toast('Prénom et nom requis','⚠️');return;}
@@ -752,6 +883,135 @@ function exportCSV() {
   a2.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(r=>r.join(';')).join('\n'));
   a2.download=`adherents_${CA.name}_${new Date().getFullYear()}.csv`; a2.click();
   toast('Export CSV téléchargé','📥');
+}
+
+// ── ÉDITION ADHÉRENT ── (NOUVEAU)
+function openEditAdh(id) {
+  const a = allAdh.find(x=>x.id===id); if(!a) return;
+  g('edit-id').value  = a.id;
+  g('edit-fn').value  = a.first_name||'';
+  g('edit-ln').value  = a.last_name||'';
+  g('edit-em').value  = a.email||'';
+  g('edit-tel').value = a.phone||'';
+  g('edit-bd').value  = a.birthdate||'';
+  g('edit-pd').value  = a.cotisation_paid ? 'true' : 'false';
+  g('edit-st').value  = a.status||'actif';
+  g('edit-note').value= a.notes||'';
+  openM('m-edit-adh');
+}
+async function saveEditAdh() {
+  const id  = v('edit-id');
+  const paid= g('edit-pd').value==='true';
+  const st  = v('edit-st') || (paid?'actif':'retard');
+  const {error} = await sb.from('adherents').update({
+    first_name:v('edit-fn'),last_name:v('edit-ln'),
+    email:v('edit-em')||null,phone:v('edit-tel')||null,
+    birthdate:v('edit-bd')||null,
+    cotisation_paid:paid, status:st,
+    notes:v('edit-note')||null,
+    updated_at:new Date().toISOString()
+  }).eq('id',id);
+  if(error){toast('Erreur: '+error.message,'❌','error');return;}
+  closeM('m-edit-adh'); toast('Fiche mise à jour ✓','✅','success');
+  await loadAdh();
+}
+
+// ── RELANCE COTISATION ── (NOUVEAU)
+let _relanceAdh = null;
+
+function buildRelanceText(a) {
+  const nom_asso = CA?.name || 'Notre association';
+  const montant  = CA?.cotisation_amount || 25;
+  const annee    = new Date().getFullYear();
+  const pres     = CA?.president || 'Le Président';
+  return `Objet : Relance cotisation ${annee} — ${nom_asso}
+
+Madame, Monsieur ${a.first_name} ${a.last_name},
+
+Nous espérons que vous allez bien.
+
+Nous nous permettons de vous contacter au sujet de votre cotisation annuelle pour l'exercice ${annee} au sein de ${nom_asso}.
+
+À ce jour, notre comptabilité indique que votre cotisation d'un montant de ${montant} € n'a pas encore été réglée.
+
+Afin de maintenir votre adhésion active et de continuer à bénéficier de tous les services et activités proposés, nous vous serions reconnaissants de bien vouloir procéder au règlement dans les meilleurs délais.
+
+Pour tout renseignement ou si ce paiement a déjà été effectué, n'hésitez pas à nous contacter directement en répondant à ce message.
+
+En vous remerciant de votre fidélité et de votre engagement,
+
+Bien cordialement,
+
+${pres}
+${nom_asso}`;
+}
+
+function openRelance(id) {
+  const a = allAdh.find(x=>x.id===id); if(!a) return;
+  _relanceAdh = a;
+  const sujet = `[${CA?.name||'Association'}] Relance cotisation ${new Date().getFullYear()}`;
+  g('relance-dest').textContent = a.email ? `${a.first_name} ${a.last_name} <${a.email}>` : `${a.first_name} ${a.last_name} (pas d'email renseigné)`;
+  g('relance-subject').value = sujet;
+  g('relance-body').value = buildRelanceText(a);
+  openM('m-relance');
+}
+
+function copyRelance() {
+  const txt = `Objet : ${v('relance-subject')}\n\n${v('relance-body')}`;
+  navigator.clipboard.writeText(txt).then(()=>toast('Email copié dans le presse-papier','📋','success'));
+}
+
+function openMailto() {
+  if(!_relanceAdh?.email){toast("Cet adhérent n'a pas d'email renseigné. Modifiez sa fiche d'abord.",'⚠️');return;}
+  const mailto = `mailto:${_relanceAdh.email}?subject=${encodeURIComponent(v('relance-subject'))}&body=${encodeURIComponent(v('relance-body'))}`;
+  window.open(mailto,'_blank');
+  toast('Client mail ouvert','✉️','success');
+}
+
+// ── BULK (sélection multiple) ──
+let selectedIds = [];
+
+function updateBulk() {
+  selectedIds = [...document.querySelectorAll('.adh-cb:checked')].map(cb=>({id:cb.dataset.id,email:cb.dataset.email,name:cb.dataset.name}));
+  const bar = g('bulk-bar');
+  if(selectedIds.length>0){
+    bar.classList.add('visible');
+    g('bulk-count').textContent = `${selectedIds.length} membre${selectedIds.length>1?'s':''} sélectionné${selectedIds.length>1?'s':''}`;
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+function toggleAllCb(checked) {
+  document.querySelectorAll('.adh-cb').forEach(cb=>{ cb.checked=checked; });
+  updateBulk();
+}
+function clearBulk() {
+  document.querySelectorAll('.adh-cb').forEach(cb=>cb.checked=false);
+  g('cb-all').checked=false;
+  selectedIds=[];
+  g('bulk-bar').classList.remove('visible');
+}
+function bulkRelance() {
+  const withEmail = selectedIds.filter(x=>x.email);
+  const noEmail   = selectedIds.filter(x=>!x.email);
+  if(!withEmail.length){toast('Aucun des sélectionnés n\'a d\'email renseigné','⚠️');return;}
+  const mailtos = withEmail.map(x=>{
+    const a = allAdh.find(ad=>ad.id===x.id);
+    if(!a) return null;
+    const sujet = `[${CA?.name||'Association'}] Relance cotisation ${new Date().getFullYear()}`;
+    return `mailto:${a.email}?subject=${encodeURIComponent(sujet)}&body=${encodeURIComponent(buildRelanceText(a))}`;
+  }).filter(Boolean);
+  // Ouvre le premier, copie les adresses des autres
+  if(mailtos[0]) window.open(mailtos[0],'_blank');
+  if(withEmail.length>1){
+    const emails = withEmail.map(x=>x.email).join(', ');
+    navigator.clipboard.writeText(emails);
+    toast(`${withEmail.length} emails copiés dans le presse-papier. Ouvrez le premier mail dans votre client.`,'📧','success');
+  } else {
+    toast('Email ouvert dans votre client mail','✉️','success');
+  }
+  if(noEmail.length) toast(`${noEmail.length} membre(s) sans email ignoré(s)`,'⚠️');
+  clearBulk();
 }
 
 // ── DOCUMENTS ──
