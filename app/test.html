@@ -302,8 +302,10 @@ function go(view, sel=null){
 /* ─── Render ─────────────────────────────────────────────── */
 function render(){
   const app = document.getElementById("app");
-  const isAdmin = USER?.role==="admin";
-  switch(VIEW){
+  if (!USER && VIEW !== "login") {
+    VIEW = "login";
+  }
+  switch (VIEW) {
     case "login":        app.innerHTML = renderLogin();      bindLogin();        break;
     case "dashboard":    app.innerHTML = renderDashboard();  bindDashboard();    break;
     case "tickets":      app.innerHTML = renderTickets();    bindTickets();      break;
@@ -946,7 +948,10 @@ async function init() {
   try {
 
     DB = await loadData();
+
     NT = ntDefault();
+
+    VIEW = "login";
 
     document.getElementById("app").innerHTML = "";
 
@@ -957,15 +962,13 @@ async function init() {
     console.error(e);
 
     document.getElementById("app").innerHTML = `
-      <div style="padding:40px;font-family:Arial">
+      <div style="padding:40px">
         <h2>Erreur JavaScript</h2>
         <pre>${e}</pre>
       </div>
     `;
   }
 }
-
-init();
 </script>
 </body>
 </html>
