@@ -1427,7 +1427,7 @@ function renderDocs(){
     return;
   }
   el.innerHTML=documents.map(d=>`
-    <div class="doc-item" onclick="viewDoc(${d.id})">
+    <div class="doc-item" onclick="viewDoc('${d.id}')">
       <div class="doc-type-badge ${d.type}">${d.type==='devis'?'📋':'🧾'}</div>
       <div class="doc-info">
         <div class="doc-num">${d.num}</div>
