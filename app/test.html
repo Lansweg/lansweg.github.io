@@ -247,12 +247,20 @@ const defaultData = () => ({
   members:[{id:"admin",name:"Administrateur",email:"admin@mls.fr",phone:"",role:"admin",password:ADMIN_PWD,createdAt:new Date().toISOString()}],
   tickets:[]
 });
-async function loadData(){
-  try{const r=await window.storage.get(STORAGE_KEY);return r?JSON.parse(r.value):defaultData();}
-  catch{return defaultData();}
+async function loadData() {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : defaultData();
+  } catch (e) {
+    return defaultData();
+  }
 }
-async function saveData(d){ try{await window.storage.set(STORAGE_KEY,JSON.stringify(d));}catch{} }
 
+async function saveData(d) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  } catch (e) {}
+}
 /* ─── Google Maps ───────────────────────────────────────── */
 let gmapsReady=false, gmapsCbs=[];
 function loadGMaps(){
