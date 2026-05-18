@@ -52,6 +52,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);hei
 .btn.red{background:var(--red-dim);color:var(--red);border:1px solid rgba(232,64,64,.25)}
 .btn.blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(78,158,245,.25)}
 .btn.purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(167,139,250,.25)}
+.btn.yellow{background:var(--yellow-dim);color:var(--yellow);border:1px solid rgba(245,200,66,.25)}
 .btn.sm{padding:5px 12px;font-size:12px}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .finput{width:100%;padding:9px 13px;border:1.5px solid var(--border2);border-radius:var(--r);font-family:'Manrope',sans-serif;font-size:13px;background:var(--bg3);color:var(--text);outline:none;transition:border .2s}
@@ -61,6 +62,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);hei
 .fgroup{margin-bottom:12px}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.frow4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
 select.finput option{background:var(--bg3)}
 .start-screen{flex:1;display:flex;align-items:center;justify-content:center;padding:40px}
 .start-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);padding:40px;width:100%;max-width:480px}
@@ -156,7 +158,7 @@ select.finput option{background:var(--bg3)}
 .overlay.open{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);width:100%;max-width:520px;max-height:92vh;overflow-y:auto;padding:24px;animation:mIn .2s cubic-bezier(.34,1.56,.64,1)}
 .modal.wide{max-width:760px}
-.modal.xl{max-width:960px}
+.modal.xl{max-width:980px}
 @keyframes mIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
 .modal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
 .modal-close{background:var(--bg4);border:none;color:var(--muted);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
@@ -192,6 +194,11 @@ select.finput option{background:var(--bg3)}
 #loading-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 .spinner{width:40px;height:40px;border:3px solid var(--border2);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* Remise styling */
+.remise-row{display:grid;grid-template-columns:1fr 110px 110px 34px;gap:5px;margin-bottom:6px;align-items:center;background:var(--yellow-dim);border:1px solid rgba(245,200,66,.2);border-radius:var(--r);padding:8px 10px}
+.remise-tag{font-size:11px;font-weight:700;color:var(--yellow);background:var(--yellow-dim);border:1px solid rgba(245,200,66,.3);border-radius:20px;padding:2px 8px;display:inline-flex;align-items:center;gap:4px}
+.doc-actions-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
 </style>
 </head>
 <body>
@@ -310,7 +317,6 @@ select.finput option{background:var(--bg3)}
                 </div>
                 <div class="pp-total-amount" id="pp-total">0 €</div>
               </div>
-              <!-- Boutons toujours visibles (impression) + boutons live seulement -->
               <div style="display:flex;gap:7px;flex-wrap:wrap">
                 <div style="display:flex;gap:7px;flex:1" id="pp-action-btns">
                   <button class="btn green" style="flex:1;justify-content:center" id="pp-close-btn" onclick="toggleClose()">✓ Clôturer</button>
@@ -425,10 +431,13 @@ select.finput option{background:var(--bg3)}
   </div>
 </div>
 
+<!-- MODAL NOUVEAU / EDIT DOC -->
 <div class="overlay" id="modal-new-doc">
   <div class="modal xl">
-    <div class="modal-title">Nouveau document <button class="modal-close" onclick="closeModal('modal-new-doc')">✕</button></div>
-    <div class="frow3">
+    <div class="modal-title" id="modal-new-doc-title">Nouveau document <button class="modal-close" onclick="closeModal('modal-new-doc')">✕</button></div>
+
+    <!-- Ligne 1 : Type, Numéro, Date doc, Date prestation -->
+    <div class="frow4">
       <div class="fgroup"><label class="flabel">Type</label>
         <select class="finput" id="dt" onchange="updateDocType()">
           <option value="devis">📋 Devis</option>
@@ -436,14 +445,33 @@ select.finput option{background:var(--bg3)}
         </select>
       </div>
       <div class="fgroup"><label class="flabel">Numéro (auto)</label><input class="finput" id="d-num-preview" readonly style="opacity:.6"></div>
-      <div class="fgroup"><label class="flabel">Date</label><input class="finput" id="dd" type="date"></div>
+      <div class="fgroup"><label class="flabel">Date document</label><input class="finput" id="dd" type="date"></div>
+      <div class="fgroup"><label class="flabel">📅 Date prestation / location</label><input class="finput" id="d-prestation-date" type="date" placeholder="Optionnel"></div>
     </div>
+
+    <!-- Label prestation (type) -->
+    <div class="frow">
+      <div class="fgroup"><label class="flabel">Intitulé date prestation</label>
+        <select class="finput" id="d-prestation-label">
+          <option value="">— Aucun —</option>
+          <option value="Date de prestation">Date de prestation</option>
+          <option value="Date de location">Date de location</option>
+          <option value="Date de l'événement">Date de l'événement</option>
+          <option value="Date de livraison">Date de livraison</option>
+          <option value="Date d'intervention">Date d'intervention</option>
+          <option value="Période">Période</option>
+        </select>
+      </div>
+      <div class="fgroup"><label class="flabel">Date fin (si période)</label><input class="finput" id="d-prestation-date-end" type="date"></div>
+    </div>
+
     <div id="facture-extra" style="display:none">
       <div class="frow">
         <div class="fgroup"><label class="flabel">N° devis associé</label><input class="finput" id="d-devis-ref" placeholder="DEV-0001"></div>
         <div class="fgroup"><label class="flabel">Date d'échéance</label><input class="finput" id="d-echeance" type="date"></div>
       </div>
     </div>
+
     <div class="section-divider"></div>
     <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--orange);margin-bottom:10px">👤 Client</div>
     <div class="frow">
@@ -454,10 +482,12 @@ select.finput option{background:var(--bg3)}
       <div class="fgroup"><label class="flabel">Email</label><input class="finput" id="d-email" placeholder="client@mail.com"></div>
       <div class="fgroup"><label class="flabel">Adresse</label><input class="finput" id="d-addr" placeholder="Adresse de facturation"></div>
     </div>
+
     <div class="section-divider"></div>
     <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--orange);margin-bottom:10px">📋 Prestations</div>
     <div class="fgroup"><label class="flabel">Objet / Intitulé</label><input class="finput" id="dobj" placeholder="Ex: Location mascotte FC Dunkerque — samedi 21 juin"></div>
-    <div style="display:grid;grid-template-columns:2fr 120px 70px 80px 80px 34px;gap:5px;margin-bottom:6px">
+
+    <div style="display:grid;grid-template-columns:2fr 120px 70px 80px 90px 34px;gap:5px;margin-bottom:6px">
       <div style="font-size:10px;color:var(--muted);text-transform:uppercase">Description</div>
       <div style="font-size:10px;color:var(--muted);text-transform:uppercase">Type</div>
       <div style="font-size:10px;color:var(--muted);text-transform:uppercase;text-align:center">Qté</div>
@@ -466,7 +496,16 @@ select.finput option{background:var(--bg3)}
       <div></div>
     </div>
     <div id="doc-lines-wrap"></div>
-    <button class="btn ghost sm" style="margin-bottom:14px" onclick="addDocLine()">+ Ligne</button>
+    <button class="btn ghost sm" style="margin-bottom:8px" onclick="addDocLine()">+ Ligne prestation</button>
+
+    <!-- REMISES -->
+    <div class="section-divider"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--yellow)">🏷️ Remises / Réductions</div>
+      <button class="btn yellow sm" onclick="addRemise()">+ Remise</button>
+    </div>
+    <div id="doc-remises-wrap"></div>
+
     <div class="frow">
       <div class="fgroup"><label class="flabel">TVA</label>
         <select class="finput" id="d-tva-mode" onchange="renderDocLines()">
@@ -479,6 +518,7 @@ select.finput option{background:var(--bg3)}
       </div>
       <div class="fgroup" id="tva-custom-wrap" style="display:none"><label class="flabel">Taux %</label><input class="finput" id="d-tva-custom" type="number" oninput="renderDocLines()"></div>
     </div>
+
     <div class="section-divider"></div>
     <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--orange);margin-bottom:10px">💳 Conditions</div>
     <div class="frow">
@@ -494,16 +534,19 @@ select.finput option{background:var(--bg3)}
     <div class="fgroup"><label class="flabel">Informations complémentaires</label>
       <textarea class="note-area" id="dnotes" style="min-height:70px" placeholder="Articles live, conditions particulières…"></textarea>
     </div>
-    <button class="btn orange" style="width:100%;justify-content:center;padding:12px;margin-top:4px" onclick="createDoc()">✓ Créer &amp; sauvegarder</button>
+    <button class="btn orange" style="width:100%;justify-content:center;padding:12px;margin-top:4px" id="modal-doc-submit-btn" onclick="createOrUpdateDoc()">✓ Créer &amp; sauvegarder</button>
   </div>
 </div>
 
+<!-- MODAL VIEW DOC -->
 <div class="overlay" id="modal-doc">
   <div class="modal xl">
     <div class="modal-title" id="mdoc-title">Document <button class="modal-close" onclick="closeModal('modal-doc')">✕</button></div>
     <div id="mdoc-body"></div>
-    <div style="display:flex;gap:8px;margin-top:16px">
+    <div class="doc-actions-bar">
       <button class="btn ghost" onclick="printDoc()">🖨️ Imprimer / PDF</button>
+      <button class="btn blue" onclick="editCurrentDoc()" id="btn-edit-doc">✏️ Modifier</button>
+      <button class="btn yellow" onclick="convertToFacture()" id="btn-convert-facture" style="display:none">🧾 Convertir en Facture</button>
       <button class="btn red sm" onclick="deleteDoc()">🗑 Supprimer</button>
     </div>
   </div>
@@ -529,6 +572,8 @@ let liveHistory=[];
 let catalogue=[];
 let documents=[];
 let docLines=[];
+let docRemises=[];        // [{desc, type:'percent'|'fixed', value}]
+let editingDocId=null;    // null = nouveau, sinon id du doc en édition
 let devNum=1, facNum=1;
 let currentDocId=null;
 let panierSaveTimer=null;
@@ -550,6 +595,7 @@ document.querySelectorAll('.overlay').forEach(m=>{
 });
 function fmt(n){return Number(n||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'}
 function fmtN(n){return Number(n||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmtDate(d){return d?new Date(d).toLocaleDateString('fr-FR'):''}
 
 async function init(){
   try {
@@ -596,19 +642,14 @@ function switchTab(name,btn){
   if(name==='settings')renderSettingsForm();
 }
 
-// ── NOUVEAU LIVE (depuis historique) ─────────────────────────
 function goNewLive(){
-  // Quitte le mode lecture et affiche l'écran de démarrage
   live=null; selPanier=null; liveIsReadonly=false;
   g('live-active').style.display='none';
   g('live-ind').style.display='none';
-  // Rétablit le topbar-right standard
   g('topbar-right').innerHTML=`<div class="sync-dot ok" id="sync-dot"></div><span id="sync-label" style="font-size:11px;color:var(--muted)">Supabase</span>`;
   g('start-screen').style.display='flex';
-  // Reset champs de démarrage
   g('live-name').value='';
   g('live-date').value=new Date().toISOString().split('T')[0];
-  // Active l'onglet Live
   document.querySelectorAll('.topbar-tab').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.topbar-tab')[0].classList.add('active');
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -822,7 +863,6 @@ async function addPaniers(n){
   setTimeout(()=>{const last=g('paniers-grid').lastElementChild;if(last)last.scrollIntoView({behavior:'smooth',block:'center'})},100);
 }
 
-// ── SAVE PANIER ───────────────────────────────────────────────
 function debouncedSavePanier(){
   const p=panierOf(selPanier);if(!p)return;
   p.name=g('pp-name').value;
@@ -851,7 +891,6 @@ async function savePanierItems(p){
   syncSet('ok');
 }
 
-// ── LIVE UI ───────────────────────────────────────────────────
 function showLiveActive(){
   g('start-screen').style.display='none';
   const la=g('live-active');
@@ -1079,7 +1118,6 @@ function printPanier(){
   const liveName=live?.name||'Live';
   const liveDate=live?.date?new Date(live.date).toLocaleDateString('fr-FR'):'';
   const org=settings.name||'FC Événement';
-
   const artRows=p.items.length
     ? p.items.map(it=>`
         <tr>
@@ -1090,151 +1128,156 @@ function printPanier(){
           <td style="padding:8px 12px;text-align:right;font-weight:700;border-bottom:1px solid #eee">${it.price*it.qty} €</td>
         </tr>`).join('')
     : `<tr><td colspan="5" style="padding:16px;text-align:center;color:#999;font-style:italic">Aucun article</td></tr>`;
-
-  const logoHtml=settings.logo
-    ? `<img src="${settings.logo}" style="max-height:60px;max-width:160px;object-fit:contain;display:block;margin-bottom:6px" alt="Logo">`
-    : '';
-
+  const logoHtml=settings.logo?`<img src="${settings.logo}" style="max-height:60px;max-width:160px;object-fit:contain;display:block;margin-bottom:6px" alt="Logo">`:'';
   const win=window.open('','_blank');
-  win.document.write(`<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<title>Panier ${p.num} — ${liveName}</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:system-ui,Arial,sans-serif;padding:32px;max-width:600px;margin:0 auto;color:#111;font-size:14px;line-height:1.5}
-  h1{font-size:22px;font-weight:800;margin-bottom:2px}
-  .sub{font-size:13px;color:#666;margin-bottom:20px}
-  .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #111}
-  .badge{display:inline-block;background:#EEF;border:1px solid #99C;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;color:#336;margin-bottom:8px}
-  .badge.clos{background:#E8F5E9;border-color:#81C784;color:#1B5E20}
-  table{width:100%;border-collapse:collapse;margin:16px 0}
-  th{text-align:left;padding:8px 12px;background:#f4f4f4;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#555;border-bottom:2px solid #ddd}
-  th:last-child,th:nth-child(3){text-align:right}
-  th:nth-child(3){text-align:center}
-  .total-row{display:flex;justify-content:flex-end;margin-top:8px}
-  .total-box{background:#f4f4f4;border-radius:8px;padding:12px 20px;text-align:right}
-  .total-label{font-size:12px;color:#666;margin-bottom:4px}
-  .total-amount{font-size:28px;font-weight:800;color:#1a1a1a}
-  .note-box{margin-top:20px;padding:14px;background:#FFFBF0;border:1px solid #F5C842;border-radius:8px}
-  .note-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8a6a00;margin-bottom:6px}
-  .note-text{font-size:13px;white-space:pre-wrap;color:#333}
-  .client-box{background:#f9f9f9;border:1px solid #ddd;border-radius:8px;padding:12px 16px;margin-bottom:20px}
-  .client-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:4px}
-  .client-name{font-size:18px;font-weight:800}
-  .footer{margin-top:28px;padding-top:14px;border-top:1px solid #ddd;display:flex;justify-content:space-between;font-size:11px;color:#999}
-  @media print{body{padding:20px}@page{margin:10mm}}
-</style>
-</head>
-<body>
-<div class="header">
-  <div>
-    ${logoHtml}
-    <div style="font-weight:800;font-size:16px">${org}</div>
-    ${settings.type?`<div style="font-size:12px;color:#666">${settings.type}</div>`:''}
+  win.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Panier ${p.num} — ${liveName}</title>
+  <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,Arial,sans-serif;padding:32px;max-width:600px;margin:0 auto;color:#111;font-size:14px;line-height:1.5}h1{font-size:22px;font-weight:800;margin-bottom:2px}.sub{font-size:13px;color:#666;margin-bottom:20px}.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #111}.badge{display:inline-block;background:#EEF;border:1px solid #99C;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;color:#336;margin-bottom:8px}.badge.clos{background:#E8F5E9;border-color:#81C784;color:#1B5E20}table{width:100%;border-collapse:collapse;margin:16px 0}th{text-align:left;padding:8px 12px;background:#f4f4f4;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#555;border-bottom:2px solid #ddd}th:last-child,th:nth-child(3){text-align:right}th:nth-child(3){text-align:center}.total-row{display:flex;justify-content:flex-end;margin-top:8px}.total-box{background:#f4f4f4;border-radius:8px;padding:12px 20px;text-align:right}.total-label{font-size:12px;color:#666;margin-bottom:4px}.total-amount{font-size:28px;font-weight:800;color:#1a1a1a}.note-box{margin-top:20px;padding:14px;background:#FFFBF0;border:1px solid #F5C842;border-radius:8px}.note-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8a6a00;margin-bottom:6px}.note-text{font-size:13px;white-space:pre-wrap;color:#333}.client-box{background:#f9f9f9;border:1px solid #ddd;border-radius:8px;padding:12px 16px;margin-bottom:20px}.client-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:4px}.client-name{font-size:18px;font-weight:800}.footer{margin-top:28px;padding-top:14px;border-top:1px solid #ddd;display:flex;justify-content:space-between;font-size:11px;color:#999}@media print{body{padding:20px}@page{margin:10mm}}</style>
+  </head><body>
+  <div class="header">
+    <div>${logoHtml}<div style="font-weight:800;font-size:16px">${org}</div>${settings.type?`<div style="font-size:12px;color:#666">${settings.type}</div>`:''}</div>
+    <div style="text-align:right"><div style="font-size:11px;color:#888;margin-bottom:4px">DESCRIPTIF PANIER</div><div style="font-size:28px;font-weight:800;line-height:1">#${p.num}</div><div style="font-size:12px;color:#888;margin-top:4px">${liveName}${liveDate?' · '+liveDate:''}</div><span class="badge ${p.closed?'clos':''}">${p.closed?'✓ Clôturé':'En cours'}</span></div>
   </div>
-  <div style="text-align:right">
-    <div style="font-size:11px;color:#888;margin-bottom:4px">DESCRIPTIF PANIER</div>
-    <div style="font-size:28px;font-weight:800;line-height:1">#${p.num}</div>
-    <div style="font-size:12px;color:#888;margin-top:4px">${liveName}${liveDate?' · '+liveDate:''}</div>
-    <span class="badge ${p.closed?'clos':''}">${p.closed?'✓ Clôturé':'En cours'}</span>
-  </div>
-</div>
+  ${p.name?`<div class="client-box"><div class="client-label">Client / Facebook</div><div class="client-name">${p.name}</div></div>`:''}
+  <table><thead><tr><th style="width:36px"></th><th>Article</th><th style="width:60px;text-align:center">Qté</th><th style="width:80px;text-align:right">PU</th><th style="width:90px;text-align:right">Total</th></tr></thead><tbody>${artRows}</tbody></table>
+  <div class="total-row"><div class="total-box"><div class="total-label">${artCount} article${artCount>1?'s':''}</div><div class="total-amount">${total} €</div></div></div>
+  ${p.note?`<div class="note-box"><div class="note-label">📝 Note</div><div class="note-text">${p.note.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div>`:''}
+  <div class="footer"><div>${org}</div><div>Panier ${p.num} · ${liveName}${liveDate?' · '+liveDate:''}</div></div>
+  </body></html>`);
+  win.document.close();win.focus();setTimeout(()=>win.print(),500);
+}
 
-${p.name?`
-<div class="client-box">
-  <div class="client-label">Client / Facebook</div>
-  <div class="client-name">${p.name}</div>
-</div>`:''}
-
-<table>
-  <thead>
-    <tr>
-      <th style="width:36px"></th>
-      <th>Article</th>
-      <th style="width:60px;text-align:center">Qté</th>
-      <th style="width:80px;text-align:right">PU</th>
-      <th style="width:90px;text-align:right">Total</th>
-    </tr>
-  </thead>
-  <tbody>
-    ${artRows}
-  </tbody>
-</table>
-
-<div class="total-row">
-  <div class="total-box">
-    <div class="total-label">${artCount} article${artCount>1?'s':''}</div>
-    <div class="total-amount">${total} €</div>
-  </div>
-</div>
-
-${p.note?`
-<div class="note-box">
-  <div class="note-label">📝 Note</div>
-  <div class="note-text">${p.note.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-</div>`:''}
-
-<div class="footer">
-  <div>${org}</div>
-  <div>Panier ${p.num} · ${liveName}${liveDate?' · '+liveDate:''}</div>
-</div>
-</body>
-</html>`);
-  win.document.close();
-  win.focus();
-  setTimeout(()=>win.print(),500);
+// ── CALCUL DES TOTAUX (avec remises) ─────────────────────────
+function calcTotals(lines, remises, tvaMode, tvaCustom){
+  const totalBrut = lines.reduce((s,l)=>s+(l.qty*l.price),0);
+  let remiseTotale = 0;
+  const remisesCalc = (remises||[]).map(r=>{
+    let montant = 0;
+    if(r.type==='percent'){
+      montant = totalBrut * (parseFloat(r.value)||0) / 100;
+    } else {
+      montant = parseFloat(r.value)||0;
+    }
+    return {...r, montant};
+  });
+  remiseTotale = remisesCalc.reduce((s,r)=>s+r.montant,0);
+  const totalHT = Math.max(0, totalBrut - remiseTotale);
+  const tvaRate = tvaMode==='non'?0 : tvaMode==='custom'?parseFloat(tvaCustom)||0 : parseFloat(tvaMode)||0;
+  const tvaAmount = totalHT * tvaRate / 100;
+  const totalTTC = totalHT + tvaAmount;
+  return {totalBrut, remisesCalc, remiseTotale, totalHT, tvaRate, tvaAmount, totalTTC};
 }
 
 // ── DOCUMENTS ─────────────────────────────────────────────────
 async function loadDocuments(){
   const {data,error}=await sb.from('documents').select('*').order('created_at',{ascending:false});
   if(error)throw error;
-  documents=(data||[]).map(d=>({...d,lines:d.lines||[]}));
+  documents=(data||[]).map(d=>({...d,lines:d.lines||[],remises:d.remises||[]}));
 }
 
 function openNewDoc(){
-  docLines=[];renderDocLines();updateDocType();
+  editingDocId=null;
+  docLines=[];docRemises=[];
+  renderDocLines();renderRemises();
+  updateDocType();
+  // Reset tous les champs
+  ['dc','dtel','d-email','d-addr','dobj','dnotes','d-devis-ref','d-echeance','d-acompte','d-prestation-date','d-prestation-date-end'].forEach(id=>g(id)&&(g(id).value=''));
+  g('dt').value='devis';
+  g('d-tva-mode').value='non';
+  g('d-payment').value='';
+  g('d-prestation-label').value='';
+  g('dd').value=new Date().toISOString().split('T')[0];
+  g('modal-new-doc-title').innerHTML='Nouveau document <button class="modal-close" onclick="closeModal(\'modal-new-doc\')">✕</button>';
+  g('modal-doc-submit-btn').textContent='✓ Créer & sauvegarder';
+  updateDocType();
   openModal('modal-new-doc');
 }
 
 function updateDocType(){
   const type=v('dt');
-  const num=type==='devis'?devNum:facNum;
-  const prefix=type==='devis'?'DEV':'FAC';
-  g('d-num-preview').value=prefix+'-'+String(num).padStart(4,'0');
+  if(editingDocId){
+    const d=documents.find(x=>x.id===editingDocId);
+    if(d)g('d-num-preview').value=d.num;
+  } else {
+    const num=type==='devis'?devNum:facNum;
+    const prefix=type==='devis'?'DEV':'FAC';
+    g('d-num-preview').value=prefix+'-'+String(num).padStart(4,'0');
+  }
   g('facture-extra').style.display=type==='facture'?'block':'none';
 }
 
+// ── REMISES ───────────────────────────────────────────────────
+function addRemise(){
+  docRemises.push({desc:'Remise',type:'percent',value:0});
+  renderRemises();
+}
+
+function renderRemises(){
+  const el=g('doc-remises-wrap');
+  if(!docRemises.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--muted2);padding:6px 0 10px">Aucune remise appliquée.</div>';
+    renderDocLines();
+    return;
+  }
+  el.innerHTML=docRemises.map((r,i)=>`
+    <div class="remise-row">
+      <input class="finput" placeholder="Description remise" value="${r.desc||''}" oninput="docRemises[${i}].desc=this.value;renderDocLines()" style="font-size:12px;background:transparent;border-color:rgba(245,200,66,.3)">
+      <select class="finput" onchange="docRemises[${i}].type=this.value;renderDocLines()" style="font-size:12px;background:var(--bg3)">
+        <option value="percent"${r.type==='percent'?' selected':''}>% du total</option>
+        <option value="fixed"${r.type==='fixed'?' selected':''}>Montant fixe €</option>
+      </select>
+      <input class="finput" type="number" min="0" placeholder="${r.type==='percent'?'%':'€'}" value="${r.value||''}" oninput="docRemises[${i}].value=this.value;renderDocLines()" style="font-size:12px;text-align:right">
+      <button class="btn red sm" onclick="docRemises.splice(${i},1);renderRemises()" style="border-radius:8px;padding:5px 7px;width:32px;justify-content:center">✕</button>
+    </div>`).join('');
+  renderDocLines();
+}
+
+// ── LIGNES DOC ────────────────────────────────────────────────
 function addDocLine(){docLines.push({desc:'',type:'forfait',qty:1,price:0});renderDocLines();}
 
 function renderDocLines(){
   const el=g('doc-lines-wrap');
   const tvaMode=v('d-tva-mode');
   g('tva-custom-wrap').style.display=tvaMode==='custom'?'block':'none';
-  const tvaRate=tvaMode==='non'?0:tvaMode==='custom'?parseFloat(v('d-tva-custom'))||0:parseFloat(tvaMode)||0;
-  if(!docLines.length){el.innerHTML='<div style="font-size:12px;color:var(--muted2);padding:8px 0;margin-bottom:8px">Aucune ligne.</div>';return;}
-  const totalHT=docLines.reduce((s,l)=>s+(l.qty*l.price),0);
-  const tvaAmount=totalHT*tvaRate/100;
-  const totalTTC=totalHT+tvaAmount;
+  const {totalBrut,remisesCalc,remiseTotale,totalHT,tvaRate,tvaAmount,totalTTC}=calcTotals(docLines,docRemises,tvaMode,v('d-tva-custom'));
   const types={'forfait':'Forfait','heure':'Heure(s)','jour':'Jour(s)','unite':'Unité(s)','km':'km','mois':'Mois'};
-  el.innerHTML=docLines.map((l,i)=>`
-    <div style="display:grid;grid-template-columns:2fr 120px 70px 80px 80px 34px;gap:5px;margin-bottom:6px;align-items:center">
-      <input class="finput" placeholder="Description" value="${l.desc||''}" oninput="docLines[${i}].desc=this.value" style="font-size:12px">
-      <select class="finput" onchange="docLines[${i}].type=this.value" style="font-size:12px">
-        ${Object.entries(types).map(([k,lb])=>`<option value="${k}"${l.type===k?' selected':''}>${lb}</option>`).join('')}
-      </select>
-      <input class="finput" type="number" value="${l.qty}" oninput="docLines[${i}].qty=parseFloat(this.value)||1;renderDocLines()" style="font-size:12px;text-align:center" min="0.5" step="0.5">
-      <input class="finput" type="number" placeholder="€ HT" value="${l.price||''}" oninput="docLines[${i}].price=parseFloat(this.value)||0;renderDocLines()" style="font-size:12px;text-align:right">
-      <div style="font-size:12px;font-weight:700;text-align:right;padding-right:4px">${fmtN(l.qty*l.price)} €</div>
-      <button class="btn red sm" onclick="docLines.splice(${i},1);renderDocLines()" style="border-radius:8px;padding:5px 7px;width:32px;justify-content:center">✕</button>
-    </div>`).join('')+`
-    <div style="border-top:1px solid var(--border);padding-top:10px;margin-bottom:10px">
-      <div style="display:flex;justify-content:flex-end;gap:16px;font-size:13px;margin-bottom:4px"><span style="color:var(--muted)">Total HT</span><span style="font-weight:700;min-width:90px;text-align:right">${fmtN(totalHT)} €</span></div>
-      ${tvaRate>0?`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:13px;margin-bottom:4px"><span style="color:var(--muted)">TVA ${tvaRate}%</span><span style="font-weight:700;min-width:90px;text-align:right">${fmtN(tvaAmount)} €</span></div>`:''}
-      <div style="display:flex;justify-content:flex-end;gap:16px;font-size:15px;margin-top:6px"><span style="color:var(--green);font-weight:700">Total ${tvaRate>0?'TTC':'HT'}</span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--green);min-width:90px;text-align:right">${fmtN(totalTTC)} €</span></div>
-    </div>`;
+  if(!docLines.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--muted2);padding:8px 0;margin-bottom:8px">Aucune ligne.</div>';
+  } else {
+    el.innerHTML=docLines.map((l,i)=>`
+      <div style="display:grid;grid-template-columns:2fr 120px 70px 80px 90px 34px;gap:5px;margin-bottom:6px;align-items:center">
+        <input class="finput" placeholder="Description" value="${l.desc||''}" oninput="docLines[${i}].desc=this.value" style="font-size:12px">
+        <select class="finput" onchange="docLines[${i}].type=this.value" style="font-size:12px">
+          ${Object.entries(types).map(([k,lb])=>`<option value="${k}"${l.type===k?' selected':''}>${lb}</option>`).join('')}
+        </select>
+        <input class="finput" type="number" value="${l.qty}" oninput="docLines[${i}].qty=parseFloat(this.value)||1;renderDocLines()" style="font-size:12px;text-align:center" min="0.5" step="0.5">
+        <input class="finput" type="number" placeholder="€ HT" value="${l.price||''}" oninput="docLines[${i}].price=parseFloat(this.value)||0;renderDocLines()" style="font-size:12px;text-align:right">
+        <div style="font-size:12px;font-weight:700;text-align:right;padding-right:4px">${fmtN(l.qty*l.price)} €</div>
+        <button class="btn red sm" onclick="docLines.splice(${i},1);renderDocLines()" style="border-radius:8px;padding:5px 7px;width:32px;justify-content:center">✕</button>
+      </div>`).join('');
+  }
+  // Totaux récapitulatifs
+  let totHtml=`<div style="border-top:1px solid var(--border);padding-top:10px;margin-bottom:10px">`;
+  if(docLines.length){
+    totHtml+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:13px;margin-bottom:4px"><span style="color:var(--muted)">Total brut HT</span><span style="font-weight:700;min-width:90px;text-align:right">${fmtN(totalBrut)} €</span></div>`;
+  }
+  if(remiseTotale>0){
+    remisesCalc.forEach(r=>{
+      totHtml+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:12px;margin-bottom:3px"><span style="color:var(--yellow)">🏷 ${r.desc||'Remise'} (${r.type==='percent'?r.value+'%':r.montant.toFixed(2)+'€ fixe'})</span><span style="font-weight:700;color:var(--yellow);min-width:90px;text-align:right">− ${fmtN(r.montant)} €</span></div>`;
+    });
+  }
+  if(tvaRate>0){
+    totHtml+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:13px;margin-bottom:4px"><span style="color:var(--muted)">Total HT après remise${remiseTotale>0?' (remisé)':''}</span><span style="font-weight:700;min-width:90px;text-align:right">${fmtN(totalHT)} €</span></div>`;
+    totHtml+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:13px;margin-bottom:4px"><span style="color:var(--muted)">TVA ${tvaRate}%</span><span style="font-weight:700;min-width:90px;text-align:right">${fmtN(tvaAmount)} €</span></div>`;
+  }
+  totHtml+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:15px;margin-top:6px"><span style="color:var(--green);font-weight:700">Total ${tvaRate>0?'TTC':'HT'}</span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--green);min-width:90px;text-align:right">${fmtN(totalTTC)} €</span></div>`;
+  totHtml+='</div>';
+  el.innerHTML+=totHtml;
+}
+
+// ── CRÉER OU MODIFIER UN DOC ───────────────────────────────────
+async function createOrUpdateDoc(){
+  if(editingDocId) await updateDoc();
+  else await createDoc();
 }
 
 async function createDoc(){
@@ -1243,10 +1286,7 @@ async function createDoc(){
   if(!docLines.length&&!v('dnotes')){toast('Ajoutez une ligne ou une note','err');return;}
   const type=v('dt');
   const tvaMode=v('d-tva-mode');
-  const tvaRate=tvaMode==='non'?0:tvaMode==='custom'?parseFloat(v('d-tva-custom'))||0:parseFloat(tvaMode)||0;
-  const totalHT=docLines.reduce((s,l)=>s+(l.qty*l.price),0);
-  const tvaAmount=totalHT*tvaRate/100;
-  const totalTTC=totalHT+tvaAmount;
+  const {totalBrut,remisesCalc,remiseTotale,totalHT,tvaRate,tvaAmount,totalTTC}=calcTotals(docLines,docRemises,tvaMode,v('d-tva-custom'));
   const num=(type==='devis'?'DEV':'FAC')+'-'+String(type==='devis'?devNum:facNum).padStart(4,'0');
   const uid=String(Date.now());
   syncSet('syncing');
@@ -1254,23 +1294,130 @@ async function createDoc(){
     uid,num,type,client,tel:v('dtel'),email:v('d-email'),addr:v('d-addr'),
     objet:v('dobj'),date:v('dd')||new Date().toISOString().split('T')[0],
     echeance:v('d-echeance')||null,devis_ref:v('d-devis-ref'),
+    prestation_date:v('d-prestation-date')||null,
+    prestation_date_end:v('d-prestation-date-end')||null,
+    prestation_label:v('d-prestation-label')||null,
     payment:v('d-payment'),acompte:parseFloat(v('d-acompte'))||0,
     notes:v('dnotes'),lines:JSON.parse(JSON.stringify(docLines)),
-    tva_mode:tvaMode,tva_rate:tvaRate,total_ht:totalHT,tva_amount:tvaAmount,total_ttc:totalTTC
+    remises:JSON.parse(JSON.stringify(docRemises)),
+    tva_mode:tvaMode,tva_rate:tvaRate,
+    total_brut:totalBrut,remise_totale:remiseTotale,
+    total_ht:totalHT,tva_amount:tvaAmount,total_ttc:totalTTC
   };
   const {data,error}=await sb.from('documents').insert(docPayload).select().single();
   if(error){toast('Erreur: '+error.message,'err');syncSet('err');return;}
   if(type==='devis')devNum++;else facNum++;
   const {data:s}=await sb.from('settings').select('id').single();
   if(s)await sb.from('settings').update({dev_num:devNum,fac_num:facNum}).eq('id',s.id);
-  documents.unshift({...data,lines:data.lines||[]});
+  documents.unshift({...data,lines:data.lines||[],remises:data.remises||[]});
   currentDocId=data.id;
-  docLines=[];
+  docLines=[];docRemises=[];editingDocId=null;
   closeModal('modal-new-doc');
-  ['dc','dtel','d-email','d-addr','dobj','dnotes','d-devis-ref','d-echeance','d-acompte'].forEach(id=>g(id)&&(g(id).value=''));
-  renderDocLines();renderDocs();
+  renderDocs();
   switchTab('docs',document.querySelectorAll('.topbar-tab')[2]);
   syncSet('ok');toast(`${num} créé et sauvegardé`);
+}
+
+async function updateDoc(){
+  const client=v('dc');
+  if(!client){toast('Nom client requis','err');return;}
+  const doc=documents.find(d=>d.id===editingDocId);
+  if(!doc){toast('Document introuvable','err');return;}
+  const type=v('dt');
+  const tvaMode=v('d-tva-mode');
+  const {totalBrut,remisesCalc,remiseTotale,totalHT,tvaRate,tvaAmount,totalTTC}=calcTotals(docLines,docRemises,tvaMode,v('d-tva-custom'));
+  syncSet('syncing');
+  const payload={
+    type,client,tel:v('dtel'),email:v('d-email'),addr:v('d-addr'),
+    objet:v('dobj'),date:v('dd')||new Date().toISOString().split('T')[0],
+    echeance:v('d-echeance')||null,devis_ref:v('d-devis-ref'),
+    prestation_date:v('d-prestation-date')||null,
+    prestation_date_end:v('d-prestation-date-end')||null,
+    prestation_label:v('d-prestation-label')||null,
+    payment:v('d-payment'),acompte:parseFloat(v('d-acompte'))||0,
+    notes:v('dnotes'),lines:JSON.parse(JSON.stringify(docLines)),
+    remises:JSON.parse(JSON.stringify(docRemises)),
+    tva_mode:tvaMode,tva_rate:tvaRate,
+    total_brut:totalBrut,remise_totale:remiseTotale,
+    total_ht:totalHT,tva_amount:tvaAmount,total_ttc:totalTTC,
+    updated_at:new Date().toISOString()
+  };
+  const {error}=await sb.from('documents').update(payload).eq('id',editingDocId);
+  if(error){toast('Erreur: '+error.message,'err');syncSet('err');return;}
+  Object.assign(doc,payload);
+  editingDocId=null;docLines=[];docRemises=[];
+  closeModal('modal-new-doc');
+  renderDocs();
+  syncSet('ok');toast(`${doc.num} mis à jour ✓`);
+}
+
+// ── ÉDITER UN DOC EXISTANT ────────────────────────────────────
+function editCurrentDoc(){
+  const d=documents.find(x=>x.id===currentDocId);
+  if(!d){toast('Document introuvable','err');return;}
+  editingDocId=d.id;
+  docLines=JSON.parse(JSON.stringify(d.lines||[]));
+  docRemises=JSON.parse(JSON.stringify(d.remises||[]));
+  // Remplir le formulaire
+  g('dt').value=d.type;
+  g('d-num-preview').value=d.num;
+  g('dd').value=d.date||'';
+  g('dc').value=d.client||'';
+  g('dtel').value=d.tel||'';
+  g('d-email').value=d.email||'';
+  g('d-addr').value=d.addr||'';
+  g('dobj').value=d.objet||'';
+  g('dnotes').value=d.notes||'';
+  g('d-devis-ref').value=d.devis_ref||'';
+  g('d-echeance').value=d.echeance||'';
+  g('d-payment').value=d.payment||'';
+  g('d-acompte').value=d.acompte||'';
+  g('d-tva-mode').value=d.tva_mode||'non';
+  g('d-prestation-date').value=d.prestation_date||'';
+  g('d-prestation-date-end').value=d.prestation_date_end||'';
+  g('d-prestation-label').value=d.prestation_label||'';
+  g('tva-custom-wrap').style.display=d.tva_mode==='custom'?'block':'none';
+  g('facture-extra').style.display=d.type==='facture'?'block':'none';
+  g('modal-new-doc-title').innerHTML=`Modifier ${d.num} <button class="modal-close" onclick="closeModal('modal-new-doc')">✕</button>`;
+  g('modal-doc-submit-btn').textContent='💾 Enregistrer les modifications';
+  renderDocLines();renderRemises();
+  closeModal('modal-doc');
+  openModal('modal-new-doc');
+}
+
+// ── CONVERTIR DEVIS → FACTURE ─────────────────────────────────
+async function convertToFacture(){
+  const d=documents.find(x=>x.id===currentDocId);
+  if(!d||d.type!=='devis'){toast('Ce document n\'est pas un devis','err');return;}
+  if(!confirm(`Convertir "${d.num}" en facture ? Une nouvelle facture sera créée.`))return;
+  syncSet('syncing');
+  const num='FAC-'+String(facNum).padStart(4,'0');
+  const uid=String(Date.now());
+  const payload={
+    uid,num,type:'facture',client:d.client,tel:d.tel,email:d.email,addr:d.addr,
+    objet:d.objet,date:new Date().toISOString().split('T')[0],
+    echeance:d.echeance,devis_ref:d.num,
+    prestation_date:d.prestation_date,prestation_date_end:d.prestation_date_end,
+    prestation_label:d.prestation_label,
+    payment:d.payment,acompte:d.acompte,notes:d.notes,
+    lines:JSON.parse(JSON.stringify(d.lines||[])),
+    remises:JSON.parse(JSON.stringify(d.remises||[])),
+    tva_mode:d.tva_mode,tva_rate:d.tva_rate,
+    total_brut:d.total_brut,remise_totale:d.remise_totale,
+    total_ht:d.total_ht,tva_amount:d.tva_amount,total_ttc:d.total_ttc
+  };
+  const {data,error}=await sb.from('documents').insert(payload).select().single();
+  if(error){toast('Erreur: '+error.message,'err');syncSet('err');return;}
+  facNum++;
+  const {data:s}=await sb.from('settings').select('id').single();
+  if(s)await sb.from('settings').update({fac_num:facNum}).eq('id',s.id);
+  documents.unshift({...data,lines:data.lines||[],remises:data.remises||[]});
+  currentDocId=data.id;
+  closeModal('modal-doc');
+  renderDocs();
+  syncSet('ok');toast(`Facture ${num} créée depuis ${d.num} ✓`);
+  // Ouvrir directement la nouvelle facture
+  setTimeout(()=>viewDoc(data.id),200);
 }
 
 function renderDocs(){
@@ -1280,14 +1427,16 @@ function renderDocs(){
     return;
   }
   el.innerHTML=documents.map(d=>`
-    <div class="doc-item" onclick="viewDoc(${d.id})">
+    <div class="doc-item" onclick="viewDoc('${d.id}')">
       <div class="doc-type-badge ${d.type}">${d.type==='devis'?'📋':'🧾'}</div>
       <div class="doc-info">
         <div class="doc-num">${d.num}</div>
         <div class="doc-client">${d.client}${d.objet?' — '+d.objet:''}</div>
+        ${d.prestation_date?`<div style="font-size:11px;color:var(--muted);margin-top:2px">📅 ${d.prestation_label||'Prestation'} : ${fmtDate(d.prestation_date)}${d.prestation_date_end?' → '+fmtDate(d.prestation_date_end):''}</div>`:''}
       </div>
       <div style="text-align:right">
         <div class="doc-amount ${d.type}">${fmtN(d.total_ttc)} €</div>
+        ${(d.remise_totale>0)?`<div style="font-size:11px;color:var(--yellow)">🏷 −${fmtN(d.remise_totale)} €</div>`:''}
         <span class="badge ${d.type}">${d.type==='devis'?'Devis':'Facture'}</span>
         <div style="font-size:11px;color:var(--muted);margin-top:2px">${new Date(d.date).toLocaleDateString('fr-FR')}</div>
       </div>
@@ -1307,16 +1456,45 @@ async function deleteDoc(){
 function viewDoc(id){
   const d=documents.find(x=>x.id===id);if(!d)return;
   currentDocId=id;
+  const isDevis=d.type==='devis';
+  // Boutons d'action
+  g('btn-edit-doc').style.display='inline-flex';
+  g('btn-convert-facture').style.display=isDevis?'inline-flex':'none';
+
   g('mdoc-title').innerHTML=`${d.num} — ${settings.name||'FC Événement'} <button class="modal-close" onclick="closeModal('modal-doc')">✕</button>`;
   const typeLabels={'forfait':'Forfait','heure':'Heure(s)','jour':'Jour(s)','unite':'Unité(s)','km':'km','mois':'Mois'};
   const lines=d.lines||[];
+  const remises=d.remises||[];
   const tvaRate=Number(d.tva_rate)||0;
+  const totalBrut=Number(d.total_brut)||Number(d.total_ht)||0;
+  const remiseTotale=Number(d.remise_totale)||0;
   const totalHT=Number(d.total_ht)||0;
   const tvaAmount=Number(d.tva_amount)||0;
   const totalTTC=Number(d.total_ttc)||0;
   const acompte=Number(d.acompte)||0;
   const logoHtml=settings.logo?`<img src="${settings.logo}" style="max-height:70px;max-width:180px;object-fit:contain;display:block;margin-bottom:6px" alt="Logo">`:'';
   const senderParts=[settings.name&&`<strong>${settings.name}</strong>`,settings.type,settings.addr,(settings.cp||settings.city)?[settings.cp,settings.city].filter(Boolean).join(' '):'',settings.tel,settings.email,settings.web].filter(Boolean);
+
+  // Date prestation
+  let prestationHtml='';
+  if(d.prestation_date){
+    const label=d.prestation_label||'Date de prestation';
+    const dateStr=fmtDate(d.prestation_date)+(d.prestation_date_end?' → '+fmtDate(d.prestation_date_end):'');
+    prestationHtml=`<div style="margin-bottom:14px;padding:10px 14px;background:var(--blue-dim);border:1px solid rgba(78,158,245,.2);border-radius:var(--r);font-size:13px;color:var(--blue)">📅 <strong>${label} :</strong> ${dateStr}</div>`;
+  }
+
+  // Remises HTML
+  let remisesHtml='';
+  if(remiseTotale>0){
+    remisesHtml=remises.map(r=>{
+      const montant = r.type==='percent' ? totalBrut*(parseFloat(r.value)||0)/100 : parseFloat(r.value)||0;
+      return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--yellow);font-size:13px">🏷 ${r.desc||'Remise'} (${r.type==='percent'?r.value+'%':fmtN(r.value)+'€'})</span>
+        <span style="font-weight:700;color:var(--yellow)">− ${fmtN(montant)} €</span>
+      </div>`;
+    }).join('');
+  }
+
   g('mdoc-body').innerHTML=`
     <div id="print-zone">
       <div style="display:flex;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border2)">
@@ -1343,6 +1521,7 @@ function viewDoc(id){
           ${d.addr?`<div style="color:var(--muted);font-size:12px">${d.addr}</div>`:''}
         </div>
       </div>
+      ${prestationHtml}
       ${d.objet?`<div style="margin-bottom:14px;padding:10px 14px;background:var(--bg3);border-radius:var(--r);font-size:13px"><strong>Objet :</strong> ${d.objet}</div>`:''}
       ${lines.length?`
         <table class="doc-table">
@@ -1356,8 +1535,9 @@ function viewDoc(id){
           </tr>`).join('')}</tbody>
         </table>
         <div style="display:flex;justify-content:flex-end;margin:10px 0 16px">
-          <div style="min-width:280px">
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted);font-size:13px">Total HT</span><span style="font-weight:700">${fmtN(totalHT)} €</span></div>
+          <div style="min-width:300px">
+            ${remiseTotale>0?`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted);font-size:13px">Total brut HT</span><span style="font-weight:700">${fmtN(totalBrut)} €</span></div>${remisesHtml}`:''}
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted);font-size:13px">Total HT${remiseTotale>0?' après remise':''}</span><span style="font-weight:700">${fmtN(totalHT)} €</span></div>
             ${tvaRate>0?`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted);font-size:13px">TVA ${tvaRate}%</span><span style="font-weight:700">${fmtN(tvaAmount)} €</span></div>`:''}
             ${acompte>0?`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--yellow);font-size:13px">Acompte ${acompte}%</span><span style="font-weight:700;color:var(--yellow)">${fmtN(totalTTC*acompte/100)} €</span></div>`:''}
             <div style="display:flex;justify-content:space-between;padding:10px 0 0"><span style="font-weight:800;font-size:15px">Total ${tvaRate>0?'TTC':'HT'}</span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);min-width:90px;text-align:right">${fmtN(totalTTC)} €</span></div>
