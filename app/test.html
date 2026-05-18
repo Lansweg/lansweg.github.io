@@ -941,12 +941,32 @@ function bindNewMember(){
 }
 
 /* ═══════════════════════════════ INIT ═══════════════════ */
-async function init(){
-  DB = await loadData();
-  NT = ntDefault();
-  document.getElementById("app").innerHTML="";
-  render();
+<script>
+async function init() {
+  try {
+
+    DB = await loadData();
+    NT = ntDefault();
+
+    document.getElementById("app").innerHTML = "";
+
+    render();
+
+  } catch (e) {
+
+    console.error(e);
+
+    document.getElementById("app").innerHTML = `
+      <div style="padding:40px;font-family:Arial">
+        <h2>Erreur JavaScript</h2>
+        <pre>${e}</pre>
+      </div>
+    `;
+  }
 }
+
+init();
+</script>
 
 init();
 </script>
