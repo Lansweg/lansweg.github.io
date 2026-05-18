@@ -19,12 +19,10 @@
 body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh}
 .hidden{display:none!important}
 input,select,button{font-family:var(--sans)}
-/* ── Input ── */
 .inp{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s}
 .inp:focus{border-color:var(--border-dark)}
 .lbl{display:block;font-size:11px;font-weight:500;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:5px}
 .field{margin-bottom:14px}
-/* ── Buttons ── */
 .btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--sans);font-weight:500;font-size:13px;cursor:pointer;border-radius:6px;padding:8px 16px;border:none;transition:opacity .12s,filter .12s}
 .btn:hover{filter:brightness(.93)}
 .btn-primary{background:var(--accent);color:#fff}
@@ -33,12 +31,10 @@ input,select,button{font-family:var(--sans)}
 .btn-green{background:var(--green);color:#fff}
 .btn-icon{background:transparent;border:none;color:var(--faint);cursor:pointer;display:flex;padding:4px}
 .btn-full{width:100%;justify-content:center}
-/* ── Toast ── */
 #toast{position:fixed;top:20px;right:20px;z-index:9999;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.13);transition:opacity .3s;opacity:0;pointer-events:none;color:#fff}
 #toast.show{opacity:1}
 #toast.ok{background:var(--green)}
 #toast.err{background:#8b1a1a}
-/* ── Nav ── */
 nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;gap:2px;position:sticky;top:0;z-index:100}
 .nav-logo{margin-right:auto;display:flex;align-items:center;gap:10px;padding:14px 0}
 .nav-logo-icon{width:26px;height:26px;border-radius:5px;background:var(--accent);display:flex;align-items:center;justify-content:center}
@@ -47,20 +43,16 @@ nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28
 .nav-btn.active{background:var(--accent-light);color:var(--text);font-weight:500}
 .nav-user{margin-left:12px;padding-left:12px;border-left:1px solid var(--border);display:flex;align-items:center;gap:8px}
 .nav-user-name{font-size:12px;color:var(--faint)}
-/* ── Pages ── */
 .page{max-width:900px;margin:0 auto;padding:36px 24px}
 .page-sm{max-width:640px;margin:0 auto;padding:36px 24px}
 .page-xs{max-width:500px;margin:0 auto;padding:32px 24px}
-/* ── SubHeader ── */
 .subheader{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:12px}
 .subheader h2{margin:0;font-size:15px;font-weight:500;flex:1}
-/* ── Stat cards ── */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:32px}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px}
 .stat-card-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
 .stat-card-value{font-family:var(--mono);font-size:22px;font-weight:500}
 .stat-card-sub{font-size:12px;color:var(--faint);margin-top:4px}
-/* ── Ticket list ── */
 .ticket-list{display:grid;gap:6px}
 .ticket-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 18px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:border-color .12s}
 .ticket-item:hover{border-color:var(--border-dark)}
@@ -70,7 +62,6 @@ nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28
 .ticket-item-amount{text-align:right;flex-shrink:0}
 .ticket-item-total{font-family:var(--mono);font-weight:500;font-size:15px}
 .ticket-item-status{font-size:11px;margin-top:3px}
-/* ── Members ── */
 .member-list{display:grid;gap:8px}
 .member-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 20px;display:flex;align-items:center;gap:14px}
 .member-avatar{width:36px;height:36px;border-radius:8px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0}
@@ -80,40 +71,32 @@ nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28
 .member-balance{text-align:right;flex-shrink:0}
 .member-due{font-family:var(--mono);font-size:13px;font-weight:500}
 .member-tickets{font-size:11px;color:var(--faint);margin-top:2px}
-/* ── Detail ── */
 .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .dt-label{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
 .dt-value{font-size:14px;color:var(--text)}
 .dt-value.mono{font-family:var(--mono)}
-/* ── Calc lines ── */
 .calc-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .calc-label{font-size:13px;color:var(--muted)}
 .calc-label.bold{font-size:14px;color:var(--text);font-weight:600}
 .calc-value{font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:500}
 .calc-value.bold{font-size:17px;color:var(--text);font-weight:700}
-/* ── Filters ── */
 .filters{display:flex;gap:6px;margin-bottom:18px}
 .filter-btn{font-family:var(--sans);font-size:12px;font-weight:500;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:5px 14px;cursor:pointer;transition:all .15s}
 .filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-/* ── Toggle ── */
 .toggle-wrap{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .toggle{width:38px;height:21px;border-radius:11px;background:var(--border);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none}
 .toggle.on{background:var(--accent)}
 .toggle-knob{width:15px;height:15px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.18);pointer-events:none}
 .toggle.on .toggle-knob{left:20px}
-/* ── Divider ── */
 .divider{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .divider-label{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
 .divider-line{flex:1;height:1px;background:var(--border)}
-/* ── Badge ── */
 .badge{font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:4px 12px;border-radius:20px}
 .badge-pending{background:var(--orange-bg);color:var(--orange);border:1px solid #f5c9a0}
 .badge-paid{background:var(--green-bg);color:var(--green);border:1px solid #b7dfc8}
-/* ── Address input ── */
 .addr-wrap{position:relative}
 .addr-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--faint);pointer-events:none}
 .addr-wrap .inp{padding-left:36px}
-/* ── Map ── */
 #map-container{border-radius:10px;overflow:hidden;border:1px solid var(--border);position:relative;margin-bottom:0}
 #map{width:100%;height:220px}
 .map-overlay{position:absolute;inset:0;background:rgba(245,244,241,.85);display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--muted)}
@@ -121,14 +104,11 @@ nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28
 .route-stat span{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.07em;display:block}
 .route-stat strong{font-family:var(--mono);font-size:18px;font-weight:500}
 .route-sep{width:1px;height:32px;background:var(--border)}
-/* ── Tariff box ── */
 .tariff-box{border:1px solid var(--border);border-radius:10px;padding:20px;background:var(--surface);margin-top:36px}
 .tariff-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-top:14px}
 .tariff-item-label{font-size:11px;color:var(--faint);margin-bottom:3px}
 .tariff-item-value{font-family:var(--mono);font-size:14px;color:var(--text)}
-/* ── Preview card ── */
 .preview-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:18px}
-/* ── Login ── */
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
 .login-box{width:100%;max-width:360px}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:26px}
@@ -137,18 +117,14 @@ nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28
 .login-title{font-family:var(--serif);font-size:24px;font-weight:400}
 .login-sub{font-size:11px;color:var(--faint);margin:5px 0 0;letter-spacing:.1em;text-transform:uppercase}
 .err-box{background:#fdf2f2;border:1px solid #f0c5c5;border-radius:6px;padding:9px 12px;margin-bottom:14px;font-size:13px;color:#8b1a1a}
-/* ── Info ── */
 .box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px}
-/* ── Print ── */
 @media print{
   body *{visibility:hidden!important}
   #print-zone,#print-zone *{visibility:visible!important}
   #print-zone{position:fixed;inset:0;background:#fff;padding:40px 56px;font-family:var(--sans);color:var(--text)}
   .no-print{display:none!important}
 }
-/* ── Empty ── */
 .empty{text-align:center;padding:48px 20px;font-size:13px;color:var(--faint)}
-/* ── Loader ── */
 #loader{min-height:100vh;display:flex;align-items:center;justify-content:center}
 .pac-container{z-index:99999!important;font-family:var(--sans)!important;border-radius:8px!important;box-shadow:0 4px 24px rgba(0,0,0,.12)!important;border:1px solid var(--border)!important;margin-top:4px!important}
 .pac-item{padding:8px 14px!important;font-size:13px!important;cursor:pointer!important}
@@ -158,15 +134,11 @@ nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28
 </head>
 <body>
 
-<!-- Toast -->
 <div id="toast"></div>
-
-<!-- App root -->
 <div id="app">
   <div id="loader"><span style="font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:3px">chargement…</span></div>
 </div>
 
-<!-- SVG Icons sprite -->
 <svg style="display:none">
   <symbol id="ic-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/>
@@ -255,12 +227,12 @@ async function loadData() {
     return defaultData();
   }
 }
-
 async function saveData(d) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
   } catch (e) {}
 }
+
 /* ─── Google Maps ───────────────────────────────────────── */
 let gmapsReady=false, gmapsCbs=[];
 function loadGMaps(){
@@ -283,9 +255,8 @@ function loadGMaps(){
 let DB    = null;
 let USER  = null;
 let VIEW  = "login";
-let SEL   = null;  // selected ticket
+let SEL   = null;
 
-// Map/route state for new-ticket form
 let mapInstance    = null;
 let dirRenderer    = null;
 let routeCalcTimer = null;
@@ -524,7 +495,7 @@ function ticketListHtml(tickets){
 }
 
 /* ═══════════════════════════════ NEW TICKET ══════════════ */
-let NT = {}; // new ticket form state
+let NT = {};
 function ntDefault(){
   return {
     memberId: USER.role==="admin"?"":USER.id,
@@ -568,7 +539,6 @@ function renderNewTicket(){
       <label class="lbl">Date</label>
       <input id="nt-date" class="inp" type="date" value="${NT.date}"/>
     </div>
-    <!-- Departure -->
     <div class="field">
       <label class="lbl">Adresse de départ</label>
       <div class="addr-wrap">
@@ -576,7 +546,6 @@ function renderNewTicket(){
         <input id="nt-dep" class="inp" type="text" placeholder="Ex : 1 place de la Victoire, Dunkerque" value="${esc(NT.departure)}"/>
       </div>
     </div>
-    <!-- Destination -->
     <div class="field">
       <label class="lbl">Adresse de destination</label>
       <div class="addr-wrap">
@@ -584,7 +553,6 @@ function renderNewTicket(){
         <input id="nt-dest" class="inp" type="text" placeholder="Ex : Mairie de Gravelines" value="${esc(NT.destination)}"/>
       </div>
     </div>
-    <!-- Map -->
     <div id="map-section" style="${NT.departure.length>5&&NT.destination.length>5?'':'display:none'}">
       <div id="map-container">
         <div id="map"></div>
@@ -597,13 +565,11 @@ function renderNewTicket(){
         <button class="btn btn-ghost" id="btn-recalc" style="margin-left:auto;padding:6px 10px">${ic("refresh",13)} Recalculer</button>
       </div>
     </div>
-    <!-- KM -->
     <div class="field">
       <label class="lbl">Distance (km) <span style="color:var(--green);font-weight:400;text-transform:none;letter-spacing:0">— calculée automatiquement</span></label>
       <input id="nt-km" class="inp" type="number" step="0.1" placeholder="0" value="${NT.km}" style="font-family:var(--mono)"/>
       <p style="margin:4px 0 0;font-size:11px;color:var(--faint)">Vous pouvez modifier manuellement si nécessaire.</p>
     </div>
-    <!-- Toll -->
     <div style="margin-bottom:14px">
       <div class="toggle-wrap">
         <button class="toggle${NT.hasToll?" on":""}" id="toggle-toll"><div class="toggle-knob"></div></button>
@@ -616,7 +582,6 @@ function renderNewTicket(){
         </div>
       </div>
     </div>
-    <!-- Notes -->
     <div class="field">
       <label class="lbl">Notes (optionnel)</label>
       <input id="nt-notes" class="inp" type="text" placeholder="Motif, précisions…" value="${esc(NT.notes)}"/>
@@ -629,7 +594,6 @@ function renderNewTicket(){
 function bindNewTicket(){
   document.getElementById("btn-back").addEventListener("click",()=>go("tickets"));
 
-  // Sync state from inputs
   const sync=()=>{
     const isAdmin=USER.role==="admin";
     if(isAdmin) NT.memberId=document.getElementById("nt-member")?.value||"";
@@ -639,25 +603,20 @@ function bindNewTicket(){
     NT.notes  = document.getElementById("nt-notes").value;
   };
 
-  // Toggle toll
   document.getElementById("toggle-toll").addEventListener("click",()=>{
     sync();
     NT.hasToll=!NT.hasToll;
     renderNewTicket_update();
   });
 
-  // Live preview on km/toll change
   const kmInp=document.getElementById("nt-km");
   kmInp.addEventListener("input",()=>{ sync(); renderNewTicket_update(); });
 
-  // Toll input
   const tollInp=document.getElementById("nt-toll");
   if(tollInp) tollInp.addEventListener("input",()=>{ sync(); renderNewTicket_update(); });
 
-  // Notes
   document.getElementById("nt-notes").addEventListener("input",()=>{ NT.notes=document.getElementById("nt-notes").value; });
 
-  // Submit
   document.getElementById("btn-submit-ticket").addEventListener("click",async()=>{
     sync();
     const isAdmin=USER.role==="admin";
@@ -679,17 +638,14 @@ function bindNewTicket(){
     go("tickets");
   });
 
-  // Init Google Maps autocomplete
   loadGMaps().then(()=>initAutocomplete());
 }
 
 function renderNewTicket_update(){
-  // Re-render just the relevant sections without losing map
   const km=parseFloat(NT.km)||0;
   const toll=NT.hasToll?(parseFloat(NT.toll)||0):0;
   const calc=km>0?calcTicket(km,toll):null;
 
-  // Update preview
   let preview=document.getElementById("preview-section");
   if(!preview){
     preview=document.createElement("div");
@@ -709,7 +665,6 @@ function renderNewTicket_update(){
     </div>`;
   } else { preview.innerHTML=""; }
 
-  // Toggle toll field visibility
   const tollField=document.getElementById("toll-field");
   if(tollField) tollField.style.display=NT.hasToll?"":"none";
   const toggle=document.getElementById("toggle-toll");
@@ -737,7 +692,6 @@ function initAutocomplete(){
   });
   destInp.addEventListener("input",()=>{ NT.destination=destInp.value; checkShowMap(); });
 
-  // If addresses already populated (back navigation), show map
   if(NT.departure.length>5&&NT.destination.length>5) calculateRoute();
 }
 
@@ -789,18 +743,15 @@ function calculateRoute(){
         dirRenderer.setDirections(result);
         const leg=result.routes[0].legs[0];
         const distKm=parseFloat((leg.distance.value/1000).toFixed(1));
-        // Update KM field
         NT.km=String(distKm);
         const kmInp=document.getElementById("nt-km");
         if(kmInp) kmInp.value=distKm;
-        // Update route info strip
         const ri=document.getElementById("route-info");
         if(ri){
           ri.classList.remove("hidden");
           document.getElementById("route-dist").textContent=leg.distance.text;
           document.getElementById("route-dur").textContent=leg.duration.text;
         }
-        // Setup recalc button
         const rb=document.getElementById("btn-recalc");
         if(rb){ rb.onclick=calculateRoute; }
         renderNewTicket_update();
@@ -821,12 +772,10 @@ function renderTicketDetail(){
   return `
   ${subHeaderHtml("Détail du ticket",`<button class="btn btn-ghost no-print" id="btn-print">${ic("print",15)} Imprimer / PDF</button>`)}
   <div id="print-zone" style="max-width:640px;margin:0 auto;padding:32px 24px">
-    <!-- Screen status bar -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
       <span style="font-family:var(--mono);font-size:11px;color:var(--faint)">#${t.id.slice(-6).toUpperCase()}</span>
       <span class="badge ${t.paid?"badge-paid":"badge-pending"}">${t.paid?"Réglé":"En attente"}</span>
     </div>
-    <!-- Details -->
     <div class="box">
       <div class="detail-grid">
         <div><div class="dt-label">Membre</div><div class="dt-value">${esc(member?.name||"—")}</div></div>
@@ -838,7 +787,6 @@ function renderTicketDetail(){
         ${t.notes?`<div style="grid-column:1/-1"><div class="dt-label">Notes</div><div class="dt-value">${esc(t.notes)}</div></div>`:""}
       </div>
     </div>
-    <!-- Calculation -->
     <div class="box" style="margin-bottom:20px">
       <p class="lbl" style="margin-bottom:14px">Décompte</p>
       <div class="calc-line"><span class="calc-label">${t.km} km × ${fmt(RATE_KM)} (tarif kilométrique)</span><span class="calc-value">${fmt(t.base)}</span></div>
@@ -849,7 +797,6 @@ function renderTicketDetail(){
       </div>
       ${t.paid&&t.paidAt?`<p style="margin:10px 0 0;font-size:12px;color:var(--green)">✓ Réglé le ${fmtDate(t.paidAt)}</p>`:""}
     </div>
-    <!-- Admin actions -->
     ${isAdmin?`<div class="no-print" style="display:flex;gap:10px;flex-wrap:wrap">
       ${!t.paid?`<button class="btn btn-green" id="btn-mark-paid">${ic("check",15)} Marquer réglé</button>`:""}
       <button class="btn btn-danger" id="btn-delete-ticket">${ic("trash",15)} Supprimer</button>
@@ -943,20 +890,13 @@ function bindNewMember(){
 }
 
 /* ═══════════════════════════════ INIT ═══════════════════ */
-
 async function init() {
   try {
-
     DB = await loadData();
-
     NT = ntDefault();
-
     VIEW = "login";
-
     document.getElementById("app").innerHTML = "";
-
     render();
-
   } catch (e) {
     console.error(e);
     document.getElementById("app").innerHTML = `
@@ -966,10 +906,9 @@ async function init() {
       </div>
     `;
   }
-} // ← fermeture de init()
+}
 
 init();
-
 </script>
 </body>
 </html>
