@@ -6,7 +6,6 @@
 <title>FC Événement — Gestionnaire Live</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<!-- Supabase JS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
@@ -35,7 +34,6 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);hei
 .topbar-tab:hover{color:var(--text);background:var(--bg4)}
 .topbar-tab.active{background:var(--orange);color:#fff}
 .topbar-right{margin-left:auto;display:flex;gap:8px;align-items:center}
-/* sync indicator */
 .sync-dot{width:8px;height:8px;border-radius:50%;background:var(--muted2);transition:background .3s;flex-shrink:0}
 .sync-dot.syncing{background:var(--yellow);animation:pulse 1s infinite}
 .sync-dot.ok{background:var(--green)}
@@ -53,6 +51,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);hei
 .btn.green:hover{background:#26b578}
 .btn.red{background:var(--red-dim);color:var(--red);border:1px solid rgba(232,64,64,.25)}
 .btn.blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(78,158,245,.25)}
+.btn.purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(167,139,250,.25)}
 .btn.sm{padding:5px 12px;font-size:12px}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .finput{width:100%;padding:9px 13px;border:1.5px solid var(--border2);border-radius:var(--r);font-family:'Manrope',sans-serif;font-size:13px;background:var(--bg3);color:var(--text);outline:none;transition:border .2s}
@@ -190,7 +189,6 @@ select.finput option{background:var(--bg3)}
 .logo-upload-zone:hover{border-color:var(--orange);background:var(--orange-dim)}
 .logo-preview{max-height:80px;max-width:200px;border-radius:var(--r);margin-bottom:8px}
 .section-divider{height:1px;background:var(--border);margin:16px 0}
-/* Loading overlay */
 #loading-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 .spinner{width:40px;height:40px;border:3px solid var(--border2);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -198,7 +196,6 @@ select.finput option{background:var(--bg3)}
 </head>
 <body>
 
-<!-- Loading screen -->
 <div id="loading-screen">
   <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:24px">FC<span style="color:var(--orange)">ÉVÉNEMENT</span></div>
   <div class="spinner"></div>
@@ -207,7 +204,6 @@ select.finput option{background:var(--bg3)}
 
 <div class="layout" id="app" style="display:none">
 
-<!-- TOPBAR -->
 <div class="topbar">
   <div class="logo">FC<span>ÉVÉNEMENT</span></div>
   <div class="live-indicator" id="live-ind"><div class="live-dot"></div>EN DIRECT</div>
@@ -223,13 +219,11 @@ select.finput option{background:var(--bg3)}
   </div>
 </div>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
   <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:2px">Historique lives</div>
   <div id="history-list"><div style="font-size:12px;color:var(--muted2);padding:8px 0">Chargement…</div></div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
   <!-- LIVE VIEW -->
@@ -260,7 +254,10 @@ select.finput option{background:var(--bg3)}
     <div id="live-active" style="display:none;flex:1;overflow:hidden;flex-direction:column">
       <div class="live-layout">
         <div class="paniers-zone">
-          <div id="history-banner" style="display:none" class="history-view-banner">📼 Live terminé — lecture seule</div>
+          <div id="history-banner" style="display:none" class="history-view-banner">
+            📼 Live terminé — lecture seule
+            <button class="btn orange sm" style="margin-left:auto" onclick="goNewLive()">🚀 Nouveau live</button>
+          </div>
           <div class="live-stats-row">
             <div class="lstat orange"><div class="lstat-num" id="st-paniers">0</div><div class="lstat-label">Paniers actifs</div></div>
             <div class="lstat green"><div class="lstat-num" id="st-total">0 €</div><div class="lstat-label">Total live</div></div>
@@ -313,9 +310,13 @@ select.finput option{background:var(--bg3)}
                 </div>
                 <div class="pp-total-amount" id="pp-total">0 €</div>
               </div>
-              <div style="display:flex;gap:7px" id="pp-action-btns">
-                <button class="btn green" style="flex:1;justify-content:center" id="pp-close-btn" onclick="toggleClose()">✓ Clôturer</button>
-                <button class="btn ghost sm" onclick="clearPanier()" style="color:var(--red)">🗑 Vider</button>
+              <!-- Boutons toujours visibles (impression) + boutons live seulement -->
+              <div style="display:flex;gap:7px;flex-wrap:wrap">
+                <div style="display:flex;gap:7px;flex:1" id="pp-action-btns">
+                  <button class="btn green" style="flex:1;justify-content:center" id="pp-close-btn" onclick="toggleClose()">✓ Clôturer</button>
+                  <button class="btn ghost sm" onclick="clearPanier()" style="color:var(--red)">🗑 Vider</button>
+                </div>
+                <button class="btn purple sm" onclick="printPanier()" title="Imprimer le descriptif du panier">🖨️ Imprimer</button>
               </div>
             </div>
           </div>
@@ -511,37 +512,18 @@ select.finput option{background:var(--bg3)}
 <div class="toasts" id="toasts"></div>
 
 <script>
-// ═══════════════════════════════════════════════════
-// SUPABASE CONFIG
-// ═══════════════════════════════════════════════════
 const SUPABASE_URL = 'https://sxayjsbwspwzcytyoljy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_rEfoyYQ624Y6TvFFv4v4Qw_pKyahZRL';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Sync indicator
 function syncSet(state){
-
   const d = g('sync-dot');
   const label = g('sync-label');
-
-  if(!d || !label){
-    console.warn('sync-dot ou sync-label introuvable');
-    return;
-  }
-
+  if(!d || !label){ console.warn('sync-dot ou sync-label introuvable'); return; }
   d.className = 'sync-dot ' + state;
-
-  label.textContent =
-    state === 'syncing'
-      ? 'Sync…'
-      : state === 'ok'
-      ? 'Sauvegardé'
-      : 'Erreur sync';
+  label.textContent = state === 'syncing' ? 'Sync…' : state === 'ok' ? 'Sauvegardé' : 'Erreur sync';
 }
 
-// ═══════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════
 let live=null, liveIsReadonly=false, selPanier=null;
 let liveHistory=[];
 let catalogue=[];
@@ -552,9 +534,6 @@ let currentDocId=null;
 let panierSaveTimer=null;
 let settings={name:'FC Événement',type:'Association loi 1901',siret:'',tva:'',addr:'',cp:'',city:'Dunkerque',tel:'',email:'',web:'',iban:'',mentions:'',logo:null};
 
-// ═══════════════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════════════
 const g=id=>document.getElementById(id);
 const v=id=>(g(id)?.value||'').trim();
 function toast(msg,type='ok'){
@@ -572,9 +551,6 @@ document.querySelectorAll('.overlay').forEach(m=>{
 function fmt(n){return Number(n||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'}
 function fmtN(n){return Number(n||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})}
 
-// ═══════════════════════════════════════════════════
-// INIT — Chargement depuis Supabase
-// ═══════════════════════════════════════════════════
 async function init(){
   try {
     setLoadingMsg('Chargement du catalogue…');
@@ -593,13 +569,11 @@ async function init(){
     g('dd').value=new Date().toISOString().split('T')[0];
     updateDocType();
     syncSet('ok');
-    // check if there's an active live to resume
     await checkActiveLive();
   } catch(err){
     setLoadingMsg('❌ Erreur: '+err.message+'. Vérifiez que les tables SQL sont créées.');
     console.error(err);
     syncSet('err');
-    // Show app anyway with empty state
     setTimeout(()=>{
       g('loading-screen').style.display='none';
       g('app').style.display='grid';
@@ -612,9 +586,6 @@ async function init(){
 function setLoadingMsg(msg){g('loading-msg').textContent=msg}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 
-// ═══════════════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════════════
 function switchTab(name,btn){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   g('view-'+name).classList.add('active');
@@ -625,14 +596,30 @@ function switchTab(name,btn){
   if(name==='settings')renderSettingsForm();
 }
 
-// ═══════════════════════════════════════════════════
-// CATALOGUE — Supabase
-// ═══════════════════════════════════════════════════
+// ── NOUVEAU LIVE (depuis historique) ─────────────────────────
+function goNewLive(){
+  // Quitte le mode lecture et affiche l'écran de démarrage
+  live=null; selPanier=null; liveIsReadonly=false;
+  g('live-active').style.display='none';
+  g('live-ind').style.display='none';
+  // Rétablit le topbar-right standard
+  g('topbar-right').innerHTML=`<div class="sync-dot ok" id="sync-dot"></div><span id="sync-label" style="font-size:11px;color:var(--muted)">Supabase</span>`;
+  g('start-screen').style.display='flex';
+  // Reset champs de démarrage
+  g('live-name').value='';
+  g('live-date').value=new Date().toISOString().split('T')[0];
+  // Active l'onglet Live
+  document.querySelectorAll('.topbar-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.topbar-tab')[0].classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  g('view-live').classList.add('active');
+}
+
+// ── CATALOGUE ─────────────────────────────────────────────────
 async function loadCatalogue(){
   const {data,error}=await sb.from('catalogue').select('*').order('id');
   if(error)throw error;
   catalogue=data||[];
-  // Si vide, insérer les articles par défaut
   if(!catalogue.length){
     const defaults=[
       {name:'T-shirt',price:20,emoji:'👕',cat:'Vêtements'},
@@ -683,9 +670,7 @@ function renderCatalogue(){
     </div>`).join('');
 }
 
-// ═══════════════════════════════════════════════════
-// SETTINGS — Supabase
-// ═══════════════════════════════════════════════════
+// ── SETTINGS ──────────────────────────────────────────────────
 async function loadSettings(){
   const {data,error}=await sb.from('settings').select('*').single();
   if(error||!data)return;
@@ -696,69 +681,22 @@ async function loadSettings(){
 }
 
 async function saveSettings(){
-
-  settings.name=v('s-name');
-  settings.type=v('s-type');
-  settings.siret=v('s-siret');
-  settings.tva=v('s-tva');
-  settings.addr=v('s-addr');
-  settings.cp=v('s-cp');
-  settings.city=v('s-city');
-  settings.tel=v('s-tel');
-  settings.email=v('s-email');
-  settings.web=v('s-web');
-  settings.iban=v('s-iban');
-  settings.mentions=v('s-mentions');
-
+  settings.name=v('s-name');settings.type=v('s-type');settings.siret=v('s-siret');
+  settings.tva=v('s-tva');settings.addr=v('s-addr');settings.cp=v('s-cp');
+  settings.city=v('s-city');settings.tel=v('s-tel');settings.email=v('s-email');
+  settings.web=v('s-web');settings.iban=v('s-iban');settings.mentions=v('s-mentions');
   devNum=parseInt(v('s-dev-start')) || 1;
   facNum=parseInt(v('s-fac-start')) || 1;
-
   syncSet('syncing');
-
-  // Vérifie si une ligne existe déjà
-  const { data: existing } = await sb
-    .from('settings')
-    .select('*')
-    .limit(1);
-
+  const { data: existing } = await sb.from('settings').select('*').limit(1);
   let error;
-
   if(existing && existing.length > 0){
-
-    // UPDATE
-    ({ error } = await sb
-      .from('settings')
-      .update({
-        data: settings,
-        dev_num: devNum,
-        fac_num: facNum,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', existing[0].id));
-
+    ({ error } = await sb.from('settings').update({data:settings,dev_num:devNum,fac_num:facNum,updated_at:new Date().toISOString()}).eq('id', existing[0].id));
   } else {
-
-    // INSERT
-    ({ error } = await sb
-      .from('settings')
-      .insert({
-        data: settings,
-        dev_num: devNum,
-        fac_num: facNum,
-        updated_at: new Date().toISOString()
-      }));
-
+    ({ error } = await sb.from('settings').insert({data:settings,dev_num:devNum,fac_num:facNum,updated_at:new Date().toISOString()}));
   }
-
-  if(error){
-    console.error(error);
-    toast('Erreur sauvegarde : ' + error.message,'err');
-    syncSet('err');
-    return;
-  }
-
-  syncSet('ok');
-  toast('Paramètres sauvegardés ✓');
+  if(error){console.error(error);toast('Erreur sauvegarde : '+error.message,'err');syncSet('err');return;}
+  syncSet('ok');toast('Paramètres sauvegardés ✓');
 }
 
 function renderSettingsForm(){
@@ -790,13 +728,10 @@ function updateLogoPreview(){
   }
 }
 
-// ═══════════════════════════════════════════════════
-// LIVES — Supabase
-// ═══════════════════════════════════════════════════
+// ── LIVES ─────────────────────────────────────────────────────
 async function loadLiveHistory(){
   const {data,error}=await sb.from('lives').select('*').eq('status','ended').order('created_at',{ascending:false});
   if(error)throw error;
-  // Pour chaque live, charger ses paniers + items
   liveHistory=[];
   for(const l of(data||[])){
     const liveObj=await fetchFullLive(l.uid);
@@ -809,15 +744,11 @@ async function checkActiveLive(){
   const {data,error}=await sb.from('lives').select('*').eq('status','active').order('created_at',{ascending:false}).limit(1);
   if(error||!data?.length)return;
   const l=data[0];
-  // Propose de reprendre
   if(confirm(`Un live actif trouvé : "${l.name}". Reprendre ?`)){
     const liveObj=await fetchFullLive(l.uid);
     if(liveObj){
-      live=liveObj;
-      liveIsReadonly=false;
-      selPanier=null;
-      showLiveActive();
-      switchTab('live',document.querySelector('.topbar-tab'));
+      live=liveObj;liveIsReadonly=false;selPanier=null;
+      showLiveActive();switchTab('live',document.querySelector('.topbar-tab'));
     }
   }
 }
@@ -847,9 +778,7 @@ async function startLive(){
   syncSet('syncing');
   const {error}=await sb.from('lives').insert({uid,name,date,nb,status:'active'});
   if(error){toast('Erreur création live: '+error.message,'err');syncSet('err');return;}
-  // Créer les paniers en bulk
   const panierRows=Array.from({length:nb},(_,i)=>({live_uid:uid,num:i+1,name:'',note:'',closed:false}));
-  // Insert par batch de 100
   for(let i=0;i<panierRows.length;i+=100){
     await sb.from('paniers').insert(panierRows.slice(i,i+100));
   }
@@ -867,12 +796,13 @@ async function endLive(){
   live.status='ended';
   liveHistory.unshift(JSON.parse(JSON.stringify(live)));
   renderHistory();
-  g('live-ind').style.display='none';
-  g('topbar-right').innerHTML=`<div class="sync-dot ok" id="sync-dot"></div><span id="sync-label" style="font-size:11px;color:var(--muted)">Sauvegardé</span>`;
   live=null;selPanier=null;liveIsReadonly=false;
+  g('live-ind').style.display='none';
+  g('topbar-right').innerHTML=`<div class="sync-dot ok" id="sync-dot"></div><span id="sync-label" style="font-size:11px;color:var(--muted)">Supabase</span>`;
   g('live-active').style.display='none';
   g('start-screen').style.display='flex';
   g('live-name').value='';
+  g('live-date').value=new Date().toISOString().split('T')[0];
   syncSet('ok');toast('Live terminé et archivé ✓');
 }
 
@@ -892,9 +822,7 @@ async function addPaniers(n){
   setTimeout(()=>{const last=g('paniers-grid').lastElementChild;if(last)last.scrollIntoView({behavior:'smooth',block:'center'})},100);
 }
 
-// ═══════════════════════════════════════════════════
-// SAVE PANIER — debounced
-// ═══════════════════════════════════════════════════
+// ── SAVE PANIER ───────────────────────────────────────────────
 function debouncedSavePanier(){
   const p=panierOf(selPanier);if(!p)return;
   p.name=g('pp-name').value;
@@ -914,7 +842,6 @@ async function savePanierMeta(p){
 async function savePanierItems(p){
   if(!live||liveIsReadonly)return;
   syncSet('syncing');
-  // Delete all items for this panier, then reinsert
   await sb.from('panier_items').delete().eq('live_uid',live.uid).eq('panier_num',p.num);
   if(p.items.length){
     const rows=p.items.map(it=>({live_uid:live.uid,panier_num:p.num,cat_id:it.catId||null,name:it.name,price:it.price,emoji:it.emoji,qty:it.qty}));
@@ -924,9 +851,7 @@ async function savePanierItems(p){
   syncSet('ok');
 }
 
-// ═══════════════════════════════════════════════════
-// LIVE UI
-// ═══════════════════════════════════════════════════
+// ── LIVE UI ───────────────────────────────────────────────────
 function showLiveActive(){
   g('start-screen').style.display='none';
   const la=g('live-active');
@@ -1145,9 +1070,124 @@ function viewHistory(idx){
   switchTab('live',document.querySelector('.topbar-tab'));
 }
 
-// ═══════════════════════════════════════════════════
-// DOCUMENTS — Supabase
-// ═══════════════════════════════════════════════════
+// ── IMPRESSION PANIER ─────────────────────────────────────────
+function printPanier(){
+  const p=panierOf(selPanier);
+  if(!p){toast('Aucun panier sélectionné','err');return;}
+  const total=panierTotal(p);
+  const artCount=p.items.reduce((s,i)=>s+i.qty,0);
+  const liveName=live?.name||'Live';
+  const liveDate=live?.date?new Date(live.date).toLocaleDateString('fr-FR'):'';
+  const org=settings.name||'FC Événement';
+
+  const artRows=p.items.length
+    ? p.items.map(it=>`
+        <tr>
+          <td style="padding:8px 12px;font-size:15px;border-bottom:1px solid #eee">${it.emoji||'📦'}</td>
+          <td style="padding:8px 12px;font-weight:600;border-bottom:1px solid #eee">${it.name}</td>
+          <td style="padding:8px 12px;text-align:center;border-bottom:1px solid #eee">${it.qty}</td>
+          <td style="padding:8px 12px;text-align:right;border-bottom:1px solid #eee">${it.price} €</td>
+          <td style="padding:8px 12px;text-align:right;font-weight:700;border-bottom:1px solid #eee">${it.price*it.qty} €</td>
+        </tr>`).join('')
+    : `<tr><td colspan="5" style="padding:16px;text-align:center;color:#999;font-style:italic">Aucun article</td></tr>`;
+
+  const logoHtml=settings.logo
+    ? `<img src="${settings.logo}" style="max-height:60px;max-width:160px;object-fit:contain;display:block;margin-bottom:6px" alt="Logo">`
+    : '';
+
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Panier ${p.num} — ${liveName}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,Arial,sans-serif;padding:32px;max-width:600px;margin:0 auto;color:#111;font-size:14px;line-height:1.5}
+  h1{font-size:22px;font-weight:800;margin-bottom:2px}
+  .sub{font-size:13px;color:#666;margin-bottom:20px}
+  .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #111}
+  .badge{display:inline-block;background:#EEF;border:1px solid #99C;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;color:#336;margin-bottom:8px}
+  .badge.clos{background:#E8F5E9;border-color:#81C784;color:#1B5E20}
+  table{width:100%;border-collapse:collapse;margin:16px 0}
+  th{text-align:left;padding:8px 12px;background:#f4f4f4;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#555;border-bottom:2px solid #ddd}
+  th:last-child,th:nth-child(3){text-align:right}
+  th:nth-child(3){text-align:center}
+  .total-row{display:flex;justify-content:flex-end;margin-top:8px}
+  .total-box{background:#f4f4f4;border-radius:8px;padding:12px 20px;text-align:right}
+  .total-label{font-size:12px;color:#666;margin-bottom:4px}
+  .total-amount{font-size:28px;font-weight:800;color:#1a1a1a}
+  .note-box{margin-top:20px;padding:14px;background:#FFFBF0;border:1px solid #F5C842;border-radius:8px}
+  .note-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8a6a00;margin-bottom:6px}
+  .note-text{font-size:13px;white-space:pre-wrap;color:#333}
+  .client-box{background:#f9f9f9;border:1px solid #ddd;border-radius:8px;padding:12px 16px;margin-bottom:20px}
+  .client-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:4px}
+  .client-name{font-size:18px;font-weight:800}
+  .footer{margin-top:28px;padding-top:14px;border-top:1px solid #ddd;display:flex;justify-content:space-between;font-size:11px;color:#999}
+  @media print{body{padding:20px}@page{margin:10mm}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    ${logoHtml}
+    <div style="font-weight:800;font-size:16px">${org}</div>
+    ${settings.type?`<div style="font-size:12px;color:#666">${settings.type}</div>`:''}
+  </div>
+  <div style="text-align:right">
+    <div style="font-size:11px;color:#888;margin-bottom:4px">DESCRIPTIF PANIER</div>
+    <div style="font-size:28px;font-weight:800;line-height:1">#${p.num}</div>
+    <div style="font-size:12px;color:#888;margin-top:4px">${liveName}${liveDate?' · '+liveDate:''}</div>
+    <span class="badge ${p.closed?'clos':''}">${p.closed?'✓ Clôturé':'En cours'}</span>
+  </div>
+</div>
+
+${p.name?`
+<div class="client-box">
+  <div class="client-label">Client / Facebook</div>
+  <div class="client-name">${p.name}</div>
+</div>`:''}
+
+<table>
+  <thead>
+    <tr>
+      <th style="width:36px"></th>
+      <th>Article</th>
+      <th style="width:60px;text-align:center">Qté</th>
+      <th style="width:80px;text-align:right">PU</th>
+      <th style="width:90px;text-align:right">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${artRows}
+  </tbody>
+</table>
+
+<div class="total-row">
+  <div class="total-box">
+    <div class="total-label">${artCount} article${artCount>1?'s':''}</div>
+    <div class="total-amount">${total} €</div>
+  </div>
+</div>
+
+${p.note?`
+<div class="note-box">
+  <div class="note-label">📝 Note</div>
+  <div class="note-text">${p.note.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+</div>`:''}
+
+<div class="footer">
+  <div>${org}</div>
+  <div>Panier ${p.num} · ${liveName}${liveDate?' · '+liveDate:''}</div>
+</div>
+</body>
+</html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(()=>win.print(),500);
+}
+
+// ── DOCUMENTS ─────────────────────────────────────────────────
 async function loadDocuments(){
   const {data,error}=await sb.from('documents').select('*').order('created_at',{ascending:false});
   if(error)throw error;
@@ -1221,7 +1261,6 @@ async function createDoc(){
   const {data,error}=await sb.from('documents').insert(docPayload).select().single();
   if(error){toast('Erreur: '+error.message,'err');syncSet('err');return;}
   if(type==='devis')devNum++;else facNum++;
-  // Update num counters in settings
   const {data:s}=await sb.from('settings').select('id').single();
   if(s)await sb.from('settings').update({dev_num:devNum,fac_num:facNum}).eq('id',s.id);
   documents.unshift({...data,lines:data.lines||[]});
@@ -1321,7 +1360,7 @@ function viewDoc(id){
             <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted);font-size:13px">Total HT</span><span style="font-weight:700">${fmtN(totalHT)} €</span></div>
             ${tvaRate>0?`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted);font-size:13px">TVA ${tvaRate}%</span><span style="font-weight:700">${fmtN(tvaAmount)} €</span></div>`:''}
             ${acompte>0?`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--yellow);font-size:13px">Acompte ${acompte}%</span><span style="font-weight:700;color:var(--yellow)">${fmtN(totalTTC*acompte/100)} €</span></div>`:''}
-            <div style="display:flex;justify-content:space-between;padding:10px 0 0"><span style="font-weight:800;font-size:15px">Total ${tvaRate>0?'TTC':'HT'}</span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green)">${fmtN(totalTTC)} €</span></div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0 0"><span style="font-weight:800;font-size:15px">Total ${tvaRate>0?'TTC':'HT'}</span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);min-width:90px;text-align:right">${fmtN(totalTTC)} €</span></div>
           </div>
         </div>`:''}
       ${d.tva_mode==='non'?`<div style="font-size:11px;color:var(--muted2);margin-bottom:12px">TVA non applicable — Art. 293 B du CGI</div>`:''}
@@ -1365,9 +1404,6 @@ function printDoc(){
   setTimeout(()=>win.print(),600);
 }
 
-// ═══════════════════════════════════════════════════
-// START
-// ═══════════════════════════════════════════════════
 init();
 </script>
 </body>
