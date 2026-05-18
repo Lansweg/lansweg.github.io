@@ -958,17 +958,18 @@ async function init() {
     render();
 
   } catch (e) {
-
     console.error(e);
-
     document.getElementById("app").innerHTML = `
       <div style="padding:40px">
         <h2>Erreur JavaScript</h2>
         <pre>${e}</pre>
       </div>
     `;
-  } //
+  }
+} // ← fermeture de init()
+
 init();
+
 </script>
 </body>
 </html>
