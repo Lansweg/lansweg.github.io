@@ -43,12 +43,9 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);hei
 .view{display:none;flex:1;overflow:hidden}
 .view.active{display:flex;flex-direction:column}
 .btn{padding:8px 18px;border-radius:50px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:7px;font-family:'Manrope',sans-serif;white-space:nowrap}
-.btn.orange{background:var(--orange);color:#fff}
-.btn.orange:hover{background:#d95f1f}
-.btn.ghost{background:var(--bg4);color:var(--text);border:1px solid var(--border2)}
-.btn.ghost:hover{background:var(--bg3);border-color:rgba(255,255,255,.2)}
-.btn.green{background:var(--green);color:#0D0F14}
-.btn.green:hover{background:#26b578}
+.btn.orange{background:var(--orange);color:#fff}.btn.orange:hover{background:#d95f1f}
+.btn.ghost{background:var(--bg4);color:var(--text);border:1px solid var(--border2)}.btn.ghost:hover{background:var(--bg3);border-color:rgba(255,255,255,.2)}
+.btn.green{background:var(--green);color:#0D0F14}.btn.green:hover{background:#26b578}
 .btn.red{background:var(--red-dim);color:var(--red);border:1px solid rgba(232,64,64,.25)}
 .btn.blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(78,158,245,.25)}
 .btn.purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(167,139,250,.25)}
@@ -85,7 +82,8 @@ select.finput option{background:var(--bg3)}
 .p-btn.has-items{border-color:rgba(46,204,138,.4);background:var(--green-dim)}
 .p-btn.closed{border-color:rgba(78,158,245,.4);background:var(--blue-dim);opacity:.8}
 .p-btn.active.has-items{border-color:var(--orange);background:var(--orange-dim);box-shadow:0 0 0 1px var(--orange)}
-.p-btn.readonly{cursor:pointer}
+.p-btn.locked-closed{border-color:rgba(78,158,245,.3);opacity:.65;cursor:not-allowed}
+.p-btn.locked-closed:hover{transform:none;border-color:rgba(78,158,245,.3)}
 .p-num{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;line-height:1}
 .p-name{font-size:9px;color:var(--muted);max-width:68px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
 .p-tot{font-size:10px;font-weight:700;color:var(--green)}
@@ -93,6 +91,7 @@ select.finput option{background:var(--bg3)}
 .p-dot.open{background:var(--green)}
 .p-dot.filled{background:var(--orange)}
 .p-dot.closed{background:var(--blue)}
+.p-lock{position:absolute;top:4px;left:4px;font-size:8px;opacity:.6}
 .p-add{aspect-ratio:1;border-radius:var(--r);border:1.5px dashed var(--border2);background:transparent;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--muted)}
 .p-add:hover{border-color:var(--orange);color:var(--orange);background:var(--orange-dim)}
 .panier-panel{background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
@@ -182,7 +181,8 @@ select.finput option{background:var(--bg3)}
 .history-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;margin-bottom:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px}
 .history-item:hover{border-color:var(--border2)}
 .history-item.readonly-live{border-left:3px solid var(--purple)}
-.history-view-banner{background:var(--purple-dim);border:1px solid rgba(167,139,250,.3);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--purple);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.history-view-banner{background:var(--purple-dim);border:1px solid rgba(167,139,250,.3);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--purple);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+/* info-box : panneau panier clôturé verrouillé */
 .info-box{background:var(--blue-dim);border:1px solid rgba(78,158,245,.2);border-radius:var(--r);padding:12px 14px;font-size:12px;color:var(--blue);margin-bottom:12px}
 .settings-view{padding:20px;overflow-y:auto;flex:1}
 .settings-section{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);padding:20px;margin-bottom:16px}
@@ -194,10 +194,7 @@ select.finput option{background:var(--bg3)}
 #loading-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 .spinner{width:40px;height:40px;border:3px solid var(--border2);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* Remise styling */
 .remise-row{display:grid;grid-template-columns:1fr 110px 110px 34px;gap:5px;margin-bottom:6px;align-items:center;background:var(--yellow-dim);border:1px solid rgba(245,200,66,.2);border-radius:var(--r);padding:8px 10px}
-.remise-tag{font-size:11px;font-weight:700;color:var(--yellow);background:var(--yellow-dim);border:1px solid rgba(245,200,66,.3);border-radius:20px;padding:2px 8px;display:inline-flex;align-items:center;gap:4px}
 .doc-actions-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
 </style>
 </head>
@@ -221,7 +218,7 @@ select.finput option{background:var(--bg3)}
     <button class="topbar-tab" onclick="switchTab('settings',this)">⚙️ Mon entreprise</button>
   </div>
   <div class="topbar-right" id="topbar-right">
-    <div class="sync-dot" id="sync-dot" title="Synchronisation"></div>
+    <div class="sync-dot" id="sync-dot"></div>
     <span id="sync-label" style="font-size:11px;color:var(--muted)">Supabase</span>
   </div>
 </div>
@@ -239,20 +236,11 @@ select.finput option{background:var(--bg3)}
       <div class="start-box">
         <div style="font-size:48px;margin-bottom:16px">🎥</div>
         <h2>Démarrer un live</h2>
-        <p>Toutes les données sont sauvegardées automatiquement dans Supabase.</p>
-        <div class="fgroup">
-          <label class="flabel">Nom du live</label>
-          <input class="finput" id="live-name" placeholder="Ex: Live mode — 16 mai">
-        </div>
+        <p>Données sauvegardées automatiquement. Paniers remis à 1 à chaque nouveau live.</p>
+        <div class="fgroup"><label class="flabel">Nom du live</label><input class="finput" id="live-name" placeholder="Ex: Live mode — 16 mai"></div>
         <div class="frow">
-          <div class="fgroup">
-            <label class="flabel">Nombre de paniers</label>
-            <input class="finput" id="live-nb" type="number" value="80" min="1" max="500">
-          </div>
-          <div class="fgroup">
-            <label class="flabel">Date</label>
-            <input class="finput" id="live-date" type="date">
-          </div>
+          <div class="fgroup"><label class="flabel">Nombre de paniers</label><input class="finput" id="live-nb" type="number" value="80" min="1" max="500"></div>
+          <div class="fgroup"><label class="flabel">Date</label><input class="finput" id="live-date" type="date"></div>
         </div>
         <button class="btn orange" style="width:100%;justify-content:center;padding:12px" onclick="startLive()">🚀 Lancer le live</button>
       </div>
@@ -261,8 +249,9 @@ select.finput option{background:var(--bg3)}
     <div id="live-active" style="display:none;flex:1;overflow:hidden;flex-direction:column">
       <div class="live-layout">
         <div class="paniers-zone">
+          <!-- Bannière live terminé avec bouton nouveau live -->
           <div id="history-banner" style="display:none" class="history-view-banner">
-            📼 Live terminé — lecture seule
+            <span>📼 Live terminé · <strong style="color:var(--green)">paniers ouverts = modifiables</strong> · <strong style="color:var(--blue)">paniers clôturés = verrouillés 🔒</strong></span>
             <button class="btn orange sm" style="margin-left:auto" onclick="goNewLive()">🚀 Nouveau live</button>
           </div>
           <div class="live-stats-row">
@@ -293,7 +282,10 @@ select.finput option{background:var(--bg3)}
               <input class="finput" id="pp-name" placeholder="Nom Facebook / client" oninput="debouncedSavePanier()" style="font-size:13px">
             </div>
             <div class="pp-body">
-              <div id="readonly-warning" style="display:none" class="info-box">📌 Mode lecture — live terminé</div>
+              <!-- Affiché seulement si panier clôturé sur live terminé -->
+              <div id="readonly-warning" style="display:none" class="info-box">
+                🔒 Panier clôturé — verrouillé. Seuls les paniers non clôturés peuvent être modifiés après la fin du live.
+              </div>
               <div class="sep" id="cat-chips-sep">Catalogue rapide</div>
               <div class="quick-chips" id="quick-chips"></div>
               <div class="sep" id="manual-sep">Ajouter manuellement</div>
@@ -360,10 +352,7 @@ select.finput option{background:var(--bg3)}
       <div class="settings-section">
         <h3>Logo</h3>
         <div class="logo-upload-zone" onclick="g('logo-file').click()">
-          <div id="logo-preview-wrap">
-            <div style="font-size:32px">🖼️</div>
-            <div style="font-size:13px;color:var(--muted);margin-top:8px">Cliquer pour choisir un logo (PNG, JPG)</div>
-          </div>
+          <div id="logo-preview-wrap"><div style="font-size:32px">🖼️</div><div style="font-size:13px;color:var(--muted);margin-top:8px">Cliquer pour choisir un logo</div></div>
         </div>
         <input type="file" id="logo-file" accept="image/*" style="display:none" onchange="handleLogo(this)">
         <button class="btn ghost sm" id="del-logo-btn" style="display:none" onclick="deleteLogo()">✕ Supprimer le logo</button>
@@ -376,7 +365,7 @@ select.finput option{background:var(--bg3)}
         </div>
         <div class="frow">
           <div class="fgroup"><label class="flabel">N° SIRET / RNA</label><input class="finput" id="s-siret" placeholder="W123456789"></div>
-          <div class="fgroup"><label class="flabel">N° TVA intracommunautaire</label><input class="finput" id="s-tva" placeholder="Non applicable"></div>
+          <div class="fgroup"><label class="flabel">N° TVA</label><input class="finput" id="s-tva" placeholder="Non applicable"></div>
         </div>
         <div class="fgroup"><label class="flabel">Adresse</label><input class="finput" id="s-addr" placeholder="12 rue des Fleurs"></div>
         <div class="frow">
@@ -388,12 +377,8 @@ select.finput option{background:var(--bg3)}
           <div class="fgroup"><label class="flabel">Email</label><input class="finput" id="s-email" placeholder="contact@fcevenement.fr"></div>
         </div>
         <div class="fgroup"><label class="flabel">Site web</label><input class="finput" id="s-web" placeholder="www.fcevenement.fr"></div>
-        <div class="fgroup"><label class="flabel">RIB / IBAN</label>
-          <textarea class="note-area" id="s-iban" placeholder="IBAN : FR76 XXXX&#10;BIC : XXXXXX" style="min-height:72px"></textarea>
-        </div>
-        <div class="fgroup"><label class="flabel">Mentions légales / pied de page</label>
-          <textarea class="note-area" id="s-mentions" placeholder="Ex: Règlement à réception. Pénalités de retard : 3× taux légal." style="min-height:80px"></textarea>
-        </div>
+        <div class="fgroup"><label class="flabel">RIB / IBAN</label><textarea class="note-area" id="s-iban" placeholder="IBAN : FR76 XXXX&#10;BIC : XXXXXX" style="min-height:72px"></textarea></div>
+        <div class="fgroup"><label class="flabel">Mentions légales</label><textarea class="note-area" id="s-mentions" placeholder="Ex: Règlement à réception." style="min-height:80px"></textarea></div>
         <div class="frow">
           <div class="fgroup"><label class="flabel">Prochain N° Devis</label><input class="finput" id="s-dev-start" type="number" value="1" min="1"></div>
           <div class="fgroup"><label class="flabel">Prochain N° Facture</label><input class="finput" id="s-fac-start" type="number" value="1" min="1"></div>
@@ -423,55 +408,38 @@ select.finput option{background:var(--bg3)}
       <div class="fgroup"><label class="flabel">Emoji</label><input class="finput" id="nc-emoji" placeholder="👕" style="text-align:center;font-size:20px"></div>
     </div>
     <div class="fgroup"><label class="flabel">Catégorie</label>
-      <select class="finput" id="nc-cat">
-        <option>Vêtements</option><option>Accessoires</option><option>Chaussures</option><option>Sacs</option><option>Mascotte</option><option>Autre</option>
-      </select>
+      <select class="finput" id="nc-cat"><option>Vêtements</option><option>Accessoires</option><option>Chaussures</option><option>Sacs</option><option>Mascotte</option><option>Autre</option></select>
     </div>
     <button class="btn orange" style="width:100%;justify-content:center;margin-top:4px" onclick="addCatItem()">✓ Ajouter</button>
   </div>
 </div>
 
-<!-- MODAL NOUVEAU / EDIT DOC -->
 <div class="overlay" id="modal-new-doc">
   <div class="modal xl">
     <div class="modal-title" id="modal-new-doc-title">Nouveau document <button class="modal-close" onclick="closeModal('modal-new-doc')">✕</button></div>
-
-    <!-- Ligne 1 : Type, Numéro, Date doc, Date prestation -->
     <div class="frow4">
       <div class="fgroup"><label class="flabel">Type</label>
-        <select class="finput" id="dt" onchange="updateDocType()">
-          <option value="devis">📋 Devis</option>
-          <option value="facture">🧾 Facture</option>
-        </select>
+        <select class="finput" id="dt" onchange="updateDocType()"><option value="devis">📋 Devis</option><option value="facture">🧾 Facture</option></select>
       </div>
       <div class="fgroup"><label class="flabel">Numéro (auto)</label><input class="finput" id="d-num-preview" readonly style="opacity:.6"></div>
       <div class="fgroup"><label class="flabel">Date document</label><input class="finput" id="dd" type="date"></div>
-      <div class="fgroup"><label class="flabel">📅 Date prestation / location</label><input class="finput" id="d-prestation-date" type="date" placeholder="Optionnel"></div>
+      <div class="fgroup"><label class="flabel">📅 Date prestation</label><input class="finput" id="d-prestation-date" type="date"></div>
     </div>
-
-    <!-- Label prestation (type) -->
     <div class="frow">
       <div class="fgroup"><label class="flabel">Intitulé date prestation</label>
         <select class="finput" id="d-prestation-label">
-          <option value="">— Aucun —</option>
-          <option value="Date de prestation">Date de prestation</option>
-          <option value="Date de location">Date de location</option>
-          <option value="Date de l'événement">Date de l'événement</option>
-          <option value="Date de livraison">Date de livraison</option>
-          <option value="Date d'intervention">Date d'intervention</option>
-          <option value="Période">Période</option>
+          <option value="">— Aucun —</option><option>Date de prestation</option><option>Date de location</option>
+          <option>Date de l'événement</option><option>Date de livraison</option><option>Période</option>
         </select>
       </div>
       <div class="fgroup"><label class="flabel">Date fin (si période)</label><input class="finput" id="d-prestation-date-end" type="date"></div>
     </div>
-
     <div id="facture-extra" style="display:none">
       <div class="frow">
         <div class="fgroup"><label class="flabel">N° devis associé</label><input class="finput" id="d-devis-ref" placeholder="DEV-0001"></div>
         <div class="fgroup"><label class="flabel">Date d'échéance</label><input class="finput" id="d-echeance" type="date"></div>
       </div>
     </div>
-
     <div class="section-divider"></div>
     <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--orange);margin-bottom:10px">👤 Client</div>
     <div class="frow">
@@ -482,11 +450,9 @@ select.finput option{background:var(--bg3)}
       <div class="fgroup"><label class="flabel">Email</label><input class="finput" id="d-email" placeholder="client@mail.com"></div>
       <div class="fgroup"><label class="flabel">Adresse</label><input class="finput" id="d-addr" placeholder="Adresse de facturation"></div>
     </div>
-
     <div class="section-divider"></div>
     <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--orange);margin-bottom:10px">📋 Prestations</div>
     <div class="fgroup"><label class="flabel">Objet / Intitulé</label><input class="finput" id="dobj" placeholder="Ex: Location mascotte FC Dunkerque — samedi 21 juin"></div>
-
     <div style="display:grid;grid-template-columns:2fr 120px 70px 80px 90px 34px;gap:5px;margin-bottom:6px">
       <div style="font-size:10px;color:var(--muted);text-transform:uppercase">Description</div>
       <div style="font-size:10px;color:var(--muted);text-transform:uppercase">Type</div>
@@ -497,48 +463,37 @@ select.finput option{background:var(--bg3)}
     </div>
     <div id="doc-lines-wrap"></div>
     <button class="btn ghost sm" style="margin-bottom:8px" onclick="addDocLine()">+ Ligne prestation</button>
-
-    <!-- REMISES -->
     <div class="section-divider"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--yellow)">🏷️ Remises / Réductions</div>
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--yellow)">🏷️ Remises</div>
       <button class="btn yellow sm" onclick="addRemise()">+ Remise</button>
     </div>
     <div id="doc-remises-wrap"></div>
-
     <div class="frow">
       <div class="fgroup"><label class="flabel">TVA</label>
         <select class="finput" id="d-tva-mode" onchange="renderDocLines()">
-          <option value="non">Non soumis à TVA</option>
-          <option value="20">TVA 20%</option>
-          <option value="10">TVA 10%</option>
-          <option value="5.5">TVA 5,5%</option>
-          <option value="custom">Taux personnalisé</option>
+          <option value="non">Non soumis à TVA</option><option value="20">TVA 20%</option>
+          <option value="10">TVA 10%</option><option value="5.5">TVA 5,5%</option><option value="custom">Taux personnalisé</option>
         </select>
       </div>
       <div class="fgroup" id="tva-custom-wrap" style="display:none"><label class="flabel">Taux %</label><input class="finput" id="d-tva-custom" type="number" oninput="renderDocLines()"></div>
     </div>
-
     <div class="section-divider"></div>
     <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--orange);margin-bottom:10px">💳 Conditions</div>
     <div class="frow">
       <div class="fgroup"><label class="flabel">Mode de paiement</label>
         <select class="finput" id="d-payment">
-          <option value="">— Non précisé —</option>
-          <option>Virement bancaire</option><option>Chèque</option><option>Espèces</option>
-          <option>CB</option><option>PayPal</option><option>Lydia / Sumeria</option>
+          <option value="">— Non précisé —</option><option>Virement bancaire</option><option>Chèque</option>
+          <option>Espèces</option><option>CB</option><option>PayPal</option><option>Lydia / Sumeria</option>
         </select>
       </div>
       <div class="fgroup"><label class="flabel">Acompte (%)</label><input class="finput" id="d-acompte" type="number" placeholder="0" min="0" max="100"></div>
     </div>
-    <div class="fgroup"><label class="flabel">Informations complémentaires</label>
-      <textarea class="note-area" id="dnotes" style="min-height:70px" placeholder="Articles live, conditions particulières…"></textarea>
-    </div>
+    <div class="fgroup"><label class="flabel">Informations complémentaires</label><textarea class="note-area" id="dnotes" style="min-height:70px" placeholder="Articles live, conditions particulières…"></textarea></div>
     <button class="btn orange" style="width:100%;justify-content:center;padding:12px;margin-top:4px" id="modal-doc-submit-btn" onclick="createOrUpdateDoc()">✓ Créer &amp; sauvegarder</button>
   </div>
 </div>
 
-<!-- MODAL VIEW DOC -->
 <div class="overlay" id="modal-doc">
   <div class="modal xl">
     <div class="modal-title" id="mdoc-title">Document <button class="modal-close" onclick="closeModal('modal-doc')">✕</button></div>
@@ -560,25 +515,20 @@ const SUPABASE_KEY = 'sb_publishable_rEfoyYQ624Y6TvFFv4v4Qw_pKyahZRL';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function syncSet(state){
-  const d = g('sync-dot');
-  const label = g('sync-label');
-  if(!d || !label){ console.warn('sync-dot ou sync-label introuvable'); return; }
-  d.className = 'sync-dot ' + state;
-  label.textContent = state === 'syncing' ? 'Sync…' : state === 'ok' ? 'Sauvegardé' : 'Erreur sync';
+  const d=g('sync-dot'), label=g('sync-label');
+  if(!d||!label)return;
+  d.className='sync-dot '+state;
+  label.textContent=state==='syncing'?'Sync…':state==='ok'?'Sauvegardé':'Erreur sync';
 }
 
+// ═══ STATE ═══════════════════════════════════════════════════
 let live=null, liveIsReadonly=false, selPanier=null;
-let liveHistory=[];
-let catalogue=[];
-let documents=[];
-let docLines=[];
-let docRemises=[];        // [{desc, type:'percent'|'fixed', value}]
-let editingDocId=null;    // null = nouveau, sinon id du doc en édition
-let devNum=1, facNum=1;
-let currentDocId=null;
-let panierSaveTimer=null;
+let liveHistory=[], catalogue=[], documents=[];
+let docLines=[], docRemises=[], editingDocId=null;
+let devNum=1, facNum=1, currentDocId=null, panierSaveTimer=null;
 let settings={name:'FC Événement',type:'Association loi 1901',siret:'',tva:'',addr:'',cp:'',city:'Dunkerque',tel:'',email:'',web:'',iban:'',mentions:'',logo:null};
 
+// ═══ UTILS ═══════════════════════════════════════════════════
 const g=id=>document.getElementById(id);
 const v=id=>(g(id)?.value||'').trim();
 function toast(msg,type='ok'){
@@ -590,48 +540,43 @@ function toast(msg,type='ok'){
 }
 function openModal(id){g(id).classList.add('open')}
 function closeModal(id){g(id).classList.remove('open')}
-document.querySelectorAll('.overlay').forEach(m=>{
-  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')});
-});
+document.querySelectorAll('.overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')})});
 function fmt(n){return Number(n||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €'}
 function fmtN(n){return Number(n||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})}
 function fmtDate(d){return d?new Date(d).toLocaleDateString('fr-FR'):''}
 
+// ═══ LOGIQUE VERROU PANIER ════════════════════════════════════
+// Un panier est "locked" (non-modifiable) uniquement si :
+//   → le live est terminé (liveIsReadonly=true) ET le panier est clôturé
+// Un panier OUVERT sur un live terminé reste entièrement modifiable.
+function isPanierLocked(p){ return liveIsReadonly && !!p?.closed; }
+// Le live est "éditable" (sauvegardes autorisées) s'il est actif OU terminé
+function isLiveEditable(){ return !!live && (live.status==='active'||live.status==='ended'); }
+
+// ═══ INIT ════════════════════════════════════════════════════
 async function init(){
-  try {
-    setLoadingMsg('Chargement du catalogue…');
-    await loadCatalogue();
-    setLoadingMsg('Chargement des paramètres…');
-    await loadSettings();
-    setLoadingMsg('Chargement des lives…');
-    await loadLiveHistory();
-    setLoadingMsg('Chargement des documents…');
-    await loadDocuments();
-    setLoadingMsg('Prêt ✓');
-    await sleep(300);
+  try{
+    setLoadingMsg('Chargement du catalogue…');await loadCatalogue();
+    setLoadingMsg('Chargement des paramètres…');await loadSettings();
+    setLoadingMsg('Chargement des lives…');await loadLiveHistory();
+    setLoadingMsg('Chargement des documents…');await loadDocuments();
+    setLoadingMsg('Prêt ✓');await sleep(300);
     g('loading-screen').style.display='none';
     g('app').style.display='grid';
     g('live-date').value=new Date().toISOString().split('T')[0];
     g('dd').value=new Date().toISOString().split('T')[0];
-    updateDocType();
-    syncSet('ok');
+    updateDocType();syncSet('ok');
     await checkActiveLive();
-  } catch(err){
-    setLoadingMsg('❌ Erreur: '+err.message+'. Vérifiez que les tables SQL sont créées.');
-    console.error(err);
-    syncSet('err');
-    setTimeout(()=>{
-      g('loading-screen').style.display='none';
-      g('app').style.display='grid';
-      g('live-date').value=new Date().toISOString().split('T')[0];
-      g('dd').value=new Date().toISOString().split('T')[0];
-      updateDocType();
-    },2000);
+  }catch(err){
+    setLoadingMsg('❌ Erreur: '+err.message);
+    console.error(err);syncSet('err');
+    setTimeout(()=>{g('loading-screen').style.display='none';g('app').style.display='grid';g('live-date').value=new Date().toISOString().split('T')[0];g('dd').value=new Date().toISOString().split('T')[0];updateDocType();},2000);
   }
 }
 function setLoadingMsg(msg){g('loading-msg').textContent=msg}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 
+// ═══ NAVIGATION ══════════════════════════════════════════════
 function switchTab(name,btn){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   g('view-'+name).classList.add('active');
@@ -642,8 +587,9 @@ function switchTab(name,btn){
   if(name==='settings')renderSettingsForm();
 }
 
+// Nouveau live depuis la bannière historique
 function goNewLive(){
-  live=null; selPanier=null; liveIsReadonly=false;
+  live=null;selPanier=null;liveIsReadonly=false;
   g('live-active').style.display='none';
   g('live-ind').style.display='none';
   g('topbar-right').innerHTML=`<div class="sync-dot ok" id="sync-dot"></div><span id="sync-label" style="font-size:11px;color:var(--muted)">Supabase</span>`;
@@ -656,161 +602,104 @@ function goNewLive(){
   g('view-live').classList.add('active');
 }
 
-// ── CATALOGUE ─────────────────────────────────────────────────
+// ═══ CATALOGUE ═══════════════════════════════════════════════
 async function loadCatalogue(){
   const {data,error}=await sb.from('catalogue').select('*').order('id');
   if(error)throw error;
   catalogue=data||[];
   if(!catalogue.length){
-    const defaults=[
-      {name:'T-shirt',price:20,emoji:'👕',cat:'Vêtements'},
-      {name:'Casquette',price:15,emoji:'🧢',cat:'Accessoires'},
-      {name:'Sweat',price:40,emoji:'🧥',cat:'Vêtements'},
-      {name:'Écharpe',price:12,emoji:'🧣',cat:'Accessoires'},
-      {name:'Peluche mascotte',price:25,emoji:'🧸',cat:'Mascotte'},
-    ];
+    const defaults=[{name:'T-shirt',price:20,emoji:'👕',cat:'Vêtements'},{name:'Casquette',price:15,emoji:'🧢',cat:'Accessoires'},{name:'Sweat',price:40,emoji:'🧥',cat:'Vêtements'},{name:'Écharpe',price:12,emoji:'🧣',cat:'Accessoires'},{name:'Peluche mascotte',price:25,emoji:'🧸',cat:'Mascotte'}];
     const {data:d2}=await sb.from('catalogue').insert(defaults).select();
     catalogue=d2||[];
   }
 }
-
 async function addCatItem(){
-  const name=v('nc-name'),price=parseFloat(v('nc-price'))||0;
-  const emoji=v('nc-emoji')||'📦',cat=v('nc-cat');
+  const name=v('nc-name'),price=parseFloat(v('nc-price'))||0,emoji=v('nc-emoji')||'📦',cat=v('nc-cat');
   if(!name){toast('Nom requis','err');return;}
   syncSet('syncing');
   const {data,error}=await sb.from('catalogue').insert({name,price,emoji,cat}).select().single();
   if(error){toast('Erreur: '+error.message,'err');syncSet('err');return;}
-  catalogue.push(data);
-  closeModal('modal-cat');
+  catalogue.push(data);closeModal('modal-cat');
   ['nc-name','nc-price','nc-emoji'].forEach(id=>g(id).value='');
-  renderCatalogue();renderQuickChips();
-  syncSet('ok');toast(name+' ajouté au catalogue');
+  renderCatalogue();renderQuickChips();syncSet('ok');toast(name+' ajouté au catalogue');
 }
-
 async function delCatItem(id){
   if(!confirm('Supprimer cet article ?'))return;
   syncSet('syncing');
   const {error}=await sb.from('catalogue').delete().eq('id',id);
   if(error){toast('Erreur','err');syncSet('err');return;}
-  catalogue=catalogue.filter(a=>a.id!==id);
-  renderCatalogue();renderQuickChips();
-  syncSet('ok');toast('Article supprimé');
+  catalogue=catalogue.filter(a=>a.id!==id);renderCatalogue();renderQuickChips();syncSet('ok');toast('Article supprimé');
 }
-
 function renderCatalogue(){
   const el=g('cat-grid');
   if(!catalogue.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:20px">Aucun article.</div>';return;}
-  el.innerHTML=catalogue.map(a=>`
-    <div class="cat-card">
-      <div class="cat-emoji">${a.emoji}</div>
-      <div class="cat-name">${a.name}</div>
-      <div class="cat-price">${a.price}€</div>
-      <div class="cat-tag">${a.cat}</div>
-      <button class="cat-del" onclick="delCatItem(${a.id})">✕ Supprimer</button>
-    </div>`).join('');
+  el.innerHTML=catalogue.map(a=>`<div class="cat-card"><div class="cat-emoji">${a.emoji}</div><div class="cat-name">${a.name}</div><div class="cat-price">${a.price}€</div><div class="cat-tag">${a.cat}</div><button class="cat-del" onclick="delCatItem(${a.id})">✕ Supprimer</button></div>`).join('');
 }
 
-// ── SETTINGS ──────────────────────────────────────────────────
+// ═══ SETTINGS ════════════════════════════════════════════════
 async function loadSettings(){
   const {data,error}=await sb.from('settings').select('*').single();
   if(error||!data)return;
-  const d=data.data||{};
-  settings={...settings,...d};
-  devNum=data.dev_num||1;
-  facNum=data.fac_num||1;
+  const d=data.data||{};settings={...settings,...d};devNum=data.dev_num||1;facNum=data.fac_num||1;
 }
-
 async function saveSettings(){
-  settings.name=v('s-name');settings.type=v('s-type');settings.siret=v('s-siret');
-  settings.tva=v('s-tva');settings.addr=v('s-addr');settings.cp=v('s-cp');
-  settings.city=v('s-city');settings.tel=v('s-tel');settings.email=v('s-email');
-  settings.web=v('s-web');settings.iban=v('s-iban');settings.mentions=v('s-mentions');
-  devNum=parseInt(v('s-dev-start')) || 1;
-  facNum=parseInt(v('s-fac-start')) || 1;
+  settings.name=v('s-name');settings.type=v('s-type');settings.siret=v('s-siret');settings.tva=v('s-tva');
+  settings.addr=v('s-addr');settings.cp=v('s-cp');settings.city=v('s-city');settings.tel=v('s-tel');
+  settings.email=v('s-email');settings.web=v('s-web');settings.iban=v('s-iban');settings.mentions=v('s-mentions');
+  devNum=parseInt(v('s-dev-start'))||1;facNum=parseInt(v('s-fac-start'))||1;
   syncSet('syncing');
-  const { data: existing } = await sb.from('settings').select('*').limit(1);
+  const {data:existing}=await sb.from('settings').select('*').limit(1);
   let error;
-  if(existing && existing.length > 0){
-    ({ error } = await sb.from('settings').update({data:settings,dev_num:devNum,fac_num:facNum,updated_at:new Date().toISOString()}).eq('id', existing[0].id));
-  } else {
-    ({ error } = await sb.from('settings').insert({data:settings,dev_num:devNum,fac_num:facNum,updated_at:new Date().toISOString()}));
-  }
-  if(error){console.error(error);toast('Erreur sauvegarde : '+error.message,'err');syncSet('err');return;}
+  if(existing&&existing.length>0){({error}=await sb.from('settings').update({data:settings,dev_num:devNum,fac_num:facNum,updated_at:new Date().toISOString()}).eq('id',existing[0].id));}
+  else{({error}=await sb.from('settings').insert({data:settings,dev_num:devNum,fac_num:facNum,updated_at:new Date().toISOString()}));}
+  if(error){toast('Erreur: '+error.message,'err');syncSet('err');return;}
   syncSet('ok');toast('Paramètres sauvegardés ✓');
 }
-
 function renderSettingsForm(){
-  g('s-name').value=settings.name||'';g('s-type').value=settings.type||'';
-  g('s-siret').value=settings.siret||'';g('s-tva').value=settings.tva||'';
-  g('s-addr').value=settings.addr||'';g('s-cp').value=settings.cp||'';
-  g('s-city').value=settings.city||'';g('s-tel').value=settings.tel||'';
-  g('s-email').value=settings.email||'';g('s-web').value=settings.web||'';
-  g('s-iban').value=settings.iban||'';g('s-mentions').value=settings.mentions||'';
-  g('s-dev-start').value=devNum;g('s-fac-start').value=facNum;
-  updateLogoPreview();
+  g('s-name').value=settings.name||'';g('s-type').value=settings.type||'';g('s-siret').value=settings.siret||'';
+  g('s-tva').value=settings.tva||'';g('s-addr').value=settings.addr||'';g('s-cp').value=settings.cp||'';
+  g('s-city').value=settings.city||'';g('s-tel').value=settings.tel||'';g('s-email').value=settings.email||'';
+  g('s-web').value=settings.web||'';g('s-iban').value=settings.iban||'';g('s-mentions').value=settings.mentions||'';
+  g('s-dev-start').value=devNum;g('s-fac-start').value=facNum;updateLogoPreview();
 }
-
-function handleLogo(input){
-  const file=input.files[0];if(!file)return;
-  const r=new FileReader();
-  r.onload=e=>{settings.logo=e.target.result;updateLogoPreview();toast('Logo chargé — pensez à sauvegarder','info')};
-  r.readAsDataURL(file);
-}
+function handleLogo(input){const file=input.files[0];if(!file)return;const r=new FileReader();r.onload=e=>{settings.logo=e.target.result;updateLogoPreview();toast('Logo chargé — pensez à sauvegarder','info')};r.readAsDataURL(file);}
 function deleteLogo(){settings.logo=null;updateLogoPreview();}
 function updateLogoPreview(){
   const wrap=g('logo-preview-wrap'),btn=g('del-logo-btn');
-  if(settings.logo){
-    wrap.innerHTML=`<img src="${settings.logo}" class="logo-preview"><div style="font-size:12px;color:var(--muted);margin-top:6px">Cliquer pour changer</div>`;
-    btn.style.display='inline-flex';
-  } else {
-    wrap.innerHTML=`<div style="font-size:32px">🖼️</div><div style="font-size:13px;color:var(--muted);margin-top:8px">Cliquer pour choisir un logo</div>`;
-    btn.style.display='none';
-  }
+  if(settings.logo){wrap.innerHTML=`<img src="${settings.logo}" class="logo-preview"><div style="font-size:12px;color:var(--muted);margin-top:6px">Cliquer pour changer</div>`;btn.style.display='inline-flex';}
+  else{wrap.innerHTML=`<div style="font-size:32px">🖼️</div><div style="font-size:13px;color:var(--muted);margin-top:8px">Cliquer pour choisir un logo</div>`;btn.style.display='none';}
 }
 
-// ── LIVES ─────────────────────────────────────────────────────
+// ═══ LIVES ═══════════════════════════════════════════════════
 async function loadLiveHistory(){
   const {data,error}=await sb.from('lives').select('*').eq('status','ended').order('created_at',{ascending:false});
   if(error)throw error;
   liveHistory=[];
-  for(const l of(data||[])){
-    const liveObj=await fetchFullLive(l.uid);
-    if(liveObj)liveHistory.push(liveObj);
-  }
+  for(const l of(data||[])){const liveObj=await fetchFullLive(l.uid);if(liveObj)liveHistory.push(liveObj);}
   renderHistory();
 }
-
 async function checkActiveLive(){
   const {data,error}=await sb.from('lives').select('*').eq('status','active').order('created_at',{ascending:false}).limit(1);
   if(error||!data?.length)return;
   const l=data[0];
   if(confirm(`Un live actif trouvé : "${l.name}". Reprendre ?`)){
     const liveObj=await fetchFullLive(l.uid);
-    if(liveObj){
-      live=liveObj;liveIsReadonly=false;selPanier=null;
-      showLiveActive();switchTab('live',document.querySelector('.topbar-tab'));
-    }
+    if(liveObj){live=liveObj;liveIsReadonly=false;selPanier=null;showLiveActive();switchTab('live',document.querySelector('.topbar-tab'));}
   }
 }
-
 async function fetchFullLive(uid){
   const {data:lRow}=await sb.from('lives').select('*').eq('uid',uid).single();
   if(!lRow)return null;
   const {data:panRows}=await sb.from('paniers').select('*').eq('live_uid',uid).order('num');
   const {data:itemRows}=await sb.from('panier_items').select('*').eq('live_uid',uid);
-  const nb=lRow.nb;
-  const paniers=[];
+  const nb=lRow.nb,paniers=[];
   for(let i=1;i<=nb;i++){
     const pr=panRows?.find(p=>p.num===i);
-    const items=(itemRows||[]).filter(it=>it.panier_num===i).map(it=>({
-      id:it.id,catId:it.cat_id,name:it.name,price:Number(it.price),emoji:it.emoji,qty:it.qty
-    }));
+    const items=(itemRows||[]).filter(it=>it.panier_num===i).map(it=>({id:it.id,catId:it.cat_id,name:it.name,price:Number(it.price),emoji:it.emoji,qty:it.qty}));
     paniers.push({num:i,name:pr?.name||'',note:pr?.note||'',closed:pr?.closed||false,items});
   }
   return{uid:lRow.uid,id:lRow.uid,name:lRow.name,date:lRow.date,nb,status:lRow.status,paniers};
 }
-
 async function startLive(){
   const name=v('live-name')||('Live du '+new Date().toLocaleDateString('fr-FR'));
   const nb=parseInt(v('live-nb'))||80;
@@ -820,17 +709,12 @@ async function startLive(){
   const {error}=await sb.from('lives').insert({uid,name,date,nb,status:'active'});
   if(error){toast('Erreur création live: '+error.message,'err');syncSet('err');return;}
   const panierRows=Array.from({length:nb},(_,i)=>({live_uid:uid,num:i+1,name:'',note:'',closed:false}));
-  for(let i=0;i<panierRows.length;i+=100){
-    await sb.from('paniers').insert(panierRows.slice(i,i+100));
-  }
+  for(let i=0;i<panierRows.length;i+=100)await sb.from('paniers').insert(panierRows.slice(i,i+100));
   live={uid,id:uid,name,date,nb,status:'active',paniers:Array.from({length:nb},(_,i)=>({num:i+1,name:'',items:[],note:'',closed:false}))};
-  liveIsReadonly=false;selPanier=null;
-  syncSet('ok');showLiveActive();
-  toast(`Live démarré — ${nb} paniers`);
+  liveIsReadonly=false;selPanier=null;syncSet('ok');showLiveActive();toast(`Live démarré — ${nb} paniers`);
 }
-
 async function endLive(){
-  if(!live||!confirm('Terminer ce live ? Il sera archivé en lecture seule.'))return;
+  if(!live||!confirm('Terminer ce live ? Les paniers ouverts resteront modifiables depuis l\'historique.'))return;
   syncSet('syncing');
   const {error}=await sb.from('lives').update({status:'ended',ended_at:new Date().toISOString()}).eq('uid',live.uid);
   if(error){toast('Erreur','err');syncSet('err');return;}
@@ -846,7 +730,6 @@ async function endLive(){
   g('live-date').value=new Date().toISOString().split('T')[0];
   syncSet('ok');toast('Live terminé et archivé ✓');
 }
-
 async function addPaniers(n){
   if(!live||liveIsReadonly)return;
   const start=live.paniers.length+1;
@@ -855,32 +738,31 @@ async function addPaniers(n){
   const rows=newPaniers.map(p=>({live_uid:live.uid,num:p.num,name:'',note:'',closed:false}));
   const {error}=await sb.from('paniers').insert(rows);
   if(error){toast('Erreur','err');syncSet('err');return;}
-  live.paniers.push(...newPaniers);
-  live.nb=live.paniers.length;
+  live.paniers.push(...newPaniers);live.nb=live.paniers.length;
   await sb.from('lives').update({nb:live.nb}).eq('uid',live.uid);
-  renderGrid();updateStats();syncSet('ok');
-  toast(n===1?`Panier ${start} ajouté`:`${n} paniers ajoutés`);
+  renderGrid();updateStats();syncSet('ok');toast(n===1?`Panier ${start} ajouté`:`${n} paniers ajoutés`);
   setTimeout(()=>{const last=g('paniers-grid').lastElementChild;if(last)last.scrollIntoView({behavior:'smooth',block:'center'})},100);
 }
 
+// ─── SAUVEGARDE PANIER ────────────────────────────────────────
+// debouncedSavePanier : ne rien faire si panier verrouillé
 function debouncedSavePanier(){
-  const p=panierOf(selPanier);if(!p)return;
-  p.name=g('pp-name').value;
-  p.note=g('pp-note').value;
+  const p=panierOf(selPanier);
+  if(!p||isPanierLocked(p))return;
+  p.name=g('pp-name').value;p.note=g('pp-note').value;
   renderGrid();
   clearTimeout(panierSaveTimer);
   panierSaveTimer=setTimeout(()=>savePanierMeta(p),800);
 }
-
+// Permet la sauvegarde sur live actif OU terminé (mais pas si locked)
 async function savePanierMeta(p){
-  if(!live||liveIsReadonly)return;
+  if(!live||!isLiveEditable())return;
   syncSet('syncing');
   const {error}=await sb.from('paniers').upsert({live_uid:live.uid,num:p.num,name:p.name,note:p.note,closed:p.closed,updated_at:new Date().toISOString()},{onConflict:'live_uid,num'});
   if(!error)syncSet('ok');else syncSet('err');
 }
-
 async function savePanierItems(p){
-  if(!live||liveIsReadonly)return;
+  if(!live||!isLiveEditable())return;
   syncSet('syncing');
   await sb.from('panier_items').delete().eq('live_uid',live.uid).eq('panier_num',p.num);
   if(p.items.length){
@@ -891,6 +773,7 @@ async function savePanierItems(p){
   syncSet('ok');
 }
 
+// ─── LIVE UI ──────────────────────────────────────────────────
 function showLiveActive(){
   g('start-screen').style.display='none';
   const la=g('live-active');
@@ -899,15 +782,13 @@ function showLiveActive(){
   g('live-ind').style.display=ro?'none':'flex';
   g('history-banner').style.display=ro?'flex':'none';
   g('live-only-btns').style.display=ro?'none':'flex';
-  g('pp-action-btns').style.display=ro?'none':'flex';
-  g('manual-add-bar').style.display=ro?'none':'flex';
-  g('cat-chips-sep').style.display=ro?'none':'flex';
-  g('quick-chips').style.display=ro?'none':'flex';
-  g('manual-sep').style.display=ro?'none':'flex';
-  g('readonly-warning').style.display=ro?'flex':'none';
-  g('pp-name').readOnly=ro;g('pp-note').readOnly=ro;
-  if(!ro)g('topbar-right').innerHTML=`<div class="sync-dot ok" id="sync-dot"></div><span id="sync-label" style="font-size:11px;color:var(--muted)">Supabase</span>`;
-  else g('topbar-right').innerHTML=`<span style="font-size:12px;color:var(--muted)">📼 ${live.name}</span>`;
+  // Les contrôles d'édition sont gérés panier par panier dans showPanierPanel (via isPanierLocked)
+  g('readonly-warning').style.display='none';
+  if(!ro){
+    g('topbar-right').innerHTML=`<div class="sync-dot ok" id="sync-dot"></div><span id="sync-label" style="font-size:11px;color:var(--muted)">Supabase</span>`;
+  } else {
+    g('topbar-right').innerHTML=`<span style="font-size:12px;color:var(--muted)">📼 ${live.name} · <span style="color:var(--orange2)">paniers ouverts modifiables</span></span>`;
+  }
   renderGrid();updateStats();renderQuickChips();
 }
 
@@ -919,10 +800,15 @@ function renderGrid(){
   if(!live){g2.innerHTML='';return;}
   g2.innerHTML=live.paniers.map(p=>{
     const tot=panierTotal(p);
+    const locked=isPanierLocked(p);
     const dotClass=p.closed?'closed':(p.items.length||p.note)?'filled':'open';
-    const cardClass=[selPanier===p.num?'active':'',p.closed?'closed':(p.items.length||p.note)?'has-items':'',liveIsReadonly?'readonly':''].filter(Boolean).join(' ');
-    return `<div class="p-btn ${cardClass}" onclick="${liveIsReadonly?'viewPanierReadonly':'selectPanier'}(${p.num})">
-      <div class="p-dot ${dotClass}"></div>
+    // locked-closed = live terminé + clôturé. has-items = a des articles mais pas clôturé.
+    const cardClass=[
+      selPanier===p.num?'active':'',
+      locked?'locked-closed':p.closed?'closed':(p.items.length||p.note)?'has-items':''
+    ].filter(Boolean).join(' ');
+    return `<div class="p-btn ${cardClass}" onclick="selectPanier(${p.num})" title="Panier ${p.num}${p.name?' — '+p.name:''}${locked?' 🔒 clôturé':p.closed?' clôturé':''}">
+      ${locked?`<div class="p-lock">🔒</div>`:`<div class="p-dot ${dotClass}"></div>`}
       <div class="p-num">${p.num}</div>
       ${p.name?`<div class="p-name">${p.name.split(' ')[0]}</div>`:''}
       ${tot>0?`<div class="p-tot">${tot}€</div>`:''}
@@ -931,14 +817,12 @@ function renderGrid(){
   if(!liveIsReadonly)g2.innerHTML+=`<div class="p-add" onclick="addPaniers(1)" title="Ajouter 1 panier">＋</div>`;
 }
 
+// selectPanier gère maintenant actif ET historique (plus de viewPanierReadonly séparé)
 function selectPanier(num){
-  if(liveIsReadonly)return;
-  selPanier=(selPanier===num)?null:num;
+  selPanier=(selPanier===num&&!liveIsReadonly)?null:num;
   renderGrid();
   if(selPanier)showPanierPanel();else hidePanierPanel();
 }
-
-function viewPanierReadonly(num){selPanier=num;renderGrid();showPanierPanel();}
 
 function showPanierPanel(){
   const p=panierOf(selPanier);if(!p)return;
@@ -950,7 +834,21 @@ function showPanierPanel(){
   else{badge.textContent='En cours';badge.style.background='var(--green-dim)';badge.style.color='var(--green)';}
   g('pp-name').value=p.name||'';
   g('pp-note').value=p.note||'';
-  if(!liveIsReadonly)g('pp-close-btn').textContent=p.closed?'↩ Réouvrir':'✓ Clôturer';
+
+  // ── LOGIQUE CLÉ : per-panier, pas per-live ──
+  // locked = live terminé ET panier clôturé → tout verrouillé
+  // ouvert sur live terminé → tout modifiable sauf "réouvrir" (car clôturé=false donc ça ne se pose pas)
+  const locked=isPanierLocked(p);
+  g('pp-action-btns').style.display=locked?'none':'flex';
+  g('manual-add-bar').style.display=locked?'none':'flex';
+  g('cat-chips-sep').style.display=locked?'none':'flex';
+  g('quick-chips').style.display=locked?'none':'flex';
+  g('manual-sep').style.display=locked?'none':'flex';
+  g('readonly-warning').style.display=locked?'flex':'none';
+  g('pp-name').readOnly=locked;
+  g('pp-note').readOnly=locked;
+  if(!locked)g('pp-close-btn').textContent=p.closed?'↩ Réouvrir':'✓ Clôturer';
+
   renderArtsList();renderQuickChips();
 }
 
@@ -964,18 +862,20 @@ function renderArtsList(){
   g('pp-note-indicator').textContent=p.note?'📝 Note présente':'';
   const el=g('arts-list');
   if(!p.items.length){el.innerHTML=`<div style="color:var(--muted2);font-size:12px;padding:10px 0">Aucun article.</div>`;return;}
+  // locked = affichage lecture seule des articles
+  const locked=isPanierLocked(p);
   el.innerHTML=p.items.map((it,idx)=>`
     <div class="art-row">
       <div class="art-emoji">${it.emoji||'📦'}</div>
       <div class="art-name">${it.name}</div>
-      ${liveIsReadonly?`<div style="margin-left:auto;font-size:12px;color:var(--muted)">${it.qty}×</div>`:`
+      ${locked?`<div style="margin-left:auto;font-size:12px;color:var(--muted)">${it.qty}×</div>`:`
       <div class="qty-ctrl">
         <button class="qty-btn" onclick="chgQty(${idx},-1)">−</button>
         <div class="qty-num">${it.qty}</div>
         <button class="qty-btn" onclick="chgQty(${idx},1)">+</button>
       </div>`}
       <div class="art-price">${it.price*it.qty}€</div>
-      ${liveIsReadonly?'':`<button class="del-btn" onclick="delItem(${idx})">✕</button>`}
+      ${locked?'':`<button class="del-btn" onclick="delItem(${idx})">✕</button>`}
     </div>`).join('');
 }
 
@@ -984,82 +884,68 @@ function renderQuickChips(){
   el.innerHTML=catalogue.map(a=>`<div class="qchip" onclick="addFromCat(${a.id})">${a.emoji} ${a.name} <span class="qchip-price">${a.price}€</span></div>`).join('');
 }
 
+// ─── ACTIONS PANIER ──────────────────────────────────────────
 async function addFromCat(id){
-  if(liveIsReadonly)return;
+  if(isPanierLocked(panierOf(selPanier)))return;
   const art=catalogue.find(a=>a.id===id),p=panierOf(selPanier);
   if(!art||!p)return;
   const ex=p.items.find(i=>i.catId===id);
   if(ex)ex.qty++;else p.items.push({catId:id,name:art.name,price:Number(art.price),emoji:art.emoji,qty:1});
-  renderArtsList();renderGrid();updateStats();
-  await savePanierItems(p);
+  renderArtsList();renderGrid();updateStats();await savePanierItems(p);
 }
-
 async function addManual(){
-  if(liveIsReadonly)return;
+  if(isPanierLocked(panierOf(selPanier)))return;
   const name=v('ma-name'),price=parseFloat(v('ma-price'))||0,p=panierOf(selPanier);
   if(!name||!p){if(!name)toast('Nom requis','err');return;}
   p.items.push({name,price,emoji:'📦',qty:1});
   g('ma-name').value='';g('ma-price').value='';
-  renderArtsList();renderGrid();updateStats();
-  await savePanierItems(p);
-  toast(name+' ajouté');
+  renderArtsList();renderGrid();updateStats();await savePanierItems(p);toast(name+' ajouté');
 }
-
 async function chgQty(idx,delta){
-  if(liveIsReadonly)return;
+  if(isPanierLocked(panierOf(selPanier)))return;
   const p=panierOf(selPanier);if(!p)return;
   p.items[idx].qty=Math.max(1,p.items[idx].qty+delta);
-  renderArtsList();renderGrid();updateStats();
-  await savePanierItems(p);
+  renderArtsList();renderGrid();updateStats();await savePanierItems(p);
 }
-
 async function delItem(idx){
-  if(liveIsReadonly)return;
+  if(isPanierLocked(panierOf(selPanier)))return;
   const p=panierOf(selPanier);if(!p)return;
-  p.items.splice(idx,1);
-  renderArtsList();renderGrid();updateStats();
-  await savePanierItems(p);
+  p.items.splice(idx,1);renderArtsList();renderGrid();updateStats();await savePanierItems(p);
 }
-
 async function toggleClose(){
-  if(liveIsReadonly)return;
+  // Sur live terminé : on peut clôturer un panier ouvert, mais PAS réouvrir un panier clôturé
   const p=panierOf(selPanier);if(!p)return;
+  if(liveIsReadonly&&p.closed)return; // verrouillé : ne peut pas réouvrir
   p.closed=!p.closed;
   showPanierPanel();renderGrid();updateStats();
   await savePanierMeta(p);
   toast(p.closed?`Panier ${p.num} clôturé`:`Panier ${p.num} réouvert`);
 }
-
 async function clearPanier(){
-  if(liveIsReadonly)return;
+  if(isPanierLocked(panierOf(selPanier)))return;
   const p=panierOf(selPanier);
   if(!p||!confirm('Vider ce panier ?'))return;
   p.items=[];p.note='';p.name='';
   showPanierPanel();renderGrid();updateStats();
-  await savePanierMeta(p);
-  await savePanierItems(p);
-  toast('Panier vidé');
+  await savePanierMeta(p);await savePanierItems(p);toast('Panier vidé');
 }
-
 function jumpTo(){
   const num=parseInt(v('jump-input'));if(!num||!live)return;
   if(num<1||num>live.paniers.length){toast('Panier introuvable','err');return;}
-  g('jump-input').value='';
-  liveIsReadonly?viewPanierReadonly(num):selectPanier(num);
+  g('jump-input').value='';selPanier=num;
+  renderGrid();showPanierPanel();
   const btns=g('paniers-grid').querySelectorAll('.p-btn');
   const t=btns[num-1];if(t)t.scrollIntoView({behavior:'smooth',block:'center'});
 }
-
 function updateStats(){
   if(!live)return;
   const active=live.paniers.filter(p=>p.items.length||p.note).length;
   const closed=live.paniers.filter(p=>p.closed).length;
   const total=live.paniers.reduce((s,p)=>s+panierTotal(p),0);
-  g('st-paniers').textContent=active;
-  g('st-total').textContent=total+' €';
-  g('st-clos').textContent=closed;
+  g('st-paniers').textContent=active;g('st-total').textContent=total+' €';g('st-clos').textContent=closed;
 }
 
+// ─── RÉCAP ───────────────────────────────────────────────────
 function showRecap(){
   if(!live)return;
   const active=live.paniers.filter(p=>p.items.length||p.note);
@@ -1084,6 +970,7 @@ function showRecap(){
   openModal('modal-recap');
 }
 
+// ─── HISTORIQUE ───────────────────────────────────────────────
 function renderHistory(){
   const el=g('history-list');
   if(!liveHistory.length){el.innerHTML='<div style="font-size:12px;color:var(--muted2);padding:8px 0">Aucun live terminé.</div>';return;}
@@ -1100,45 +987,62 @@ function renderHistory(){
     </div>`;
   }).join('');
 }
-
 function viewHistory(idx){
   const l=liveHistory[idx];if(!l)return;
   live=JSON.parse(JSON.stringify(l));
+  live.status='ended'; // assurer le statut
   selPanier=null;liveIsReadonly=true;
   hidePanierPanel();showLiveActive();
   switchTab('live',document.querySelector('.topbar-tab'));
 }
 
-// ── IMPRESSION PANIER ─────────────────────────────────────────
+// ─── IMPRESSION PANIER ────────────────────────────────────────
 function printPanier(){
   const p=panierOf(selPanier);
   if(!p){toast('Aucun panier sélectionné','err');return;}
-  const total=panierTotal(p);
-  const artCount=p.items.reduce((s,i)=>s+i.qty,0);
-  const liveName=live?.name||'Live';
-  const liveDate=live?.date?new Date(live.date).toLocaleDateString('fr-FR'):'';
+  const total=panierTotal(p),artCount=p.items.reduce((s,i)=>s+i.qty,0);
+  const liveName=live?.name||'Live',liveDate=live?.date?new Date(live.date).toLocaleDateString('fr-FR'):'';
   const org=settings.name||'FC Événement';
   const artRows=p.items.length
-    ? p.items.map(it=>`
-        <tr>
-          <td style="padding:8px 12px;font-size:15px;border-bottom:1px solid #eee">${it.emoji||'📦'}</td>
-          <td style="padding:8px 12px;font-weight:600;border-bottom:1px solid #eee">${it.name}</td>
-          <td style="padding:8px 12px;text-align:center;border-bottom:1px solid #eee">${it.qty}</td>
-          <td style="padding:8px 12px;text-align:right;border-bottom:1px solid #eee">${it.price} €</td>
-          <td style="padding:8px 12px;text-align:right;font-weight:700;border-bottom:1px solid #eee">${it.price*it.qty} €</td>
-        </tr>`).join('')
-    : `<tr><td colspan="5" style="padding:16px;text-align:center;color:#999;font-style:italic">Aucun article</td></tr>`;
+    ?p.items.map(it=>`<tr><td style="padding:8px 12px;font-size:15px;border-bottom:1px solid #eee">${it.emoji||'📦'}</td><td style="padding:8px 12px;font-weight:600;border-bottom:1px solid #eee">${it.name}</td><td style="padding:8px 12px;text-align:center;border-bottom:1px solid #eee">${it.qty}</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid #eee">${it.price} €</td><td style="padding:8px 12px;text-align:right;font-weight:700;border-bottom:1px solid #eee">${it.price*it.qty} €</td></tr>`).join('')
+    :`<tr><td colspan="5" style="padding:16px;text-align:center;color:#999;font-style:italic">Aucun article catalogué</td></tr>`;
   const logoHtml=settings.logo?`<img src="${settings.logo}" style="max-height:60px;max-width:160px;object-fit:contain;display:block;margin-bottom:6px" alt="Logo">`:'';
   const win=window.open('','_blank');
   win.document.write(`<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>Panier ${p.num} — ${liveName}</title>
-  <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,Arial,sans-serif;padding:32px;max-width:600px;margin:0 auto;color:#111;font-size:14px;line-height:1.5}h1{font-size:22px;font-weight:800;margin-bottom:2px}.sub{font-size:13px;color:#666;margin-bottom:20px}.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #111}.badge{display:inline-block;background:#EEF;border:1px solid #99C;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;color:#336;margin-bottom:8px}.badge.clos{background:#E8F5E9;border-color:#81C784;color:#1B5E20}table{width:100%;border-collapse:collapse;margin:16px 0}th{text-align:left;padding:8px 12px;background:#f4f4f4;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#555;border-bottom:2px solid #ddd}th:last-child,th:nth-child(3){text-align:right}th:nth-child(3){text-align:center}.total-row{display:flex;justify-content:flex-end;margin-top:8px}.total-box{background:#f4f4f4;border-radius:8px;padding:12px 20px;text-align:right}.total-label{font-size:12px;color:#666;margin-bottom:4px}.total-amount{font-size:28px;font-weight:800;color:#1a1a1a}.note-box{margin-top:20px;padding:14px;background:#FFFBF0;border:1px solid #F5C842;border-radius:8px}.note-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8a6a00;margin-bottom:6px}.note-text{font-size:13px;white-space:pre-wrap;color:#333}.client-box{background:#f9f9f9;border:1px solid #ddd;border-radius:8px;padding:12px 16px;margin-bottom:20px}.client-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:4px}.client-name{font-size:18px;font-weight:800}.footer{margin-top:28px;padding-top:14px;border-top:1px solid #ddd;display:flex;justify-content:space-between;font-size:11px;color:#999}@media print{body{padding:20px}@page{margin:10mm}}</style>
+  <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,Arial,sans-serif;padding:32px;max-width:600px;margin:0 auto;color:#111;font-size:14px;line-height:1.5}
+  .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #111}
+  .badge{display:inline-block;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700}
+  .badge.open{background:#ECFDF5;border:1px solid #81C784;color:#1B5E20}
+  .badge.clos{background:#EFF6FF;border:1px solid #93C5FD;color:#1E40AF}
+  .client-box{background:#f9f9f9;border:1px solid #ddd;border-radius:8px;padding:12px 16px;margin-bottom:20px}
+  .client-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:4px}
+  .client-name{font-size:18px;font-weight:800}
+  table{width:100%;border-collapse:collapse;margin:16px 0}
+  th{text-align:left;padding:8px 12px;background:#f4f4f4;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#555;border-bottom:2px solid #ddd}
+  th:last-child,th:nth-child(4){text-align:right}th:nth-child(3){text-align:center}
+  .total-row{display:flex;justify-content:flex-end;margin-top:8px}
+  .total-box{background:#f4f4f4;border-radius:8px;padding:12px 20px;text-align:right}
+  .total-label{font-size:12px;color:#666;margin-bottom:4px}.total-amount{font-size:28px;font-weight:800;color:#1a1a1a}
+  .note-box{margin-top:20px;padding:14px;background:#FFFBF0;border:1px solid #F5C842;border-radius:8px}
+  .note-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8a6a00;margin-bottom:6px}
+  .note-text{font-size:13px;white-space:pre-wrap;color:#333}
+  .footer{margin-top:28px;padding-top:14px;border-top:1px solid #ddd;display:flex;justify-content:space-between;font-size:11px;color:#999}
+  @media print{body{padding:20px}@page{margin:10mm}}</style>
   </head><body>
   <div class="header">
     <div>${logoHtml}<div style="font-weight:800;font-size:16px">${org}</div>${settings.type?`<div style="font-size:12px;color:#666">${settings.type}</div>`:''}</div>
-    <div style="text-align:right"><div style="font-size:11px;color:#888;margin-bottom:4px">DESCRIPTIF PANIER</div><div style="font-size:28px;font-weight:800;line-height:1">#${p.num}</div><div style="font-size:12px;color:#888;margin-top:4px">${liveName}${liveDate?' · '+liveDate:''}</div><span class="badge ${p.closed?'clos':''}">${p.closed?'✓ Clôturé':'En cours'}</span></div>
+    <div style="text-align:right">
+      <div style="font-size:11px;color:#888;margin-bottom:4px">DESCRIPTIF PANIER</div>
+      <div style="font-size:32px;font-weight:800;line-height:1">#${p.num}</div>
+      <div style="font-size:12px;color:#888;margin-top:4px">${liveName}${liveDate?' · '+liveDate:''}</div>
+      <span class="badge ${p.closed?'clos':'open'}">${p.closed?'✓ Clôturé':'En cours'}</span>
+    </div>
   </div>
-  ${p.name?`<div class="client-box"><div class="client-label">Client / Facebook</div><div class="client-name">${p.name}</div></div>`:''}
-  <table><thead><tr><th style="width:36px"></th><th>Article</th><th style="width:60px;text-align:center">Qté</th><th style="width:80px;text-align:right">PU</th><th style="width:90px;text-align:right">Total</th></tr></thead><tbody>${artRows}</tbody></table>
+  ${p.name?`<div class="client-box"><div class="client-label">Client / Facebook</div><div class="client-name">${p.name}</div></div>`:'<div class="client-box"><div class="client-label">Client</div><div style="color:#aaa;font-style:italic">Non renseigné</div></div>'}
+  <table>
+    <thead><tr><th style="width:36px"></th><th>Article</th><th style="width:60px;text-align:center">Qté</th><th style="width:80px;text-align:right">P.U.</th><th style="width:90px;text-align:right">Total</th></tr></thead>
+    <tbody>${artRows}</tbody>
+  </table>
   <div class="total-row"><div class="total-box"><div class="total-label">${artCount} article${artCount>1?'s':''}</div><div class="total-amount">${total} €</div></div></div>
   ${p.note?`<div class="note-box"><div class="note-label">📝 Note</div><div class="note-text">${p.note.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div>`:''}
   <div class="footer"><div>${org}</div><div>Panier ${p.num} · ${liveName}${liveDate?' · '+liveDate:''}</div></div>
@@ -1146,286 +1050,144 @@ function printPanier(){
   win.document.close();win.focus();setTimeout(()=>win.print(),500);
 }
 
-// ── CALCUL DES TOTAUX (avec remises) ─────────────────────────
-function calcTotals(lines, remises, tvaMode, tvaCustom){
-  const totalBrut = lines.reduce((s,l)=>s+(l.qty*l.price),0);
-  let remiseTotale = 0;
-  const remisesCalc = (remises||[]).map(r=>{
-    let montant = 0;
-    if(r.type==='percent'){
-      montant = totalBrut * (parseFloat(r.value)||0) / 100;
-    } else {
-      montant = parseFloat(r.value)||0;
-    }
-    return {...r, montant};
-  });
-  remiseTotale = remisesCalc.reduce((s,r)=>s+r.montant,0);
-  const totalHT = Math.max(0, totalBrut - remiseTotale);
-  const tvaRate = tvaMode==='non'?0 : tvaMode==='custom'?parseFloat(tvaCustom)||0 : parseFloat(tvaMode)||0;
-  const tvaAmount = totalHT * tvaRate / 100;
-  const totalTTC = totalHT + tvaAmount;
-  return {totalBrut, remisesCalc, remiseTotale, totalHT, tvaRate, tvaAmount, totalTTC};
+// ═══ CALCUL TOTAUX ═══════════════════════════════════════════
+function calcTotals(lines,remises,tvaMode,tvaCustom){
+  const totalBrut=lines.reduce((s,l)=>s+(l.qty*l.price),0);
+  const remisesCalc=(remises||[]).map(r=>({...r,montant:r.type==='percent'?totalBrut*(parseFloat(r.value)||0)/100:parseFloat(r.value)||0}));
+  const remiseTotale=remisesCalc.reduce((s,r)=>s+r.montant,0);
+  const totalHT=Math.max(0,totalBrut-remiseTotale);
+  const tvaRate=tvaMode==='non'?0:tvaMode==='custom'?parseFloat(tvaCustom)||0:parseFloat(tvaMode)||0;
+  const tvaAmount=totalHT*tvaRate/100;
+  return{totalBrut,remisesCalc,remiseTotale,totalHT,tvaRate,tvaAmount,totalTTC:totalHT+tvaAmount};
 }
 
-// ── DOCUMENTS ─────────────────────────────────────────────────
+// ═══ DOCUMENTS ═══════════════════════════════════════════════
 async function loadDocuments(){
   const {data,error}=await sb.from('documents').select('*').order('created_at',{ascending:false});
   if(error)throw error;
   documents=(data||[]).map(d=>({...d,lines:d.lines||[],remises:d.remises||[]}));
 }
-
 function openNewDoc(){
-  editingDocId=null;
-  docLines=[];docRemises=[];
-  renderDocLines();renderRemises();
-  updateDocType();
-  // Reset tous les champs
+  editingDocId=null;docLines=[];docRemises=[];renderDocLines();renderRemises();updateDocType();
   ['dc','dtel','d-email','d-addr','dobj','dnotes','d-devis-ref','d-echeance','d-acompte','d-prestation-date','d-prestation-date-end'].forEach(id=>g(id)&&(g(id).value=''));
-  g('dt').value='devis';
-  g('d-tva-mode').value='non';
-  g('d-payment').value='';
-  g('d-prestation-label').value='';
+  g('dt').value='devis';g('d-tva-mode').value='non';g('d-payment').value='';g('d-prestation-label').value='';
   g('dd').value=new Date().toISOString().split('T')[0];
   g('modal-new-doc-title').innerHTML='Nouveau document <button class="modal-close" onclick="closeModal(\'modal-new-doc\')">✕</button>';
   g('modal-doc-submit-btn').textContent='✓ Créer & sauvegarder';
-  updateDocType();
-  openModal('modal-new-doc');
+  updateDocType();openModal('modal-new-doc');
 }
-
 function updateDocType(){
   const type=v('dt');
-  if(editingDocId){
-    const d=documents.find(x=>x.id===editingDocId);
-    if(d)g('d-num-preview').value=d.num;
-  } else {
-    const num=type==='devis'?devNum:facNum;
-    const prefix=type==='devis'?'DEV':'FAC';
-    g('d-num-preview').value=prefix+'-'+String(num).padStart(4,'0');
-  }
+  if(editingDocId){const d=documents.find(x=>x.id===editingDocId);if(d)g('d-num-preview').value=d.num;}
+  else{const num=type==='devis'?devNum:facNum;g('d-num-preview').value=(type==='devis'?'DEV':'FAC')+'-'+String(num).padStart(4,'0');}
   g('facture-extra').style.display=type==='facture'?'block':'none';
 }
-
-// ── REMISES ───────────────────────────────────────────────────
-function addRemise(){
-  docRemises.push({desc:'Remise',type:'percent',value:0});
-  renderRemises();
-}
-
+function addRemise(){docRemises.push({desc:'Remise',type:'percent',value:0});renderRemises();}
 function renderRemises(){
   const el=g('doc-remises-wrap');
-  if(!docRemises.length){
-    el.innerHTML='<div style="font-size:12px;color:var(--muted2);padding:6px 0 10px">Aucune remise appliquée.</div>';
-    renderDocLines();
-    return;
-  }
+  if(!docRemises.length){el.innerHTML='<div style="font-size:12px;color:var(--muted2);padding:6px 0 10px">Aucune remise.</div>';renderDocLines();return;}
   el.innerHTML=docRemises.map((r,i)=>`
     <div class="remise-row">
       <input class="finput" placeholder="Description remise" value="${r.desc||''}" oninput="docRemises[${i}].desc=this.value;renderDocLines()" style="font-size:12px;background:transparent;border-color:rgba(245,200,66,.3)">
-      <select class="finput" onchange="docRemises[${i}].type=this.value;renderDocLines()" style="font-size:12px;background:var(--bg3)">
-        <option value="percent"${r.type==='percent'?' selected':''}>% du total</option>
-        <option value="fixed"${r.type==='fixed'?' selected':''}>Montant fixe €</option>
-      </select>
+      <select class="finput" onchange="docRemises[${i}].type=this.value;renderDocLines()" style="font-size:12px;background:var(--bg3)"><option value="percent"${r.type==='percent'?' selected':''}>% du total</option><option value="fixed"${r.type==='fixed'?' selected':''}>Montant fixe €</option></select>
       <input class="finput" type="number" min="0" placeholder="${r.type==='percent'?'%':'€'}" value="${r.value||''}" oninput="docRemises[${i}].value=this.value;renderDocLines()" style="font-size:12px;text-align:right">
       <button class="btn red sm" onclick="docRemises.splice(${i},1);renderRemises()" style="border-radius:8px;padding:5px 7px;width:32px;justify-content:center">✕</button>
     </div>`).join('');
   renderDocLines();
 }
-
-// ── LIGNES DOC ────────────────────────────────────────────────
 function addDocLine(){docLines.push({desc:'',type:'forfait',qty:1,price:0});renderDocLines();}
-
 function renderDocLines(){
   const el=g('doc-lines-wrap');
   const tvaMode=v('d-tva-mode');
   g('tva-custom-wrap').style.display=tvaMode==='custom'?'block':'none';
   const {totalBrut,remisesCalc,remiseTotale,totalHT,tvaRate,tvaAmount,totalTTC}=calcTotals(docLines,docRemises,tvaMode,v('d-tva-custom'));
   const types={'forfait':'Forfait','heure':'Heure(s)','jour':'Jour(s)','unite':'Unité(s)','km':'km','mois':'Mois'};
-  if(!docLines.length){
-    el.innerHTML='<div style="font-size:12px;color:var(--muted2);padding:8px 0;margin-bottom:8px">Aucune ligne.</div>';
-  } else {
-    el.innerHTML=docLines.map((l,i)=>`
-      <div style="display:grid;grid-template-columns:2fr 120px 70px 80px 90px 34px;gap:5px;margin-bottom:6px;align-items:center">
-        <input class="finput" placeholder="Description" value="${l.desc||''}" oninput="docLines[${i}].desc=this.value" style="font-size:12px">
-        <select class="finput" onchange="docLines[${i}].type=this.value" style="font-size:12px">
-          ${Object.entries(types).map(([k,lb])=>`<option value="${k}"${l.type===k?' selected':''}>${lb}</option>`).join('')}
-        </select>
-        <input class="finput" type="number" value="${l.qty}" oninput="docLines[${i}].qty=parseFloat(this.value)||1;renderDocLines()" style="font-size:12px;text-align:center" min="0.5" step="0.5">
-        <input class="finput" type="number" placeholder="€ HT" value="${l.price||''}" oninput="docLines[${i}].price=parseFloat(this.value)||0;renderDocLines()" style="font-size:12px;text-align:right">
-        <div style="font-size:12px;font-weight:700;text-align:right;padding-right:4px">${fmtN(l.qty*l.price)} €</div>
-        <button class="btn red sm" onclick="docLines.splice(${i},1);renderDocLines()" style="border-radius:8px;padding:5px 7px;width:32px;justify-content:center">✕</button>
-      </div>`).join('');
-  }
-  // Totaux récapitulatifs
-  let totHtml=`<div style="border-top:1px solid var(--border);padding-top:10px;margin-bottom:10px">`;
-  if(docLines.length){
-    totHtml+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:13px;margin-bottom:4px"><span style="color:var(--muted)">Total brut HT</span><span style="font-weight:700;min-width:90px;text-align:right">${fmtN(totalBrut)} €</span></div>`;
-  }
-  if(remiseTotale>0){
-    remisesCalc.forEach(r=>{
-      totHtml+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:12px;margin-bottom:3px"><span style="color:var(--yellow)">🏷 ${r.desc||'Remise'} (${r.type==='percent'?r.value+'%':r.montant.toFixed(2)+'€ fixe'})</span><span style="font-weight:700;color:var(--yellow);min-width:90px;text-align:right">− ${fmtN(r.montant)} €</span></div>`;
-    });
-  }
-  if(tvaRate>0){
-    totHtml+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:13px;margin-bottom:4px"><span style="color:var(--muted)">Total HT après remise${remiseTotale>0?' (remisé)':''}</span><span style="font-weight:700;min-width:90px;text-align:right">${fmtN(totalHT)} €</span></div>`;
-    totHtml+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:13px;margin-bottom:4px"><span style="color:var(--muted)">TVA ${tvaRate}%</span><span style="font-weight:700;min-width:90px;text-align:right">${fmtN(tvaAmount)} €</span></div>`;
-  }
-  totHtml+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:15px;margin-top:6px"><span style="color:var(--green);font-weight:700">Total ${tvaRate>0?'TTC':'HT'}</span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--green);min-width:90px;text-align:right">${fmtN(totalTTC)} €</span></div>`;
-  totHtml+='</div>';
-  el.innerHTML+=totHtml;
+  if(!docLines.length){el.innerHTML='<div style="font-size:12px;color:var(--muted2);padding:8px 0;margin-bottom:8px">Aucune ligne.</div>';}
+  else{el.innerHTML=docLines.map((l,i)=>`<div style="display:grid;grid-template-columns:2fr 120px 70px 80px 90px 34px;gap:5px;margin-bottom:6px;align-items:center">
+      <input class="finput" placeholder="Description" value="${l.desc||''}" oninput="docLines[${i}].desc=this.value" style="font-size:12px">
+      <select class="finput" onchange="docLines[${i}].type=this.value" style="font-size:12px">${Object.entries(types).map(([k,lb])=>`<option value="${k}"${l.type===k?' selected':''}>${lb}</option>`).join('')}</select>
+      <input class="finput" type="number" value="${l.qty}" oninput="docLines[${i}].qty=parseFloat(this.value)||1;renderDocLines()" style="font-size:12px;text-align:center" min="0.5" step="0.5">
+      <input class="finput" type="number" placeholder="€ HT" value="${l.price||''}" oninput="docLines[${i}].price=parseFloat(this.value)||0;renderDocLines()" style="font-size:12px;text-align:right">
+      <div style="font-size:12px;font-weight:700;text-align:right;padding-right:4px">${fmtN(l.qty*l.price)} €</div>
+      <button class="btn red sm" onclick="docLines.splice(${i},1);renderDocLines()" style="border-radius:8px;padding:5px 7px;width:32px;justify-content:center">✕</button>
+    </div>`).join('');}
+  let t=`<div style="border-top:1px solid var(--border);padding-top:10px;margin-bottom:10px">`;
+  if(docLines.length)t+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:13px;margin-bottom:4px"><span style="color:var(--muted)">Total brut HT</span><span style="font-weight:700;min-width:90px;text-align:right">${fmtN(totalBrut)} €</span></div>`;
+  if(remiseTotale>0)remisesCalc.forEach(r=>{t+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:12px;margin-bottom:3px"><span style="color:var(--yellow)">🏷 ${r.desc||'Remise'} (${r.type==='percent'?r.value+'%':r.montant.toFixed(2)+'€'})</span><span style="font-weight:700;color:var(--yellow);min-width:90px;text-align:right">− ${fmtN(r.montant)} €</span></div>`;});
+  if(tvaRate>0){t+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:13px;margin-bottom:4px"><span style="color:var(--muted)">Total HT après remise</span><span style="font-weight:700;min-width:90px;text-align:right">${fmtN(totalHT)} €</span></div>`;t+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:13px;margin-bottom:4px"><span style="color:var(--muted)">TVA ${tvaRate}%</span><span style="font-weight:700;min-width:90px;text-align:right">${fmtN(tvaAmount)} €</span></div>`;}
+  t+=`<div style="display:flex;justify-content:flex-end;gap:16px;font-size:15px;margin-top:6px"><span style="color:var(--green);font-weight:700">Total ${tvaRate>0?'TTC':'HT'}</span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--green);min-width:90px;text-align:right">${fmtN(totalTTC)} €</span></div></div>`;
+  el.innerHTML+=t;
 }
 
-// ── CRÉER OU MODIFIER UN DOC ───────────────────────────────────
-async function createOrUpdateDoc(){
-  if(editingDocId) await updateDoc();
-  else await createDoc();
-}
+async function createOrUpdateDoc(){if(editingDocId)await updateDoc();else await createDoc();}
 
 async function createDoc(){
-  const client=v('dc');
-  if(!client){toast('Nom client requis','err');return;}
+  const client=v('dc');if(!client){toast('Nom client requis','err');return;}
   if(!docLines.length&&!v('dnotes')){toast('Ajoutez une ligne ou une note','err');return;}
-  const type=v('dt');
-  const tvaMode=v('d-tva-mode');
-  const {totalBrut,remisesCalc,remiseTotale,totalHT,tvaRate,tvaAmount,totalTTC}=calcTotals(docLines,docRemises,tvaMode,v('d-tva-custom'));
+  const type=v('dt'),tvaMode=v('d-tva-mode');
+  const {totalBrut,remiseTotale,totalHT,tvaRate,tvaAmount,totalTTC}=calcTotals(docLines,docRemises,tvaMode,v('d-tva-custom'));
   const num=(type==='devis'?'DEV':'FAC')+'-'+String(type==='devis'?devNum:facNum).padStart(4,'0');
-  const uid=String(Date.now());
-  syncSet('syncing');
-  const docPayload={
-    uid,num,type,client,tel:v('dtel'),email:v('d-email'),addr:v('d-addr'),
-    objet:v('dobj'),date:v('dd')||new Date().toISOString().split('T')[0],
-    echeance:v('d-echeance')||null,devis_ref:v('d-devis-ref'),
-    prestation_date:v('d-prestation-date')||null,
-    prestation_date_end:v('d-prestation-date-end')||null,
-    prestation_label:v('d-prestation-label')||null,
-    payment:v('d-payment'),acompte:parseFloat(v('d-acompte'))||0,
-    notes:v('dnotes'),lines:JSON.parse(JSON.stringify(docLines)),
-    remises:JSON.parse(JSON.stringify(docRemises)),
-    tva_mode:tvaMode,tva_rate:tvaRate,
-    total_brut:totalBrut,remise_totale:remiseTotale,
-    total_ht:totalHT,tva_amount:tvaAmount,total_ttc:totalTTC
-  };
-  const {data,error}=await sb.from('documents').insert(docPayload).select().single();
+  const uid=String(Date.now());syncSet('syncing');
+  const payload={uid,num,type,client,tel:v('dtel'),email:v('d-email'),addr:v('d-addr'),objet:v('dobj'),date:v('dd')||new Date().toISOString().split('T')[0],echeance:v('d-echeance')||null,devis_ref:v('d-devis-ref'),prestation_date:v('d-prestation-date')||null,prestation_date_end:v('d-prestation-date-end')||null,prestation_label:v('d-prestation-label')||null,payment:v('d-payment'),acompte:parseFloat(v('d-acompte'))||0,notes:v('dnotes'),lines:JSON.parse(JSON.stringify(docLines)),remises:JSON.parse(JSON.stringify(docRemises)),tva_mode:tvaMode,tva_rate:tvaRate,total_brut:totalBrut,remise_totale:remiseTotale,total_ht:totalHT,tva_amount:tvaAmount,total_ttc:totalTTC};
+  const {data,error}=await sb.from('documents').insert(payload).select().single();
   if(error){toast('Erreur: '+error.message,'err');syncSet('err');return;}
   if(type==='devis')devNum++;else facNum++;
   const {data:s}=await sb.from('settings').select('id').single();
   if(s)await sb.from('settings').update({dev_num:devNum,fac_num:facNum}).eq('id',s.id);
   documents.unshift({...data,lines:data.lines||[],remises:data.remises||[]});
-  currentDocId=data.id;
-  docLines=[];docRemises=[];editingDocId=null;
-  closeModal('modal-new-doc');
-  renderDocs();
+  currentDocId=data.id;docLines=[];docRemises=[];editingDocId=null;
+  closeModal('modal-new-doc');renderDocs();
   switchTab('docs',document.querySelectorAll('.topbar-tab')[2]);
   syncSet('ok');toast(`${num} créé et sauvegardé`);
 }
 
 async function updateDoc(){
-  const client=v('dc');
-  if(!client){toast('Nom client requis','err');return;}
-  const doc=documents.find(d=>d.id===editingDocId);
-  if(!doc){toast('Document introuvable','err');return;}
-  const type=v('dt');
-  const tvaMode=v('d-tva-mode');
-  const {totalBrut,remisesCalc,remiseTotale,totalHT,tvaRate,tvaAmount,totalTTC}=calcTotals(docLines,docRemises,tvaMode,v('d-tva-custom'));
+  const client=v('dc');if(!client){toast('Nom client requis','err');return;}
+  const doc=documents.find(d=>d.id===editingDocId);if(!doc){toast('Document introuvable','err');return;}
+  const type=v('dt'),tvaMode=v('d-tva-mode');
+  const {totalBrut,remiseTotale,totalHT,tvaRate,tvaAmount,totalTTC}=calcTotals(docLines,docRemises,tvaMode,v('d-tva-custom'));
   syncSet('syncing');
-  const payload={
-    type,client,tel:v('dtel'),email:v('d-email'),addr:v('d-addr'),
-    objet:v('dobj'),date:v('dd')||new Date().toISOString().split('T')[0],
-    echeance:v('d-echeance')||null,devis_ref:v('d-devis-ref'),
-    prestation_date:v('d-prestation-date')||null,
-    prestation_date_end:v('d-prestation-date-end')||null,
-    prestation_label:v('d-prestation-label')||null,
-    payment:v('d-payment'),acompte:parseFloat(v('d-acompte'))||0,
-    notes:v('dnotes'),lines:JSON.parse(JSON.stringify(docLines)),
-    remises:JSON.parse(JSON.stringify(docRemises)),
-    tva_mode:tvaMode,tva_rate:tvaRate,
-    total_brut:totalBrut,remise_totale:remiseTotale,
-    total_ht:totalHT,tva_amount:tvaAmount,total_ttc:totalTTC,
-    updated_at:new Date().toISOString()
-  };
+  const payload={type,client,tel:v('dtel'),email:v('d-email'),addr:v('d-addr'),objet:v('dobj'),date:v('dd')||new Date().toISOString().split('T')[0],echeance:v('d-echeance')||null,devis_ref:v('d-devis-ref'),prestation_date:v('d-prestation-date')||null,prestation_date_end:v('d-prestation-date-end')||null,prestation_label:v('d-prestation-label')||null,payment:v('d-payment'),acompte:parseFloat(v('d-acompte'))||0,notes:v('dnotes'),lines:JSON.parse(JSON.stringify(docLines)),remises:JSON.parse(JSON.stringify(docRemises)),tva_mode:tvaMode,tva_rate:tvaRate,total_brut:totalBrut,remise_totale:remiseTotale,total_ht:totalHT,tva_amount:tvaAmount,total_ttc:totalTTC,updated_at:new Date().toISOString()};
   const {error}=await sb.from('documents').update(payload).eq('id',editingDocId);
   if(error){toast('Erreur: '+error.message,'err');syncSet('err');return;}
-  Object.assign(doc,payload);
-  editingDocId=null;docLines=[];docRemises=[];
-  closeModal('modal-new-doc');
-  renderDocs();
-  syncSet('ok');toast(`${doc.num} mis à jour ✓`);
+  Object.assign(doc,payload);editingDocId=null;docLines=[];docRemises=[];
+  closeModal('modal-new-doc');renderDocs();syncSet('ok');toast(`${doc.num} mis à jour ✓`);
 }
 
-// ── ÉDITER UN DOC EXISTANT ────────────────────────────────────
 function editCurrentDoc(){
-  const d=documents.find(x=>x.id===currentDocId);
-  if(!d){toast('Document introuvable','err');return;}
-  editingDocId=d.id;
-  docLines=JSON.parse(JSON.stringify(d.lines||[]));
-  docRemises=JSON.parse(JSON.stringify(d.remises||[]));
-  // Remplir le formulaire
-  g('dt').value=d.type;
-  g('d-num-preview').value=d.num;
-  g('dd').value=d.date||'';
-  g('dc').value=d.client||'';
-  g('dtel').value=d.tel||'';
-  g('d-email').value=d.email||'';
-  g('d-addr').value=d.addr||'';
-  g('dobj').value=d.objet||'';
-  g('dnotes').value=d.notes||'';
-  g('d-devis-ref').value=d.devis_ref||'';
-  g('d-echeance').value=d.echeance||'';
-  g('d-payment').value=d.payment||'';
-  g('d-acompte').value=d.acompte||'';
-  g('d-tva-mode').value=d.tva_mode||'non';
-  g('d-prestation-date').value=d.prestation_date||'';
-  g('d-prestation-date-end').value=d.prestation_date_end||'';
+  const d=documents.find(x=>x.id===currentDocId);if(!d){toast('Document introuvable','err');return;}
+  editingDocId=d.id;docLines=JSON.parse(JSON.stringify(d.lines||[]));docRemises=JSON.parse(JSON.stringify(d.remises||[]));
+  g('dt').value=d.type;g('d-num-preview').value=d.num;g('dd').value=d.date||'';g('dc').value=d.client||'';
+  g('dtel').value=d.tel||'';g('d-email').value=d.email||'';g('d-addr').value=d.addr||'';g('dobj').value=d.objet||'';
+  g('dnotes').value=d.notes||'';g('d-devis-ref').value=d.devis_ref||'';g('d-echeance').value=d.echeance||'';
+  g('d-payment').value=d.payment||'';g('d-acompte').value=d.acompte||'';g('d-tva-mode').value=d.tva_mode||'non';
+  g('d-prestation-date').value=d.prestation_date||'';g('d-prestation-date-end').value=d.prestation_date_end||'';
   g('d-prestation-label').value=d.prestation_label||'';
   g('tva-custom-wrap').style.display=d.tva_mode==='custom'?'block':'none';
   g('facture-extra').style.display=d.type==='facture'?'block':'none';
   g('modal-new-doc-title').innerHTML=`Modifier ${d.num} <button class="modal-close" onclick="closeModal('modal-new-doc')">✕</button>`;
   g('modal-doc-submit-btn').textContent='💾 Enregistrer les modifications';
-  renderDocLines();renderRemises();
-  closeModal('modal-doc');
-  openModal('modal-new-doc');
+  renderDocLines();renderRemises();closeModal('modal-doc');openModal('modal-new-doc');
 }
 
-// ── CONVERTIR DEVIS → FACTURE ─────────────────────────────────
 async function convertToFacture(){
-  const d=documents.find(x=>x.id===currentDocId);
-  if(!d||d.type!=='devis'){toast('Ce document n\'est pas un devis','err');return;}
-  if(!confirm(`Convertir "${d.num}" en facture ? Une nouvelle facture sera créée.`))return;
+  const d=documents.find(x=>x.id===currentDocId);if(!d||d.type!=='devis'){toast('Ce document n\'est pas un devis','err');return;}
+  if(!confirm(`Convertir "${d.num}" en facture ?`))return;
   syncSet('syncing');
   const num='FAC-'+String(facNum).padStart(4,'0');
-  const uid=String(Date.now());
-  const payload={
-    uid,num,type:'facture',client:d.client,tel:d.tel,email:d.email,addr:d.addr,
-    objet:d.objet,date:new Date().toISOString().split('T')[0],
-    echeance:d.echeance,devis_ref:d.num,
-    prestation_date:d.prestation_date,prestation_date_end:d.prestation_date_end,
-    prestation_label:d.prestation_label,
-    payment:d.payment,acompte:d.acompte,notes:d.notes,
-    lines:JSON.parse(JSON.stringify(d.lines||[])),
-    remises:JSON.parse(JSON.stringify(d.remises||[])),
-    tva_mode:d.tva_mode,tva_rate:d.tva_rate,
-    total_brut:d.total_brut,remise_totale:d.remise_totale,
-    total_ht:d.total_ht,tva_amount:d.tva_amount,total_ttc:d.total_ttc
-  };
-  const {data,error}=await sb.from('documents').insert(payload).select().single();
+  const {data,error}=await sb.from('documents').insert({...d,id:undefined,uid:String(Date.now()),num,type:'facture',date:new Date().toISOString().split('T')[0],devis_ref:d.num}).select().single();
   if(error){toast('Erreur: '+error.message,'err');syncSet('err');return;}
   facNum++;
   const {data:s}=await sb.from('settings').select('id').single();
   if(s)await sb.from('settings').update({fac_num:facNum}).eq('id',s.id);
   documents.unshift({...data,lines:data.lines||[],remises:data.remises||[]});
-  currentDocId=data.id;
-  closeModal('modal-doc');
-  renderDocs();
-  syncSet('ok');toast(`Facture ${num} créée depuis ${d.num} ✓`);
-  // Ouvrir directement la nouvelle facture
+  currentDocId=data.id;closeModal('modal-doc');renderDocs();syncSet('ok');toast(`Facture ${num} créée ✓`);
   setTimeout(()=>viewDoc(data.id),200);
 }
 
 function renderDocs(){
   const el=g('docs-list');
-  if(!documents.length){
-    el.innerHTML='<div style="text-align:center;padding:60px;color:var(--muted)"><div style="font-size:48px;margin-bottom:12px">📄</div><p>Aucun document.</p></div>';
-    return;
-  }
+  if(!documents.length){el.innerHTML='<div style="text-align:center;padding:60px;color:var(--muted)"><div style="font-size:48px;margin-bottom:12px">📄</div><p>Aucun document.</p></div>';return;}
   el.innerHTML=documents.map(d=>`
     <div class="doc-item" onclick="viewDoc('${d.id}')">
       <div class="doc-type-badge ${d.type}">${d.type==='devis'?'📋':'🧾'}</div>
@@ -1436,7 +1198,7 @@ function renderDocs(){
       </div>
       <div style="text-align:right">
         <div class="doc-amount ${d.type}">${fmtN(d.total_ttc)} €</div>
-        ${(d.remise_totale>0)?`<div style="font-size:11px;color:var(--yellow)">🏷 −${fmtN(d.remise_totale)} €</div>`:''}
+        ${d.remise_totale>0?`<div style="font-size:11px;color:var(--yellow)">🏷 −${fmtN(d.remise_totale)} €</div>`:''}
         <span class="badge ${d.type}">${d.type==='devis'?'Devis':'Facture'}</span>
         <div style="font-size:11px;color:var(--muted);margin-top:2px">${new Date(d.date).toLocaleDateString('fr-FR')}</div>
       </div>
@@ -1448,111 +1210,51 @@ async function deleteDoc(){
   syncSet('syncing');
   const {error}=await sb.from('documents').delete().eq('id',currentDocId);
   if(error){toast('Erreur','err');syncSet('err');return;}
-  documents=documents.filter(d=>d.id!==currentDocId);
-  currentDocId=null;closeModal('modal-doc');renderDocs();
-  syncSet('ok');toast('Document supprimé');
+  documents=documents.filter(d=>d.id!==currentDocId);currentDocId=null;closeModal('modal-doc');renderDocs();syncSet('ok');toast('Document supprimé');
 }
 
 function viewDoc(id){
   const d=documents.find(x=>x.id===id);if(!d)return;
   currentDocId=id;
-  const isDevis=d.type==='devis';
-  // Boutons d'action
   g('btn-edit-doc').style.display='inline-flex';
-  g('btn-convert-facture').style.display=isDevis?'inline-flex':'none';
-
+  g('btn-convert-facture').style.display=d.type==='devis'?'inline-flex':'none';
   g('mdoc-title').innerHTML=`${d.num} — ${settings.name||'FC Événement'} <button class="modal-close" onclick="closeModal('modal-doc')">✕</button>`;
   const typeLabels={'forfait':'Forfait','heure':'Heure(s)','jour':'Jour(s)','unite':'Unité(s)','km':'km','mois':'Mois'};
-  const lines=d.lines||[];
-  const remises=d.remises||[];
-  const tvaRate=Number(d.tva_rate)||0;
-  const totalBrut=Number(d.total_brut)||Number(d.total_ht)||0;
-  const remiseTotale=Number(d.remise_totale)||0;
-  const totalHT=Number(d.total_ht)||0;
-  const tvaAmount=Number(d.tva_amount)||0;
-  const totalTTC=Number(d.total_ttc)||0;
-  const acompte=Number(d.acompte)||0;
-  const logoHtml=settings.logo?`<img src="${settings.logo}" style="max-height:70px;max-width:180px;object-fit:contain;display:block;margin-bottom:6px" alt="Logo">`:'';
-  const senderParts=[settings.name&&`<strong>${settings.name}</strong>`,settings.type,settings.addr,(settings.cp||settings.city)?[settings.cp,settings.city].filter(Boolean).join(' '):'',settings.tel,settings.email,settings.web].filter(Boolean);
-
-  // Date prestation
+  const lines=d.lines||[],remises=d.remises||[];
+  const tvaRate=Number(d.tva_rate)||0,totalBrut=Number(d.total_brut)||Number(d.total_ht)||0,remiseTotale=Number(d.remise_totale)||0;
+  const totalHT=Number(d.total_ht)||0,tvaAmount=Number(d.tva_amount)||0,totalTTC=Number(d.total_ttc)||0,acompte=Number(d.acompte)||0;
+  const logoHtml=settings.logo?`<img src="${settings.logo}" style="max-height:70px;max-width:180px;object-fit:contain;display:block;margin-bottom:6px">`:'';
+  const senderParts=[settings.name&&`<strong>${settings.name}</strong>`,settings.type,settings.addr,[settings.cp,settings.city].filter(Boolean).join(' ')||'',settings.tel,settings.email,settings.web].filter(Boolean);
   let prestationHtml='';
-  if(d.prestation_date){
-    const label=d.prestation_label||'Date de prestation';
-    const dateStr=fmtDate(d.prestation_date)+(d.prestation_date_end?' → '+fmtDate(d.prestation_date_end):'');
-    prestationHtml=`<div style="margin-bottom:14px;padding:10px 14px;background:var(--blue-dim);border:1px solid rgba(78,158,245,.2);border-radius:var(--r);font-size:13px;color:var(--blue)">📅 <strong>${label} :</strong> ${dateStr}</div>`;
-  }
-
-  // Remises HTML
+  if(d.prestation_date)prestationHtml=`<div style="margin-bottom:14px;padding:10px 14px;background:var(--blue-dim);border:1px solid rgba(78,158,245,.2);border-radius:var(--r);font-size:13px;color:var(--blue)">📅 <strong>${d.prestation_label||'Date de prestation'} :</strong> ${fmtDate(d.prestation_date)}${d.prestation_date_end?' → '+fmtDate(d.prestation_date_end):''}</div>`;
   let remisesHtml='';
-  if(remiseTotale>0){
-    remisesHtml=remises.map(r=>{
-      const montant = r.type==='percent' ? totalBrut*(parseFloat(r.value)||0)/100 : parseFloat(r.value)||0;
-      return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
-        <span style="color:var(--yellow);font-size:13px">🏷 ${r.desc||'Remise'} (${r.type==='percent'?r.value+'%':fmtN(r.value)+'€'})</span>
-        <span style="font-weight:700;color:var(--yellow)">− ${fmtN(montant)} €</span>
-      </div>`;
-    }).join('');
-  }
-
-  g('mdoc-body').innerHTML=`
-    <div id="print-zone">
-      <div style="display:flex;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border2)">
-        <div>${logoHtml}<div style="font-size:12px;color:var(--muted);line-height:1.6">${senderParts.join('<br>')}</div>${settings.siret?`<div style="font-size:11px;color:var(--muted2);margin-top:3px">SIRET/RNA : ${settings.siret}</div>`:''}</div>
-        <div style="text-align:right">
-          <span class="badge ${d.type}" style="font-size:14px;padding:5px 14px">${d.type==='devis'?'DEVIS':'FACTURE'}</span>
-          <div style="font-family:'Syne',sans-serif;font-weight:800;margin-top:8px;font-size:18px">${d.num}</div>
-          <div style="color:var(--muted);font-size:12px;margin-top:2px">Date : ${new Date(d.date).toLocaleDateString('fr-FR')}</div>
-          ${d.echeance?`<div style="color:var(--yellow);font-size:12px;margin-top:2px">Échéance : ${new Date(d.echeance).toLocaleDateString('fr-FR')}</div>`:''}
-          ${d.devis_ref?`<div style="color:var(--muted2);font-size:11px;margin-top:2px">Réf. devis : ${d.devis_ref}</div>`:''}
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-        <div style="padding:12px 14px;background:var(--bg3);border-radius:var(--r)">
-          <div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:5px">Émetteur</div>
-          <div style="font-weight:700">${settings.name||'FC Événement'}</div>
-          ${settings.type?`<div style="font-size:12px;color:var(--muted)">${settings.type}</div>`:''}
-        </div>
-        <div style="padding:12px 14px;background:var(--bg3);border-radius:var(--r)">
-          <div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:5px">Client</div>
-          <div style="font-weight:700;font-size:15px">${d.client}</div>
-          ${d.tel?`<div style="color:var(--muted);font-size:12px">${d.tel}</div>`:''}
-          ${d.email?`<div style="color:var(--muted);font-size:12px">${d.email}</div>`:''}
-          ${d.addr?`<div style="color:var(--muted);font-size:12px">${d.addr}</div>`:''}
-        </div>
-      </div>
-      ${prestationHtml}
-      ${d.objet?`<div style="margin-bottom:14px;padding:10px 14px;background:var(--bg3);border-radius:var(--r);font-size:13px"><strong>Objet :</strong> ${d.objet}</div>`:''}
-      ${lines.length?`
-        <table class="doc-table">
-          <thead><tr><th>Description</th><th style="text-align:center">Type</th><th style="text-align:center">Qté</th><th style="text-align:right">PU HT</th><th style="text-align:right">Total HT</th></tr></thead>
-          <tbody>${lines.map(l=>`<tr>
-            <td style="font-weight:600">${l.desc}</td>
-            <td style="text-align:center;font-size:11px;color:var(--muted)">${typeLabels[l.type]||l.type}</td>
-            <td style="text-align:center">${l.qty}</td>
-            <td style="text-align:right">${fmtN(l.price)} €</td>
-            <td style="text-align:right;font-weight:700">${fmtN(l.qty*l.price)} €</td>
-          </tr>`).join('')}</tbody>
-        </table>
-        <div style="display:flex;justify-content:flex-end;margin:10px 0 16px">
-          <div style="min-width:300px">
-            ${remiseTotale>0?`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted);font-size:13px">Total brut HT</span><span style="font-weight:700">${fmtN(totalBrut)} €</span></div>${remisesHtml}`:''}
-            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted);font-size:13px">Total HT${remiseTotale>0?' après remise':''}</span><span style="font-weight:700">${fmtN(totalHT)} €</span></div>
-            ${tvaRate>0?`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted);font-size:13px">TVA ${tvaRate}%</span><span style="font-weight:700">${fmtN(tvaAmount)} €</span></div>`:''}
-            ${acompte>0?`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--yellow);font-size:13px">Acompte ${acompte}%</span><span style="font-weight:700;color:var(--yellow)">${fmtN(totalTTC*acompte/100)} €</span></div>`:''}
-            <div style="display:flex;justify-content:space-between;padding:10px 0 0"><span style="font-weight:800;font-size:15px">Total ${tvaRate>0?'TTC':'HT'}</span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green);min-width:90px;text-align:right">${fmtN(totalTTC)} €</span></div>
-          </div>
-        </div>`:''}
-      ${d.tva_mode==='non'?`<div style="font-size:11px;color:var(--muted2);margin-bottom:12px">TVA non applicable — Art. 293 B du CGI</div>`:''}
-      ${d.payment?`<div style="font-size:13px;margin-bottom:10px"><strong>Mode de paiement :</strong> ${d.payment}</div>`:''}
-      ${settings.iban?`<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:var(--r);font-size:12px;white-space:pre-wrap"><strong>Coordonnées bancaires</strong>\n<span style="color:var(--muted)">${settings.iban}</span></div>`:''}
-      ${d.notes?`<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:var(--r);font-size:12px;white-space:pre-wrap"><strong>Informations complémentaires</strong>\n<span style="color:var(--muted)">${d.notes}</span></div>`:''}
-      ${settings.mentions?`<div style="margin-top:10px;padding:10px 14px;background:var(--bg3);border-radius:var(--r);font-size:11px;color:var(--muted2);white-space:pre-wrap">${settings.mentions}</div>`:''}
-      <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:11px;color:var(--muted2)">
-        <div>${settings.name||'FC Événement'}${settings.type?' · '+settings.type:''}</div>
-        <div>${d.num} · ${new Date(d.date).toLocaleDateString('fr-FR')}</div>
-      </div>
-    </div>`;
+  if(remiseTotale>0)remisesHtml=remises.map(r=>{const m=r.type==='percent'?totalBrut*(parseFloat(r.value)||0)/100:parseFloat(r.value)||0;return`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--yellow);font-size:13px">🏷 ${r.desc||'Remise'} (${r.type==='percent'?r.value+'%':fmtN(r.value)+'€'})</span><span style="font-weight:700;color:var(--yellow)">− ${fmtN(m)} €</span></div>`;}).join('');
+  g('mdoc-body').innerHTML=`<div id="print-zone">
+    <div style="display:flex;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border2)">
+      <div>${logoHtml}<div style="font-size:12px;color:var(--muted);line-height:1.6">${senderParts.join('<br>')}</div>${settings.siret?`<div style="font-size:11px;color:var(--muted2);margin-top:3px">SIRET/RNA : ${settings.siret}</div>`:''}</div>
+      <div style="text-align:right"><span class="badge ${d.type}" style="font-size:14px;padding:5px 14px">${d.type==='devis'?'DEVIS':'FACTURE'}</span><div style="font-family:'Syne',sans-serif;font-weight:800;margin-top:8px;font-size:18px">${d.num}</div><div style="color:var(--muted);font-size:12px;margin-top:2px">Date : ${new Date(d.date).toLocaleDateString('fr-FR')}</div>${d.echeance?`<div style="color:var(--yellow);font-size:12px;margin-top:2px">Échéance : ${new Date(d.echeance).toLocaleDateString('fr-FR')}</div>`:''}${d.devis_ref?`<div style="color:var(--muted2);font-size:11px;margin-top:2px">Réf. devis : ${d.devis_ref}</div>`:''}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div style="padding:12px 14px;background:var(--bg3);border-radius:var(--r)"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:5px">Émetteur</div><div style="font-weight:700">${settings.name||'FC Événement'}</div>${settings.type?`<div style="font-size:12px;color:var(--muted)">${settings.type}</div>`:''}</div>
+      <div style="padding:12px 14px;background:var(--bg3);border-radius:var(--r)"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:5px">Client</div><div style="font-weight:700;font-size:15px">${d.client}</div>${d.tel?`<div style="color:var(--muted);font-size:12px">${d.tel}</div>`:''}${d.email?`<div style="color:var(--muted);font-size:12px">${d.email}</div>`:''}${d.addr?`<div style="color:var(--muted);font-size:12px">${d.addr}</div>`:''}</div>
+    </div>
+    ${prestationHtml}
+    ${d.objet?`<div style="margin-bottom:14px;padding:10px 14px;background:var(--bg3);border-radius:var(--r);font-size:13px"><strong>Objet :</strong> ${d.objet}</div>`:''}
+    ${lines.length?`<table class="doc-table"><thead><tr><th>Description</th><th style="text-align:center">Type</th><th style="text-align:center">Qté</th><th style="text-align:right">PU HT</th><th style="text-align:right">Total HT</th></tr></thead><tbody>${lines.map(l=>`<tr><td style="font-weight:600">${l.desc}</td><td style="text-align:center;font-size:11px;color:var(--muted)">${typeLabels[l.type]||l.type}</td><td style="text-align:center">${l.qty}</td><td style="text-align:right">${fmtN(l.price)} €</td><td style="text-align:right;font-weight:700">${fmtN(l.qty*l.price)} €</td></tr>`).join('')}</tbody></table>
+    <div style="display:flex;justify-content:flex-end;margin:10px 0 16px"><div style="min-width:300px">
+      ${remiseTotale>0?`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted);font-size:13px">Total brut HT</span><span style="font-weight:700">${fmtN(totalBrut)} €</span></div>${remisesHtml}`:''}
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted);font-size:13px">Total HT${remiseTotale>0?' après remise':''}</span><span style="font-weight:700">${fmtN(totalHT)} €</span></div>
+      ${tvaRate>0?`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted);font-size:13px">TVA ${tvaRate}%</span><span style="font-weight:700">${fmtN(tvaAmount)} €</span></div>`:''}
+      ${acompte>0?`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="color:var(--yellow);font-size:13px">Acompte ${acompte}%</span><span style="font-weight:700;color:var(--yellow)">${fmtN(totalTTC*acompte/100)} €</span></div>`:''}
+      <div style="display:flex;justify-content:space-between;padding:10px 0 0"><span style="font-weight:800;font-size:15px">Total ${tvaRate>0?'TTC':'HT'}</span><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--green)">${fmtN(totalTTC)} €</span></div>
+    </div></div>`:''}
+    ${d.tva_mode==='non'?`<div style="font-size:11px;color:var(--muted2);margin-bottom:12px">TVA non applicable — Art. 293 B du CGI</div>`:''}
+    ${d.payment?`<div style="font-size:13px;margin-bottom:10px"><strong>Mode de paiement :</strong> ${d.payment}</div>`:''}
+    ${settings.iban?`<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:var(--r);font-size:12px;white-space:pre-wrap"><strong>Coordonnées bancaires</strong>\n<span style="color:var(--muted)">${settings.iban}</span></div>`:''}
+    ${d.notes?`<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:var(--r);font-size:12px;white-space:pre-wrap"><strong>Informations complémentaires</strong>\n<span style="color:var(--muted)">${d.notes}</span></div>`:''}
+    ${settings.mentions?`<div style="margin-top:10px;padding:10px 14px;background:var(--bg3);border-radius:var(--r);font-size:11px;color:var(--muted2);white-space:pre-wrap">${settings.mentions}</div>`:''}
+    <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:11px;color:var(--muted2)"><div>${settings.name||'FC Événement'}${settings.type?' · '+settings.type:''}</div><div>${d.num} · ${new Date(d.date).toLocaleDateString('fr-FR')}</div></div>
+  </div>`;
   openModal('modal-doc');
 }
 
@@ -1560,28 +1262,10 @@ function printDoc(){
   const zone=document.getElementById('print-zone');if(!zone)return;
   const win=window.open('','_blank');
   win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${g('mdoc-title').innerText.replace('✕','').trim()}</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:system-ui,sans-serif;padding:32px;max-width:760px;margin:0 auto;color:#111;font-size:13px;line-height:1.5}
-    table{width:100%;border-collapse:collapse;font-size:12px;margin:12px 0}
-    th{text-align:left;padding:8px 10px;background:#f4f4f4;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border:1px solid #ddd;color:#555}
-    td{padding:8px 10px;border:1px solid #e5e5e5;vertical-align:top}
-    img{max-height:70px;max-width:180px;object-fit:contain}
-    .badge{display:inline-block;padding:5px 14px;border-radius:20px;font-size:13px;font-weight:700}
-    .badge.devis{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE}
-    .badge.facture{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0}
-    @media print{body{padding:20px}@page{margin:12mm}}
-  </style></head><body>
-  ${zone.innerHTML
-    .replace(/color:var\([^)]+\)/g,'color:#333')
-    .replace(/background:var\([^)]+\)/g,'background:#f9f9f9')
-    .replace(/border:[^;]*var\([^)]+\)[^;]*/g,'border:1px solid #ddd')
-    .replace(/font-family:'Syne',sans-serif/g,'font-family:Georgia,serif')
-    .replace(/font-family:'Manrope',sans-serif/g,'font-family:system-ui,sans-serif')
-  }
+  <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,sans-serif;padding:32px;max-width:760px;margin:0 auto;color:#111;font-size:13px;line-height:1.5}table{width:100%;border-collapse:collapse;font-size:12px;margin:12px 0}th{text-align:left;padding:8px 10px;background:#f4f4f4;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border:1px solid #ddd;color:#555}td{padding:8px 10px;border:1px solid #e5e5e5;vertical-align:top}img{max-height:70px;max-width:180px;object-fit:contain}.badge{display:inline-block;padding:5px 14px;border-radius:20px;font-size:13px;font-weight:700}.badge.devis{background:#EFF6FF;color:#1D4ED8;border:1px solid #BFDBFE}.badge.facture{background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0}@media print{body{padding:20px}@page{margin:12mm}}</style></head><body>
+  ${zone.innerHTML.replace(/color:var\([^)]+\)/g,'color:#333').replace(/background:var\([^)]+\)/g,'background:#f9f9f9').replace(/border:[^;]*var\([^)]+\)[^;]*/g,'border:1px solid #ddd').replace(/font-family:'Syne',sans-serif/g,'font-family:Georgia,serif').replace(/font-family:'Manrope',sans-serif/g,'font-family:system-ui,sans-serif')}
   </body></html>`);
-  win.document.close();win.focus();
-  setTimeout(()=>win.print(),600);
+  win.document.close();win.focus();setTimeout(()=>win.print(),600);
 }
 
 init();
