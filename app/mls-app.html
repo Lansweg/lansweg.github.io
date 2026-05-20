@@ -6,7 +6,23 @@
 <title>Mobilité Littorale & SAM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
-<link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet"/>
+<link rel="icon" href="data:,">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+
+<link
+  rel="stylesheet"
+  href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.1/mapbox-gl-geocoder.css"
+  type="text/css"
+/>
+
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.1/mapbox-gl-geocoder.min.js"></script>
+
+<script>
+console.log("MapboxGeocoder =", window.MapboxGeocoder);
+</script>
+
+  
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -505,7 +521,10 @@ const fmtKm  = n => parseFloat(n||0).toFixed(1) + ' km';
 const fmtDate = iso => new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
 const fmtShort = iso => new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
 const escHtml = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-
+const SB_URL = window.APP_CONFIG.SB_URL
+const SB_KEY = window.APP_CONFIG.SB_KEY
+const MB_TOKEN = window.APP_CONFIG.MB_TOKEN
+  
 function calcTicket(km, toll) {
   const base = +((km * RATE_KM).toFixed(2));
   const fuel = +((km * SURCHARGE).toFixed(2));
@@ -541,7 +560,13 @@ async function initAuth() {
 async function loadProfile(authUser) {
   const { data } = await sb.from('members').select('*').eq('auth_id', authUser.id).single();
   currentUser = data
-    ? { id:data.id, auth_id:data.auth_id, name:data.name, email:data.email, role:data.role }
+  ? {
+      id: data.id,
+      auth_id: data.auth_id,
+      name: data.name,
+      email: data.email,
+      role: data.role
+    }
     : { id:authUser.id, auth_id:authUser.id, name:authUser.email, email:authUser.email, role:'member' };
   setNavNames(currentUser.name);
   const isAdmin = currentUser.role==='admin';
@@ -590,7 +615,12 @@ async function renderDashboard() {
 
   let q = sb.from('tickets').select('*, members(name)').order('created_at',{ascending:false}).limit(6);
   if (currentUser.role!=='admin') q = q.eq('member_id', currentUser.id);
-  const { data:tickets=[] } = await q;
+  const { data:tickets, error } = await q;
+
+  if (error) {
+    console.error(error);
+    tickets = [];
+  }
 
   const pending  = tickets.filter(t=>!t.paid);
   const totalDue = pending.reduce((s,t)=>s+(t.total||0),0);
@@ -617,7 +647,12 @@ async function renderTickets() {
   if (currentUser.role!=='admin') q = q.eq('member_id', currentUser.id);
   if (currentFilter==='pending') q = q.eq('paid',false);
   if (currentFilter==='paid')    q = q.eq('paid',true);
-  const { data:tickets=[] } = await q;
+  const { data:tickets, error } = await q;
+
+  if (error) {
+    console.error(error);
+    tickets = [];
+  }
   eid('tickets-list').innerHTML = tickets.length===0
     ? '<div class="empty">Aucun ticket dans cette catégorie.</div>'
     : renderTicketListHTML(tickets);
