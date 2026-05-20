@@ -30,37 +30,29 @@
   .container { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
   .container-sm { max-width: 620px; margin: 0 auto; padding: 24px 16px; }
   .container-xs { max-width: 500px; margin: 0 auto; padding: 24px 16px; }
-
   @media (min-width: 600px) {
     .container { padding: 36px 24px; }
     .container-sm { padding: 32px 24px; }
     .container-xs { padding: 32px 24px; }
   }
 
-  /* ── Nav (desktop) ── */
-  nav {
-    background: var(--surface); border-bottom: 1px solid var(--border);
-    padding: 0 16px; display: flex; align-items: center; gap: 2px;
-    position: sticky; top: 0; z-index: 100; height: var(--nav-h);
-  }
-  @media (min-width: 600px) { nav { padding: 0 28px; gap: 4px; } }
+  /* ── Splash loader ── */
+  #splash { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column; gap: 14px; }
+  #splash.hidden { display: none; }
+  .splash-logo { width: 48px; height: 48px; border-radius: 12px; background: var(--accent); display: flex; align-items: center; justify-content: center; }
+  .splash-text { font-family: var(--serif); font-size: 20px; }
+  .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* ── Nav desktop ── */
+  nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 16px; display: flex; align-items: center; gap: 2px; position: sticky; top: 0; z-index: 100; height: var(--nav-h); }
+  @media (min-width: 600px) { nav { padding: 0 28px; gap: 4px; } }
   .nav-brand { margin-right: auto; display: flex; align-items: center; gap: 8px; padding: 12px 0; flex-shrink: 0; }
   .nav-logo { width: 26px; height: 26px; border-radius: 5px; background: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .nav-title { font-family: var(--serif); font-size: 16px; }
-
-  /* Desktop nav buttons */
-  .nav-btn {
-    background: transparent; color: var(--muted); border: none; border-radius: 6px;
-    padding: 7px 11px; font-size: 13px; font-weight: 400;
-    display: none; /* hidden on mobile by default */
-    align-items: center; gap: 6px; transition: background .15s; white-space: nowrap;
-  }
-  @media (min-width: 600px) {
-    .nav-btn { display: flex; }
-  }
+  .nav-btn { background: transparent; color: var(--muted); border: none; border-radius: 6px; padding: 7px 11px; font-size: 13px; font-weight: 400; display: none; align-items: center; gap: 6px; transition: background .15s; white-space: nowrap; }
+  @media (min-width: 600px) { .nav-btn { display: flex; } }
   .nav-btn:hover, .nav-btn.active { background: var(--accent-light); color: var(--text); font-weight: 500; }
-
   .nav-user { margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
   @media (min-width: 600px) { .nav-user { margin-left: 12px; padding-left: 12px; } }
   .nav-username { font-size: 12px; color: var(--faint); display: none; }
@@ -68,46 +60,25 @@
   .nav-logout { background: transparent; border: none; color: var(--faint); display: flex; padding: 4px; }
 
   /* ── Mobile bottom nav ── */
-  .mobile-nav {
-    display: flex;
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
-    background: var(--surface); border-top: 1px solid var(--border);
-    padding: 6px 0 max(6px, env(safe-area-inset-bottom));
-  }
+  .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; background: var(--surface); border-top: 1px solid var(--border); padding: 6px 0 max(6px, env(safe-area-inset-bottom)); }
   @media (min-width: 600px) { .mobile-nav { display: none; } }
-
-  .mobile-nav-btn {
-    flex: 1; background: transparent; border: none;
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
-    padding: 4px 0; color: var(--faint); font-size: 10px; font-weight: 500;
-    letter-spacing: .04em; transition: color .15s;
-  }
+  .mobile-nav-btn { flex: 1; background: transparent; border: none; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 0; color: var(--faint); font-size: 10px; font-weight: 500; letter-spacing: .04em; transition: color .15s; }
   .mobile-nav-btn.active { color: var(--text); }
-  .mobile-nav-btn svg { display: block; }
-
-  /* Page padding-bottom on mobile so content isn't hidden behind bottom nav */
   @media (max-width: 599px) {
-    .page.active > .container,
-    .page.active > .container-sm,
-    .page.active > .container-xs {
-      padding-bottom: 80px;
-    }
+    .page.active > .container, .page.active > .container-sm, .page.active > .container-xs { padding-bottom: 80px; }
   }
 
   /* ── Sub header ── */
-  .subheader {
-    background: var(--surface); border-bottom: 1px solid var(--border);
-    padding: 10px 16px; display: flex; align-items: center; gap: 10px;
-  }
+  .subheader { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
   .subheader h2 { margin: 0; font-size: 15px; font-weight: 500; flex: 1; }
   .back-btn { background: transparent; border: none; color: var(--muted); display: flex; padding: 2px; }
 
-  /* ── Cards & boxes ── */
+  /* ── Cards ── */
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
   @media (min-width: 600px) { .card { padding: 20px; } }
   .card + .card { margin-top: 12px; }
 
-  /* ── Stat cards ── */
+  /* ── Stats ── */
   .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 24px; }
   @media (min-width: 500px) { .stats { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 32px; } }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
@@ -122,13 +93,8 @@
   .divider span { font-size: 10px; color: var(--faint); text-transform: uppercase; letter-spacing: .08em; white-space: nowrap; }
   .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  /* ── Ticket list ── */
-  .ticket-list { display: grid; gap: 6px; }
-  .ticket-item {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
-    padding: 12px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px;
-    transition: border-color .12s; text-decoration: none; color: inherit;
-  }
+  /* ── Tickets ── */
+  .ticket-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: border-color .12s; margin-bottom: 6px; }
   @media (min-width: 600px) { .ticket-item { padding: 13px 18px; gap: 14px; } }
   .ticket-item:hover { border-color: var(--border-dark); }
   .ticket-route { font-weight: 500; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -150,20 +116,17 @@
   .field label .hint { color: var(--green); font-weight: 400; text-transform: none; letter-spacing: 0; }
   input[type=text], input[type=email], input[type=password], input[type=number], input[type=date], select, textarea {
     width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px;
-    font-size: 16px; /* prevent iOS zoom */ color: var(--text); background: var(--surface); outline: none;
+    font-size: 16px; color: var(--text); background: var(--surface); outline: none;
     transition: border-color .15s; -webkit-appearance: none;
   }
   @media (min-width: 600px) {
-    input[type=text], input[type=email], input[type=password], input[type=number], input[type=date], select, textarea {
-      font-size: 14px; padding: 9px 12px;
-    }
+    input[type=text], input[type=email], input[type=password], input[type=number], input[type=date], select, textarea { font-size: 14px; padding: 9px 12px; }
   }
   input:focus, select:focus, textarea:focus { border-color: var(--border-dark); }
   .input-icon { position: relative; }
   .input-icon input { padding-left: 36px; }
-  .input-icon .icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--faint); pointer-events: none; }
+  .input-icon .icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--faint); pointer-events: none; z-index: 1; }
   .field-hint { font-size: 11px; color: var(--faint); margin-top: 4px; }
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
   /* ── Toggle ── */
   .toggle-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
@@ -218,17 +181,15 @@
   .member-due { font-family: var(--mono); font-size: 13px; font-weight: 500; text-align: right; white-space: nowrap; }
   .member-tickets { font-size: 11px; color: var(--faint); text-align: right; margin-top: 2px; }
 
-  /* ── Tariff box ── */
+  /* ── Tariff ── */
   .tariff-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
   @media (min-width: 500px) { .tariff-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; } }
   .tariff-label { font-size: 11px; color: var(--faint); margin-bottom: 3px; }
   .tariff-value { font-family: var(--mono); font-size: 14px; color: var(--text); }
 
-  /* ── Alert ── */
+  /* ── Alert / Toast ── */
   .alert-error { background: #fdf2f2; border: 1px solid #f0c5c5; border-radius: 6px; padding: 9px 12px; margin-bottom: 14px; font-size: 13px; color: var(--red); display: none; }
   .alert-error.show { display: block; }
-
-  /* ── Toast ── */
   #toast { position: fixed; top: 16px; right: 16px; z-index: 9999; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,.13); display: none; max-width: calc(100vw - 32px); }
   #toast.show { display: block; }
   #toast.ok { background: var(--green); }
@@ -256,32 +217,11 @@
   .route-info-dur { font-family: var(--mono); font-size: 14px; color: var(--muted); }
   #km-auto-hint { font-size: 11px; color: var(--green); }
 
-  /* ── Places autocomplete (new API) ── */
-  .pac-wrap { position: relative; }
-  gmp-place-autocomplete {
-    width: 100%;
-    --gmp-input-padding: 10px 12px 10px 36px;
-    --gmp-input-font-size: 16px;
-    --gmp-input-border-radius: 6px;
-    --gmp-input-border-color: var(--border);
-    --gmp-input-focus-border-color: var(--border-dark);
-    --gmp-input-background-color: var(--surface);
-    --gmp-input-color: var(--text);
-    font-family: var(--sans);
-  }
-  @media (min-width: 600px) {
-    gmp-place-autocomplete { --gmp-input-font-size: 14px; }
-  }
-  /* Fallback for plain input used when new API not available */
-  .input-icon gmp-place-autocomplete { display: block; }
-
   /* ── Page header ── */
   .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
   .page-title { font-family: var(--serif); font-weight: 400; font-size: 24px; }
   @media (min-width: 600px) { .page-title { font-size: 26px; } .page-header { margin-bottom: 22px; } }
   .empty { text-align: center; padding: 48px 20px; font-size: 13px; color: var(--faint); }
-  .sep-line { height: 1px; background: var(--border); margin: 24px 0; }
-  @media (min-width: 600px) { .sep-line { margin: 32px 0; } }
   .mono { font-family: var(--mono); }
   .ticket-id { font-family: var(--mono); font-size: 11px; color: var(--faint); }
 
@@ -299,29 +239,28 @@
 </head>
 <body>
 
+<!-- Splash -->
+<div id="splash">
+  <div class="splash-logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/></svg></div>
+  <div class="splash-text">Mobilité Littorale</div>
+  <div class="spinner"></div>
+</div>
+
 <div id="toast"></div>
 
 <!-- ══ LOGIN ══ -->
-<div id="page-login" class="page active">
+<div id="page-login" class="page">
   <div class="login-wrap">
     <div class="login-box">
-      <div class="login-logo">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/></svg>
-      </div>
+      <div class="login-logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/></svg></div>
       <h1 class="login-title">Mobilité Littorale</h1>
       <p class="login-sub">& SAM — Espace membres</p>
       <div class="login-card">
         <div id="login-error" class="alert-error"></div>
-        <div class="field">
-          <label>Adresse e-mail</label>
-          <input type="email" id="login-email" placeholder="prenom.nom@exemple.fr" autocomplete="email" />
-        </div>
-        <div class="field">
-          <label>Mot de passe</label>
-          <input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" />
-        </div>
-        <button class="btn btn-primary btn-full" onclick="doLogin()">Se connecter</button>
-        <p class="login-hint">Mot de passe par défaut : <span class="mono">membre2024</span></p>
+        <div class="field"><label>Adresse e-mail</label><input type="email" id="login-email" placeholder="prenom.nom@exemple.fr" autocomplete="email" /></div>
+        <div class="field"><label>Mot de passe</label><input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" /></div>
+        <button class="btn btn-primary btn-full" onclick="doLogin()" id="login-btn">Se connecter</button>
+        <p class="login-hint">Compte admin : <span class="mono">admin@mls.fr</span> / <span class="mono">admin2024</span></p>
       </div>
     </div>
   </div>
@@ -329,24 +268,15 @@
 
 <!-- ══ DASHBOARD ══ -->
 <div id="page-dashboard" class="page">
-  <nav id="nav-dashboard">
-    <div class="nav-brand">
-      <div class="nav-logo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/></svg></div>
-      <span class="nav-title">MLS</span>
-    </div>
+  <nav>
+    <div class="nav-brand"><div class="nav-logo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/></svg></div><span class="nav-title">MLS</span></div>
     <button class="nav-btn active" onclick="showPage('dashboard')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Tableau de bord</button>
     <button class="nav-btn" onclick="showPage('tickets')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 010 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 010-4V7a2 2 0 00-2-2H5z"/></svg>Tickets</button>
     <button class="nav-btn admin-only" onclick="showPage('members')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/></svg>Membres</button>
-    <div class="nav-user">
-      <span class="nav-username" id="nav-name"></span>
-      <button class="nav-logout" onclick="doLogout()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></button>
-    </div>
+    <div class="nav-user"><span class="nav-username" id="nav-name"></span><button class="nav-logout" onclick="doLogout()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></button></div>
   </nav>
   <div class="container">
-    <div style="margin-bottom:22px">
-      <h2 style="font-family:var(--serif);font-size:26px;font-weight:400" id="dash-greeting">Bonjour</h2>
-      <p style="margin-top:4px;font-size:13px;color:var(--muted)" id="dash-subtitle"></p>
-    </div>
+    <div style="margin-bottom:22px"><h2 style="font-family:var(--serif);font-size:26px;font-weight:400" id="dash-greeting">Bonjour</h2><p style="margin-top:4px;font-size:13px;color:var(--muted)" id="dash-subtitle"></p></div>
     <div class="stats" id="dash-stats"></div>
     <div class="divider"><span>Derniers trajets</span></div>
     <div id="dash-tickets"></div>
@@ -364,8 +294,7 @@
       </div>
     </div>
   </div>
-  <!-- Mobile bottom nav -->
-  <nav class="mobile-nav" id="mob-nav-d">
+  <nav class="mobile-nav">
     <button class="mobile-nav-btn active" onclick="showPage('dashboard')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Accueil</button>
     <button class="mobile-nav-btn" onclick="showPage('tickets')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 010 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 010-4V7a2 2 0 00-2-2H5z"/></svg>Tickets</button>
     <button class="mobile-nav-btn" onclick="showPage('new-ticket')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Nouveau</button>
@@ -377,23 +306,14 @@
 <!-- ══ TICKETS ══ -->
 <div id="page-tickets" class="page">
   <nav>
-    <div class="nav-brand">
-      <div class="nav-logo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/></svg></div>
-      <span class="nav-title">MLS</span>
-    </div>
+    <div class="nav-brand"><div class="nav-logo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/></svg></div><span class="nav-title">MLS</span></div>
     <button class="nav-btn" onclick="showPage('dashboard')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Tableau de bord</button>
     <button class="nav-btn active" onclick="showPage('tickets')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 010 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 010-4V7a2 2 0 00-2-2H5z"/></svg>Tickets</button>
     <button class="nav-btn admin-only" onclick="showPage('members')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/></svg>Membres</button>
-    <div class="nav-user">
-      <span class="nav-username" id="nav-name-t"></span>
-      <button class="nav-logout" onclick="doLogout()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></button>
-    </div>
+    <div class="nav-user"><span class="nav-username" id="nav-name-t"></span><button class="nav-logout" onclick="doLogout()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></button></div>
   </nav>
   <div class="container">
-    <div class="page-header">
-      <h2 class="page-title">Tickets de trajet</h2>
-      <button class="btn btn-primary" onclick="showPage('new-ticket')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Nouveau</button>
-    </div>
+    <div class="page-header"><h2 class="page-title">Tickets de trajet</h2><button class="btn btn-primary" onclick="showPage('new-ticket')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Nouveau</button></div>
     <div class="filters">
       <button class="filter-btn active" onclick="filterTickets('all',this)">Tous</button>
       <button class="filter-btn" onclick="filterTickets('pending',this)">En attente</button>
@@ -417,53 +337,36 @@
     <h2>Nouveau ticket de trajet</h2>
   </div>
   <div class="container-sm">
-    <div class="field admin-only" id="member-select-wrap">
-      <label>Membre</label>
-      <select id="nt-member"><option value="">— Sélectionner —</option></select>
-    </div>
-    <div class="field">
-      <label>Date</label>
-      <input type="date" id="nt-date" />
-    </div>
+    <div class="field admin-only" id="member-select-wrap"><label>Membre</label><select id="nt-member"><option value="">— Sélectionner —</option></select></div>
+    <div class="field"><label>Date</label><input type="date" id="nt-date" /></div>
     <div class="field">
       <label>Adresse de départ</label>
-      <div class="input-icon pac-wrap" id="dep-wrap">
+      <div class="input-icon" id="dep-wrap">
         <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4zm7-4v16m8-12v16"/></svg>
         <input type="text" id="nt-departure" placeholder="Ex : 1 place de la Victoire, Dunkerque" />
       </div>
     </div>
     <div class="field">
       <label>Adresse de destination</label>
-      <div class="input-icon pac-wrap" id="dest-wrap">
+      <div class="input-icon" id="dest-wrap">
         <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4zm7-4v16m8-12v16"/></svg>
         <input type="text" id="nt-destination" placeholder="Ex : Mairie de Gravelines" />
       </div>
     </div>
-
     <div id="route-map-wrap">
       <div id="route-map"></div>
       <div id="route-info">
-        <div>
-          <div class="route-info-label">Distance</div>
-          <div class="route-info-val" id="ri-dist">—</div>
-        </div>
+        <div><div class="route-info-label">Distance</div><div class="route-info-val" id="ri-dist">—</div></div>
         <div class="route-info-sep"></div>
-        <div>
-          <div class="route-info-label">Durée estimée</div>
-          <div class="route-info-dur" id="ri-dur">—</div>
-        </div>
-        <button class="btn btn-ghost" style="margin-left:auto;padding:8px 10px" onclick="recalcRoute()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>Recalculer
-        </button>
+        <div><div class="route-info-label">Durée estimée</div><div class="route-info-dur" id="ri-dur">—</div></div>
+        <button class="btn btn-ghost" style="margin-left:auto;padding:8px 10px" onclick="recalcRoute()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>Recalculer</button>
       </div>
     </div>
-
     <div class="field">
       <label>Distance (km) <span class="hint" id="km-auto-hint"></span></label>
       <input type="number" id="nt-km" placeholder="0" step="0.1" oninput="updatePreview()" />
       <p class="field-hint">Calculée automatiquement — modifiable si nécessaire.</p>
     </div>
-
     <div class="toggle-wrap">
       <button class="toggle" id="toll-toggle" onclick="toggleToll()"></button>
       <span class="toggle-label">Péage avancé par l'association</span>
@@ -472,12 +375,7 @@
       <label>Montant péage (€)</label>
       <input type="number" id="nt-toll" placeholder="0,00" step="0.01" oninput="updatePreview()" />
     </div>
-
-    <div class="field">
-      <label>Notes (optionnel)</label>
-      <input type="text" id="nt-notes" placeholder="Motif, précisions…" />
-    </div>
-
+    <div class="field"><label>Notes (optionnel)</label><input type="text" id="nt-notes" placeholder="Motif, précisions…" /></div>
     <div class="card" id="preview-box" style="display:none;margin-bottom:18px">
       <p style="font-size:11px;font-weight:500;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:12px">Aperçu du montant</p>
       <div class="calc-line"><span class="cl-label" id="prev-base-label">—</span><span class="cl-value" id="prev-base">—</span></div>
@@ -486,10 +384,7 @@
       <hr class="calc-sep" />
       <div class="calc-line total"><span class="cl-label">Total dû</span><span class="cl-value" id="prev-total">—</span></div>
     </div>
-
-    <button class="btn btn-primary btn-full" style="padding:14px" onclick="submitTicket()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Créer le ticket
-    </button>
+    <button class="btn btn-primary btn-full" style="padding:14px" onclick="submitTicket()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Créer le ticket</button>
   </div>
 </div>
 
@@ -498,26 +393,11 @@
   <div class="subheader">
     <button class="back-btn" onclick="showPage('tickets')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg></button>
     <h2>Détail du ticket</h2>
-    <button class="btn btn-ghost screen-only" style="padding:7px 10px" onclick="window.print()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg><span style="display:none" class="print-label">Imprimer</span>
-    </button>
+    <button class="btn btn-ghost screen-only" style="padding:7px 10px" onclick="window.print()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg></button>
   </div>
   <div id="print-zone" class="container-sm">
-    <div id="print-header">
-      <div>
-        <div style="font-family:var(--serif);font-size:22px">Mobilité Littorale &amp; SAM</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.05em">Association loi 1901 — Dunkerque</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:10px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase">Ticket de trajet</div>
-        <div class="mono" style="font-size:14px;margin-top:3px" id="td-id-print"></div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px" id="td-emitted"></div>
-      </div>
-    </div>
-    <div class="screen-only" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
-      <span class="ticket-id" id="td-id"></span>
-      <span class="badge" id="td-badge"></span>
-    </div>
+    <div id="print-header"><div><div style="font-family:var(--serif);font-size:22px">Mobilité Littorale &amp; SAM</div><div style="font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.05em">Association loi 1901 — Dunkerque</div></div><div style="text-align:right"><div style="font-size:10px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase">Ticket de trajet</div><div class="mono" style="font-size:14px;margin-top:3px" id="td-id-print"></div><div style="font-size:11px;color:var(--muted);margin-top:2px" id="td-emitted"></div></div></div>
+    <div class="screen-only" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px"><span class="ticket-id" id="td-id"></span><span class="badge" id="td-badge"></span></div>
     <div class="card"><div class="detail-grid" id="td-details"></div></div>
     <div class="card" style="margin-top:12px">
       <p style="font-size:11px;font-weight:500;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:14px">Décompte</p>
@@ -536,23 +416,14 @@
 <!-- ══ MEMBERS ══ -->
 <div id="page-members" class="page">
   <nav>
-    <div class="nav-brand">
-      <div class="nav-logo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/></svg></div>
-      <span class="nav-title">MLS</span>
-    </div>
+    <div class="nav-brand"><div class="nav-logo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/></svg></div><span class="nav-title">MLS</span></div>
     <button class="nav-btn" onclick="showPage('dashboard')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Tableau de bord</button>
     <button class="nav-btn" onclick="showPage('tickets')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 010 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 010-4V7a2 2 0 00-2-2H5z"/></svg>Tickets</button>
     <button class="nav-btn active admin-only" onclick="showPage('members')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/></svg>Membres</button>
-    <div class="nav-user">
-      <span class="nav-username" id="nav-name-m"></span>
-      <button class="nav-logout" onclick="doLogout()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></button>
-    </div>
+    <div class="nav-user"><span class="nav-username" id="nav-name-m"></span><button class="nav-logout" onclick="doLogout()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></button></div>
   </nav>
   <div class="container">
-    <div class="page-header">
-      <h2 class="page-title">Membres</h2>
-      <button class="btn btn-primary" onclick="showPage('new-member')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Nouveau</button>
-    </div>
+    <div class="page-header"><h2 class="page-title">Membres</h2><button class="btn btn-primary" onclick="showPage('new-member')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Nouveau</button></div>
     <div id="members-list"></div>
   </div>
   <nav class="mobile-nav">
@@ -577,51 +448,54 @@
     <div class="field"><label>Téléphone</label><input type="text" id="nm-phone" placeholder="06 xx xx xx xx" /></div>
     <div class="field"><label>Mot de passe initial</label><input type="text" id="nm-pwd" value="membre2024" /></div>
     <p style="font-size:12px;color:var(--faint);margin-top:-8px;margin-bottom:18px">Le membre se connecte avec cet e-mail et ce mot de passe.</p>
-    <button class="btn btn-primary btn-full" style="padding:14px" onclick="submitMember()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/></svg>Créer le membre
-    </button>
+    <button class="btn btn-primary btn-full" style="padding:14px" onclick="submitMember()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/></svg>Créer le membre</button>
   </div>
 </div>
 
-<!-- ══ GOOGLE MAPS (new Places API + Routes) ══ -->
+<!-- ══ SUPABASE ══ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ══ GOOGLE MAPS (callback-based, loads AFTER page) ══ -->
 <script>
-(async () => {
-  const { Map } = await google.maps.importLibrary("maps");
-  const { DirectionsService, DirectionsRenderer, TravelMode } = await google.maps.importLibrary("routes");
-  const { PlaceAutocompleteElement } = await google.maps.importLibrary("places");
-  window._gmLibs = { Map, DirectionsService, DirectionsRenderer, TravelMode, PlaceAutocompleteElement };
-  window._gmapsReady = true;
-  if (window._pendingAutocomplete) setupAutocomplete();
-})().catch(err => {
-  console.warn('Google Maps failed to load:', err);
-  window._gmapsReady = false;
-});
+window.initGoogleMaps = async function() {
+  try {
+    const { Map } = await google.maps.importLibrary("maps");
+    const { DirectionsService, DirectionsRenderer, TravelMode } = await google.maps.importLibrary("routes");
+    // Try new Places API, fall back gracefully
+    let PlaceAutocompleteElement = null;
+    try { ({ PlaceAutocompleteElement } = await google.maps.importLibrary("places")); } catch(e) {}
+    window._gmLibs = { Map, DirectionsService, DirectionsRenderer, TravelMode, PlaceAutocompleteElement };
+    window._gmapsReady = true;
+    if (window._pendingAutocomplete) { window._pendingAutocomplete = false; setupAutocomplete(); }
+  } catch(e) { console.warn('Maps init error:', e); }
+};
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuuhocrv_oktg2Jq-IKp_dE1X_tHQOH3Q&loading=async&libraries=places,routes"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuuhocrv_oktg2Jq-IKp_dE1X_tHQOH3Q&callback=initGoogleMaps&libraries=places,routes"></script>
 
 <script>
-/* ══ STATE ══ */
+/* ══════════════════════════════════════════
+   SUPABASE INIT
+══════════════════════════════════════════ */
+const SB_URL = 'https://rixsenvshgconhvgevix.supabase.co';
+const SB_KEY = 'sb_publishable_9DbMPtt6ZwzQ21-ADtyB2w_V0VKAw9N';
+const sb = supabase.createClient(SB_URL, SB_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    storageKey: 'mls-session'
+  }
+});
+
+/* ══════════════════════════════════════════
+   CONSTANTS / STATE
+══════════════════════════════════════════ */
 const RATE_KM = 0.55, SURCHARGE = 0.20;
-const STORAGE_KEY = 'mls-html-v1';
-let DB = load();
-let currentUser = null;
+let currentUser = null;   // { id, name, email, role }
 let currentFilter = 'all';
 let mapInstance = null, directionsRenderer = null;
 let routeDebounce = null;
-let acDep = null, acDest = null;
 
-function load() {
-  try { const d = localStorage.getItem(STORAGE_KEY); return d ? JSON.parse(d) : defaultDB(); }
-  catch { return defaultDB(); }
-}
-function defaultDB() {
-  return {
-    members: [{ id: 'admin', name: 'Administrateur', email: 'admin@mls.fr', phone: '', role: 'admin', password: 'admin2024', createdAt: new Date().toISOString() }],
-    tickets: []
-  };
-}
-function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }
-
+/* ══ Helpers ══ */
 const fmt = n => parseFloat(n).toFixed(2).replace('.', ',') + ' €';
 const fmtDate = iso => new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
 const fmtShort = iso => new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -639,28 +513,82 @@ function toast(msg, type = 'ok') {
 function escHtml(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+function hideSplash() { document.getElementById('splash').classList.add('hidden'); }
+function setNavNames(name) {
+  ['nav-name','nav-name-t','nav-name-m'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = name.split(' ')[0]; });
+}
 
-/* ══ AUTH ══ */
-function doLogin() {
+/* ══════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════ */
+async function initAuth() {
+  // Check existing session
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    await loadUserProfile(session.user);
+    hideSplash();
+    showPage('dashboard');
+  } else {
+    hideSplash();
+    showPage('login');
+  }
+
+  // Listen for auth changes
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      await loadUserProfile(session.user);
+    } else if (event === 'SIGNED_OUT') {
+      currentUser = null;
+      showPage('login');
+    }
+  });
+}
+
+async function loadUserProfile(authUser) {
+  // Fetch profile from members table
+  const { data, error } = await sb.from('members').select('*').eq('auth_id', authUser.id).single();
+  if (data) {
+    currentUser = { id: data.id, auth_id: data.auth_id, name: data.name, email: data.email, role: data.role };
+  } else {
+    // Fallback: basic profile from auth metadata
+    currentUser = { id: authUser.id, auth_id: authUser.id, name: authUser.user_metadata?.name || authUser.email, email: authUser.email, role: authUser.user_metadata?.role || 'member' };
+  }
+  setNavNames(currentUser.name);
+  const isAdmin = currentUser.role === 'admin';
+  document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? '' : 'none');
+}
+
+async function doLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pwd = document.getElementById('login-pwd').value;
   const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
   errEl.classList.remove('show');
-  const m = DB.members.find(m => m.email.toLowerCase() === email.toLowerCase());
-  if (!m) { errEl.textContent = 'Adresse introuvable.'; errEl.classList.add('show'); return; }
-  const expected = m.role === 'admin' ? 'admin2024' : (m.password || 'membre2024');
-  if (pwd !== expected) { errEl.textContent = 'Mot de passe incorrect.'; errEl.classList.add('show'); return; }
-  currentUser = m;
+  btn.textContent = 'Connexion…'; btn.disabled = true;
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
+  btn.innerHTML = 'Se connecter'; btn.disabled = false;
+
+  if (error) {
+    errEl.textContent = error.message === 'Invalid login credentials' ? 'E-mail ou mot de passe incorrect.' : error.message;
+    errEl.classList.add('show');
+    return;
+  }
   document.getElementById('login-email').value = '';
   document.getElementById('login-pwd').value = '';
-  ['nav-name','nav-name-t','nav-name-m'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = m.name.split(' ')[0]; });
-  const isAdmin = m.role === 'admin';
-  document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? '' : 'none');
+  await loadUserProfile(data.user);
   showPage('dashboard');
 }
-function doLogout() { currentUser = null; showPage('login'); }
 
-/* ══ PAGES ══ */
+async function doLogout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  showPage('login');
+}
+
+/* ══════════════════════════════════════════
+   PAGES
+══════════════════════════════════════════ */
 function showPage(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const el = document.getElementById('page-' + page);
@@ -672,57 +600,67 @@ function showPage(page) {
   window.scrollTo(0, 0);
 }
 
-/* ══ DASHBOARD ══ */
-function renderDashboard() {
+/* ══════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════ */
+async function renderDashboard() {
   if (!currentUser) return;
-  const tickets = currentUser.role === 'admin' ? DB.tickets : DB.tickets.filter(t => t.memberId === currentUser.id);
-  const pending = tickets.filter(t => !t.paid);
-  const totalDue = pending.reduce((s, t) => s + t.total, 0);
-  const totalKm = tickets.reduce((s, t) => s + t.km, 0);
-  const totalToll = tickets.filter(t => t.hasToll).reduce((s, t) => s + t.toll, 0);
   document.getElementById('dash-greeting').textContent = 'Bonjour, ' + currentUser.name.split(' ')[0];
   document.getElementById('dash-subtitle').textContent = currentUser.role === 'admin' ? 'Vue administrateur — ensemble des tickets' : 'Votre espace personnel';
+  document.getElementById('dash-stats').innerHTML = '<div style="grid-column:1/-1;padding:20px;text-align:center;font-size:12px;color:var(--faint)">Chargement…</div>';
+  document.getElementById('dash-tickets').innerHTML = '';
+
+  let query = sb.from('tickets').select('*, members(name)').order('created_at', { ascending: false }).limit(6);
+  if (currentUser.role !== 'admin') query = query.eq('member_id', currentUser.id);
+  const { data: tickets, error } = await query;
+  if (error) { toast('Erreur chargement tickets', 'err'); return; }
+
+  const pending = tickets.filter(t => !t.paid);
+  const totalDue = pending.reduce((s, t) => s + (t.total || 0), 0);
+  const totalKm = tickets.reduce((s, t) => s + (t.km || 0), 0);
+  const totalToll = tickets.filter(t => t.has_toll).reduce((s, t) => s + (t.toll || 0), 0);
+
   let html = `
-    <div class="stat-card">
-      <div class="stat-label">${currentUser.role === 'admin' ? 'Total à percevoir' : 'Montant à régler'}</div>
-      <div class="stat-value" style="color:${totalDue > 0 ? 'var(--orange)' : 'var(--green)'}">${fmt(totalDue)}</div>
-      <div class="stat-sub">${pending.length} en attente</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Kilomètres</div>
-      <div class="stat-value">${totalKm} km</div>
-      <div class="stat-sub">${tickets.length} trajet${tickets.length > 1 ? 's' : ''}</div>
-    </div>`;
+    <div class="stat-card"><div class="stat-label">${currentUser.role === 'admin' ? 'Total à percevoir' : 'Montant à régler'}</div><div class="stat-value" style="color:${totalDue > 0 ? 'var(--orange)' : 'var(--green)'}">${fmt(totalDue)}</div><div class="stat-sub">${pending.length} en attente</div></div>
+    <div class="stat-card"><div class="stat-label">Kilomètres</div><div class="stat-value">${totalKm.toFixed(1)} km</div><div class="stat-sub">${tickets.length} trajet${tickets.length !== 1 ? 's' : ''}</div></div>`;
   if (totalToll > 0) html += `<div class="stat-card"><div class="stat-label">Péages avancés</div><div class="stat-value" style="color:var(--orange)">${fmt(totalToll)}</div><div class="stat-sub">À rembourser</div></div>`;
   document.getElementById('dash-stats').innerHTML = html;
-  const recent = [...tickets].reverse().slice(0, 6);
-  document.getElementById('dash-tickets').innerHTML = recent.length === 0
-    ? '<div class="empty">Aucun ticket enregistré.</div>'
-    : renderTicketList(recent);
+  document.getElementById('dash-tickets').innerHTML = tickets.length === 0 ? '<div class="empty">Aucun ticket enregistré.</div>' : renderTicketListHTML(tickets);
 }
 
-/* ══ TICKETS ══ */
-function renderTickets() {
+/* ══════════════════════════════════════════
+   TICKETS
+══════════════════════════════════════════ */
+async function renderTickets() {
   if (!currentUser) return;
-  const all = currentUser.role === 'admin' ? DB.tickets : DB.tickets.filter(t => t.memberId === currentUser.id);
-  const filtered = currentFilter === 'all' ? all : currentFilter === 'pending' ? all.filter(t => !t.paid) : all.filter(t => t.paid);
-  document.getElementById('tickets-list').innerHTML = filtered.length === 0
+  document.getElementById('tickets-list').innerHTML = '<div style="padding:40px;text-align:center;font-size:12px;color:var(--faint)">Chargement…</div>';
+
+  let query = sb.from('tickets').select('*, members(name)').order('date', { ascending: false });
+  if (currentUser.role !== 'admin') query = query.eq('member_id', currentUser.id);
+  if (currentFilter === 'pending') query = query.eq('paid', false);
+  if (currentFilter === 'paid') query = query.eq('paid', true);
+
+  const { data: tickets, error } = await query;
+  if (error) { toast('Erreur', 'err'); return; }
+  document.getElementById('tickets-list').innerHTML = tickets.length === 0
     ? '<div class="empty">Aucun ticket dans cette catégorie.</div>'
-    : renderTicketList([...filtered].reverse());
+    : renderTicketListHTML(tickets);
 }
+
 function filterTickets(f, btn) {
   currentFilter = f;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderTickets();
 }
-function renderTicketList(tickets) {
+
+function renderTicketListHTML(tickets) {
   return tickets.map(t => {
-    const m = DB.members.find(m => m.id === t.memberId);
+    const memberName = t.members?.name || '';
     return `<div class="ticket-item" onclick="openTicket('${t.id}')">
       <div style="flex:1;min-width:0">
         <div class="ticket-route">${escHtml(t.departure)} → ${escHtml(t.destination)}</div>
-        <div class="ticket-meta">${fmtShort(t.date)} · ${t.km} km${m ? ' · ' + escHtml(m.name) : ''}</div>
+        <div class="ticket-meta">${fmtShort(t.date)} · ${t.km} km${memberName ? ' · ' + escHtml(memberName) : ''}</div>
       </div>
       <div style="flex-shrink:0">
         <div class="ticket-amount">${fmt(t.total)}</div>
@@ -733,25 +671,27 @@ function renderTicketList(tickets) {
   }).join('');
 }
 
-/* ══ TICKET DETAIL ══ */
-function openTicket(id) {
-  const t = DB.tickets.find(t => t.id === id);
-  if (!t) return;
-  const m = DB.members.find(m => m.id === t.memberId);
-  document.getElementById('td-id').textContent = '#' + t.id.slice(-6).toUpperCase();
-  document.getElementById('td-id-print').textContent = '#' + t.id.slice(-6).toUpperCase();
-  document.getElementById('td-emitted').textContent = 'Émis le ' + fmtShort(t.createdAt);
+/* ══════════════════════════════════════════
+   TICKET DETAIL
+══════════════════════════════════════════ */
+async function openTicket(id) {
+  const { data: t, error } = await sb.from('tickets').select('*, members(name)').eq('id', id).single();
+  if (error || !t) { toast('Ticket introuvable', 'err'); return; }
+
+  document.getElementById('td-id').textContent = '#' + String(t.id).slice(-6).toUpperCase();
+  document.getElementById('td-id-print').textContent = '#' + String(t.id).slice(-6).toUpperCase();
+  document.getElementById('td-emitted').textContent = 'Émis le ' + fmtShort(t.created_at);
   document.getElementById('pf-date').textContent = 'Document généré le ' + fmtShort(new Date().toISOString());
   const badge = document.getElementById('td-badge');
   badge.textContent = t.paid ? 'Réglé' : 'En attente';
   badge.className = 'badge ' + (t.paid ? 'badge-paid' : 'badge-pending');
   document.getElementById('td-details').innerHTML = `
-    <div class="detail-item"><div class="dl">Membre</div><div class="dv">${escHtml(m?.name||'—')}</div></div>
+    <div class="detail-item"><div class="dl">Membre</div><div class="dv">${escHtml(t.members?.name || '—')}</div></div>
     <div class="detail-item"><div class="dl">Date du trajet</div><div class="dv">${fmtDate(t.date)}</div></div>
     <div class="detail-item"><div class="dl">Départ</div><div class="dv">${escHtml(t.departure)}</div></div>
     <div class="detail-item"><div class="dl">Destination</div><div class="dv">${escHtml(t.destination)}</div></div>
     <div class="detail-item"><div class="dl">Distance</div><div class="dv mono">${t.km} km</div></div>
-    <div class="detail-item"><div class="dl">Péage avancé</div><div class="dv mono">${t.hasToll ? fmt(t.toll) : '—'}</div></div>
+    <div class="detail-item"><div class="dl">Péage avancé</div><div class="dv mono">${t.has_toll ? fmt(t.toll) : '—'}</div></div>
     ${t.notes ? `<div class="detail-item detail-full"><div class="dl">Notes</div><div class="dv">${escHtml(t.notes)}</div></div>` : ''}
   `;
   document.getElementById('td-base-lbl').textContent = `${t.km} km × ${fmt(RATE_KM)} (tarif kilométrique)`;
@@ -759,12 +699,13 @@ function openTicket(id) {
   document.getElementById('td-fuel-lbl').textContent = `${t.km} km × ${fmt(SURCHARGE)} (supplément carburant)`;
   document.getElementById('td-fuel').textContent = fmt(t.fuel);
   const tollLine = document.getElementById('td-toll-line');
-  if (t.hasToll && t.toll > 0) { tollLine.style.display = ''; document.getElementById('td-toll').textContent = fmt(t.toll); }
+  if (t.has_toll && t.toll > 0) { tollLine.style.display = ''; document.getElementById('td-toll').textContent = fmt(t.toll); }
   else tollLine.style.display = 'none';
   document.getElementById('td-total').textContent = fmt(t.total);
   const paidDate = document.getElementById('td-paid-date');
-  if (t.paid && t.paidAt) { paidDate.textContent = '✓ Réglé le ' + fmtDate(t.paidAt); paidDate.style.display = ''; }
+  if (t.paid && t.paid_at) { paidDate.textContent = '✓ Réglé le ' + fmtDate(t.paid_at); paidDate.style.display = ''; }
   else paidDate.style.display = 'none';
+
   const actions = document.getElementById('td-actions');
   if (currentUser?.role === 'admin') {
     let html = '';
@@ -774,20 +715,24 @@ function openTicket(id) {
   } else { actions.style.display = 'none'; }
   showPage('ticket-detail');
 }
-function markPaid(id) {
-  const t = DB.tickets.find(t => t.id === id);
-  if (!t) return;
-  t.paid = true; t.paidAt = new Date().toISOString();
-  save(); toast('Ticket marqué comme réglé !'); showPage('tickets');
-}
-function deleteTicket(id) {
-  if (!confirm('Supprimer ce ticket ?')) return;
-  DB.tickets = DB.tickets.filter(t => t.id !== id);
-  save(); toast('Ticket supprimé.'); showPage('tickets');
+
+async function markPaid(id) {
+  const { error } = await sb.from('tickets').update({ paid: true, paid_at: new Date().toISOString() }).eq('id', id);
+  if (error) { toast('Erreur', 'err'); return; }
+  toast('Ticket marqué comme réglé !'); showPage('tickets');
 }
 
-/* ══ NEW TICKET — AUTOCOMPLETE (new PlaceAutocompleteElement) ══ */
-function initNewTicket() {
+async function deleteTicket(id) {
+  if (!confirm('Supprimer ce ticket ?')) return;
+  const { error } = await sb.from('tickets').delete().eq('id', id);
+  if (error) { toast('Erreur suppression', 'err'); return; }
+  toast('Ticket supprimé.'); showPage('tickets');
+}
+
+/* ══════════════════════════════════════════
+   NEW TICKET
+══════════════════════════════════════════ */
+async function initNewTicket() {
   document.getElementById('nt-date').value = new Date().toISOString().split('T')[0];
   ['nt-km','nt-notes','nt-toll','nt-departure','nt-destination'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
   document.getElementById('toll-toggle').classList.remove('on');
@@ -795,103 +740,81 @@ function initNewTicket() {
   document.getElementById('preview-box').style.display = 'none';
   document.getElementById('route-map-wrap').style.display = 'none';
   document.getElementById('km-auto-hint').textContent = '';
-  const sel = document.getElementById('nt-member');
-  sel.innerHTML = '<option value="">— Sélectionner —</option>';
-  DB.members.filter(m => m.role !== 'admin').forEach(m => {
-    const opt = document.createElement('option');
-    opt.value = m.id; opt.textContent = m.name; sel.appendChild(opt);
-  });
-  if (currentUser?.role !== 'admin') sel.value = currentUser?.id || '';
+
+  if (currentUser?.role === 'admin') {
+    const sel = document.getElementById('nt-member');
+    sel.innerHTML = '<option value="">— Sélectionner —</option>';
+    const { data } = await sb.from('members').select('id, name').neq('role', 'admin').order('name');
+    (data || []).forEach(m => { const o = document.createElement('option'); o.value = m.id; o.textContent = m.name; sel.appendChild(o); });
+  }
+
   if (window._gmapsReady) setupAutocomplete();
   else window._pendingAutocomplete = true;
 }
 
 function setupAutocomplete() {
   const { PlaceAutocompleteElement } = window._gmLibs || {};
-  if (!PlaceAutocompleteElement) return setupFallbackAutocomplete();
-
-  // Remove old autocomplete elements if present
-  ['dep-wrap','dest-wrap'].forEach(wrapId => {
-    const wrap = document.getElementById(wrapId);
-    if (!wrap) return;
-    const existing = wrap.querySelector('gmp-place-autocomplete');
-    if (existing) existing.remove();
-  });
-
-  // Departure
-  const depWrap = document.getElementById('dep-wrap');
   const depInput = document.getElementById('nt-departure');
-  const depAc = new PlaceAutocompleteElement({ componentRestrictions: { country: 'fr' } });
-  depAc.style.cssText = 'width:100%;display:block;';
-  // Hide the plain input, show the element
-  depInput.style.display = 'none';
-  depWrap.appendChild(depAc);
-  depAc.addEventListener('gmp-placeselect', async ({ place }) => {
-    await place.fetchFields({ fields: ['formattedAddress'] });
-    depInput.value = place.formattedAddress;
-    triggerRouteCalc();
-  });
-
-  // Destination
-  const destWrap = document.getElementById('dest-wrap');
   const destInput = document.getElementById('nt-destination');
-  const destAc = new PlaceAutocompleteElement({ componentRestrictions: { country: 'fr' } });
-  destAc.style.cssText = 'width:100%;display:block;';
-  destInput.style.display = 'none';
-  destWrap.appendChild(destAc);
-  destAc.addEventListener('gmp-placeselect', async ({ place }) => {
-    await place.fetchFields({ fields: ['formattedAddress'] });
-    destInput.value = place.formattedAddress;
-    triggerRouteCalc();
-  });
+  if (!depInput || !destInput) return;
 
-  acDep = depAc; acDest = destAc;
-}
-
-// Fallback to plain text inputs if new API unavailable
-function setupFallbackAutocomplete() {
-  ['nt-departure','nt-destination'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.style.display = ''; el.addEventListener('change', triggerRouteCalc); }
-  });
+  if (PlaceAutocompleteElement) {
+    // New API
+    ['dep-wrap','dest-wrap'].forEach(wrapId => {
+      const wrap = document.getElementById(wrapId);
+      if (!wrap) return;
+      wrap.querySelectorAll('gmp-place-autocomplete').forEach(el => el.remove());
+    });
+    const makeAc = (wrap, input) => {
+      const ac = new PlaceAutocompleteElement({ componentRestrictions: { country: 'fr' } });
+      ac.style.cssText = 'width:100%;display:block;margin-left:22px;';
+      input.style.display = 'none';
+      wrap.appendChild(ac);
+      ac.addEventListener('gmp-placeselect', async ({ place }) => {
+        await place.fetchFields({ fields: ['formattedAddress'] });
+        input.value = place.formattedAddress; triggerRouteCalc();
+      });
+      return ac;
+    };
+    makeAc(document.getElementById('dep-wrap'), depInput);
+    makeAc(document.getElementById('dest-wrap'), destInput);
+  } else {
+    // Fallback: plain inputs with change listener
+    [depInput, destInput].forEach(el => { el.style.display = ''; el.addEventListener('change', triggerRouteCalc); });
+  }
 }
 
 function triggerRouteCalc() {
   if (routeDebounce) clearTimeout(routeDebounce);
-  routeDebounce = setTimeout(calculateRoute, 600);
+  routeDebounce = setTimeout(calculateRoute, 700);
 }
 
 function calculateRoute() {
   const dep = document.getElementById('nt-departure').value.trim();
   const dest = document.getElementById('nt-destination').value.trim();
   if (!dep || !dest || dep.length < 4 || dest.length < 4) return;
-  const { Map, DirectionsService, DirectionsRenderer, TravelMode } = window._gmLibs || {};
-  if (!Map) return;
-  const mapWrap = document.getElementById('route-map-wrap');
-  mapWrap.style.display = 'block';
+  const libs = window._gmLibs;
+  if (!libs?.Map) return;
+  document.getElementById('route-map-wrap').style.display = 'block';
   if (!mapInstance) {
-    mapInstance = new Map(document.getElementById('route-map'), {
-      zoom: 10, center: { lat: 50.95, lng: 2.33 },
-      disableDefaultUI: true, zoomControl: true,
+    mapInstance = new libs.Map(document.getElementById('route-map'), {
+      zoom: 10, center: { lat: 50.95, lng: 2.33 }, disableDefaultUI: true, zoomControl: true,
       styles: [
-        { featureType: 'all', elementType: 'geometry', stylers: [{ saturation: -30 }] },
-        { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
-        { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#e6e3de' }] },
-        { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#d4e6f1' }] },
-        { featureType: 'poi', stylers: [{ visibility: 'off' }] },
-        { featureType: 'transit', stylers: [{ visibility: 'off' }] },
-        { elementType: 'labels.text.fill', stylers: [{ color: '#78746e' }] },
+        { featureType:'all', elementType:'geometry', stylers:[{saturation:-30}] },
+        { featureType:'road', elementType:'geometry', stylers:[{color:'#ffffff'}] },
+        { featureType:'road', elementType:'geometry.stroke', stylers:[{color:'#e6e3de'}] },
+        { featureType:'water', elementType:'geometry', stylers:[{color:'#d4e6f1'}] },
+        { featureType:'poi', stylers:[{visibility:'off'}] },
+        { featureType:'transit', stylers:[{visibility:'off'}] },
+        { elementType:'labels.text.fill', stylers:[{color:'#78746e'}] }
       ]
     });
   }
   if (directionsRenderer) directionsRenderer.setMap(null);
-  directionsRenderer = new DirectionsRenderer({
-    map: mapInstance,
-    polylineOptions: { strokeColor: '#1a1916', strokeWeight: 3, strokeOpacity: 0.8 }
-  });
+  directionsRenderer = new libs.DirectionsRenderer({ map: mapInstance, polylineOptions: { strokeColor:'#1a1916', strokeWeight:3, strokeOpacity:.8 } });
   document.getElementById('ri-dist').textContent = '…';
   document.getElementById('ri-dur').textContent = '…';
-  new DirectionsService().route({ origin: dep, destination: dest, travelMode: TravelMode.DRIVING }, (result, status) => {
+  new libs.DirectionsService().route({ origin: dep, destination: dest, travelMode: libs.TravelMode.DRIVING }, (result, status) => {
     if (status !== 'OK') { document.getElementById('ri-dist').textContent = 'Erreur itinéraire'; return; }
     directionsRenderer.setDirections(result);
     const leg = result.routes[0].legs[0];
@@ -933,7 +856,7 @@ function updatePreview() {
   document.getElementById('prev-total').textContent = fmt(c.total);
 }
 
-function submitTicket() {
+async function submitTicket() {
   const isAdmin = currentUser?.role === 'admin';
   const memberId = isAdmin ? document.getElementById('nt-member').value : currentUser.id;
   const date = document.getElementById('nt-date').value;
@@ -947,51 +870,70 @@ function submitTicket() {
   if (!dep || !dest) { toast('Départ et destination requis.', 'err'); return; }
   if (km <= 0) { toast('Distance invalide.', 'err'); return; }
   const c = calcTicket(km, toll);
-  DB.tickets.push({ id: Date.now().toString(), memberId, date, departure: dep, destination: dest, km, hasToll, toll, notes, ...c, paid: false, createdAt: new Date().toISOString() });
-  save(); toast('Ticket créé !'); showPage('tickets');
+  const { error } = await sb.from('tickets').insert({
+    member_id: memberId, date, departure: dep, destination: dest,
+    km, has_toll: hasToll, toll: c.toll, notes, base: c.base, fuel: c.fuel, total: c.total,
+    paid: false, created_at: new Date().toISOString()
+  });
+  if (error) { toast('Erreur création ticket: ' + error.message, 'err'); return; }
+  toast('Ticket créé !'); showPage('tickets');
 }
 
-/* ══ MEMBERS ══ */
-function renderMembers() {
-  const list = document.getElementById('members-list');
-  list.innerHTML = DB.members.map(m => {
-    const mt = DB.tickets.filter(t => t.memberId === m.id);
-    const due = mt.filter(t => !t.paid).reduce((s, t) => s + t.total, 0);
+/* ══════════════════════════════════════════
+   MEMBERS
+══════════════════════════════════════════ */
+async function renderMembers() {
+  if (!currentUser || currentUser.role !== 'admin') return;
+  document.getElementById('members-list').innerHTML = '<div style="padding:40px;text-align:center;font-size:12px;color:var(--faint)">Chargement…</div>';
+  const { data: members, error } = await sb.from('members').select('*, tickets(total, paid)').order('name');
+  if (error) { toast('Erreur', 'err'); return; }
+  document.getElementById('members-list').innerHTML = members.map(m => {
+    const due = (m.tickets || []).filter(t => !t.paid).reduce((s, t) => s + (t.total || 0), 0);
+    const total = (m.tickets || []).length;
     const delBtn = m.role !== 'admin' ? `<button class="btn btn-danger" style="padding:8px 10px;flex-shrink:0" onclick="deleteMember('${m.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>` : '';
     return `<div class="member-item">
       <div class="member-avatar">${m.name[0]}</div>
-      <div style="flex:1;min-width:0">
-        <div class="member-name">${escHtml(m.name)}</div>
-        <div class="member-meta">${escHtml(m.email)}${m.phone ? ' · ' + escHtml(m.phone) : ''}</div>
-      </div>
-      <div style="flex-shrink:0">
-        <div class="member-due" style="color:${due > 0 ? 'var(--orange)' : 'var(--green)'}">${due > 0 ? fmt(due) + ' dû' : 'À jour'}</div>
-        <div class="member-tickets">${mt.length} ticket${mt.length > 1 ? 's' : ''}</div>
-      </div>
+      <div style="flex:1;min-width:0"><div class="member-name">${escHtml(m.name)}</div><div class="member-meta">${escHtml(m.email)}${m.phone ? ' · '+escHtml(m.phone):''}</div></div>
+      <div style="flex-shrink:0"><div class="member-due" style="color:${due>0?'var(--orange)':'var(--green)'}">${due>0?fmt(due)+' dû':'À jour'}</div><div class="member-tickets">${total} ticket${total!==1?'s':''}</div></div>
       ${delBtn}
     </div>`;
   }).join('');
 }
-function deleteMember(id) {
-  if (!confirm('Supprimer ce membre ?')) return;
-  DB.members = DB.members.filter(m => m.id !== id);
-  save(); toast('Membre supprimé.'); renderMembers();
+
+async function deleteMember(id) {
+  if (!confirm('Supprimer ce membre et tous ses tickets ?')) return;
+  await sb.from('tickets').delete().eq('member_id', id);
+  const { error } = await sb.from('members').delete().eq('id', id);
+  if (error) { toast('Erreur suppression', 'err'); return; }
+  toast('Membre supprimé.'); renderMembers();
 }
-function submitMember() {
+
+async function submitMember() {
   const name = document.getElementById('nm-name').value.trim();
   const email = document.getElementById('nm-email').value.trim();
   const phone = document.getElementById('nm-phone').value.trim();
-  const pwd = document.getElementById('nm-pwd').value.trim();
+  const pwd = document.getElementById('nm-pwd').value.trim() || 'membre2024';
   const errEl = document.getElementById('nm-error');
   errEl.classList.remove('show');
   if (!name || !email) { errEl.textContent = 'Nom et email requis.'; errEl.classList.add('show'); return; }
-  if (DB.members.find(m => m.email.toLowerCase() === email.toLowerCase())) { errEl.textContent = 'Cet email est déjà utilisé.'; errEl.classList.add('show'); return; }
-  DB.members.push({ id: Date.now().toString(), name, email, phone, password: pwd || 'membre2024', role: 'member', createdAt: new Date().toISOString() });
-  save();
+
+  // 1) Create auth user (admin API not available client-side, so we use signUp)
+  // We insert member profile into DB first (auth will be created separately or on first login)
+  const { data: existing } = await sb.from('members').select('id').eq('email', email).single();
+  if (existing) { errEl.textContent = 'Cet email est déjà utilisé.'; errEl.classList.add('show'); return; }
+
+  const { error } = await sb.from('members').insert({ name, email, phone, role: 'member', password_hint: pwd });
+  if (error) { errEl.textContent = error.message; errEl.classList.add('show'); return; }
+
   ['nm-name','nm-email','nm-phone'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('nm-pwd').value = 'membre2024';
   toast('Membre créé !'); showPage('members');
 }
+
+/* ══════════════════════════════════════════
+   BOOT
+══════════════════════════════════════════ */
+initAuth();
 </script>
 </body>
 </html>
