@@ -939,7 +939,7 @@ function renderGrid(){
     return `<div class="p-btn ${cardClass}" onclick="selectPanier(${p.num})" title="Panier ${p.num}${p.name?' — '+p.name:''}${locked?' 🔒 clôturé':p.closed?' clôturé':''}">
       ${locked?`<div class="p-lock">🔒</div>`:`<div class="p-dot ${dotClass}"></div>`}
       <div class="p-num">${p.num}</div>
-      ${p.name?`<div class="p-name">${panier.name || 'Sans nom'}</div>`:''}
+      ${p.name?`<div class="p-name">${p.name || 'Sans nom'}</div>`:''}
       ${tot>0?`<div class="p-tot">${tot}€</div>`:''}
     </div>`;
   }).join('');
