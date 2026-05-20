@@ -497,14 +497,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--border-dark)}
 <script src="config.js"></script>
 
 <script>
-const RATE_KM = 0.55;
-const SURCHARGE = 0.20;
+let RATE_KM = 0.55;
+let SURCHARGE = 0.20;
 
-const SB_URL = window.APP_CONFIG.SB_URL;
-const SB_KEY = window.APP_CONFIG.SB_KEY;
-const MB_TOKEN = window.APP_CONFIG.MB_TOKEN;
+let SB_URL = window.APP_CONFIG.SB_URL;
+let SB_KEY = window.APP_CONFIG.SB_KEY;
+let MB_TOKEN = window.APP_CONFIG.MB_TOKEN;
 
-const sb = supabase.createClient(SB_URL, SB_KEY, {
+let sb = supabase.createClient(SB_URL, SB_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true
@@ -526,28 +526,28 @@ let routeDebounce = null;
 /* ════════════════════════════════════════
    HELPERS
 ════════════════════════════════════════ */
-const fmt    = n => parseFloat(n||0).toFixed(2).replace('.',',') + ' €';
-const fmtKm  = n => parseFloat(n||0).toFixed(1) + ' km';
-const fmtDate = iso => new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
-const fmtShort = iso => new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
-const escHtml = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+let fmt    = n => parseFloat(n||0).toFixed(2).replace('.',',') + ' €';
+let fmtKm  = n => parseFloat(n||0).toFixed(1) + ' km';
+let fmtDate = iso => new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+let fmtShort = iso => new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
+let escHtml = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
   
 function calcTicket(km, toll) {
-  const base = +((km * RATE_KM).toFixed(2));
-  const fuel = +((km * SURCHARGE).toFixed(2));
-  const t    = parseFloat(toll)||0;
+  let base = +((km * RATE_KM).toFixed(2));
+  let fuel = +((km * SURCHARGE).toFixed(2));
+  let t    = parseFloat(toll)||0;
   return { base, fuel, toll:t, total:+((base+fuel+t).toFixed(2)) };
 }
 function toast(msg, type='ok') {
-  const el = document.getElementById('toast');
+  let el = document.getElementById('toast');
   el.textContent = msg; el.className = 'show '+type;
   setTimeout(()=>el.className='', 3200);
 }
 function hideSplash() { document.getElementById('splash').classList.add('hidden'); }
 function setNavNames(name) {
   ['nav-name','nav-name-t','nav-name-p','nav-name-v','nav-name-m'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.textContent=name.split(' ')[0];
+    let el=document.getElementById(id); if(el) el.textContent=name.split(' ')[0];
   });
 }
 function eid(id){ return document.getElementById(id); }
@@ -556,7 +556,7 @@ function eid(id){ return document.getElementById(id); }
    AUTH
 ════════════════════════════════════════ */
 async function initAuth() {
-  const { data:{ session } } = await sb.auth.getSession();
+  let { data:{ session } } = await sb.auth.getSession();
   if (session) { await loadProfile(session.user); hideSplash(); showPage('dashboard'); }
   else { hideSplash(); showPage('login'); }
   sb.auth.onAuthStateChange(async (event, session) => {
@@ -566,7 +566,7 @@ async function initAuth() {
 }
 
 async function loadProfile(authUser) {
-  const { data } = await sb.from('members').select('*').eq('auth_id', authUser.id).single();
+  let { data } = await sb.from('members').select('*').eq('auth_id', authUser.id).single();
   currentUser = data
   ? {
       id: data.id,
@@ -577,19 +577,19 @@ async function loadProfile(authUser) {
     }
     : { id:authUser.id, auth_id:authUser.id, name:authUser.email, email:authUser.email, role:'member' };
   setNavNames(currentUser.name);
-  const isAdmin = currentUser.role==='admin';
+  let isAdmin = currentUser.role==='admin';
   document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? '' : 'none');
-  if (isAdmin) { const s=eid('nav-stats-btn'); if(s) s.style.display='flex'; }
+  if (isAdmin) { let s=eid('nav-stats-btn'); if(s) s.style.display='flex'; }
 }
 
 async function doLogin() {
-  const email = eid('login-email').value.trim();
-  const pwd   = eid('login-pwd').value;
-  const errEl = eid('login-error');
-  const btn   = eid('login-btn');
+  let email = eid('login-email').value.trim();
+  let pwd   = eid('login-pwd').value;
+  let errEl = eid('login-error');
+  let btn   = eid('login-btn');
   errEl.classList.remove('show');
   btn.textContent='Connexion…'; btn.disabled=true;
-  const { data, error } = await sb.auth.signInWithPassword({ email, password:pwd });
+  let { data, error } = await sb.auth.signInWithPassword({ email, password:pwd });
   btn.innerHTML='Se connecter'; btn.disabled=false;
   if (error) { errEl.textContent = error.message.includes('Invalid') ? 'E-mail ou mot de passe incorrect.' : error.message; errEl.classList.add('show'); return; }
   eid('login-email').value=''; eid('login-pwd').value='';
@@ -603,9 +603,9 @@ async function doLogout() { await sb.auth.signOut(); currentUser=null; showPage(
 ════════════════════════════════════════ */
 function showPage(page) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const el = eid('page-'+page);
+  let el = eid('page-'+page);
   if (el) el.classList.add('active');
-  const map = { dashboard:renderDashboard, tickets:renderTickets, planning:renderPlanning,
+  let map = { dashboard:renderDashboard, tickets:renderTickets, planning:renderPlanning,
                 vehicle:renderVehicle, members:renderMembers, stats:renderStats,
                 'new-ticket':initNewTicket, 'new-planning':initNewPlanning, 'new-vehicle':initNewVehicle };
   if (map[page]) map[page]();
@@ -623,17 +623,17 @@ async function renderDashboard() {
 
   let q = sb.from('tickets').select('*, members(name)').order('created_at',{ascending:false}).limit(6);
   if (currentUser.role!=='admin') q = q.eq('member_id', currentUser.id);
-  const { data:tickets, error } = await q;
+  let { data:tickets, error } = await q;
 
   if (error) {
     console.error(error);
     tickets = [];
   }
 
-  const pending  = tickets.filter(t=>!t.paid);
-  const totalDue = pending.reduce((s,t)=>s+(t.total||0),0);
-  const totalKm  = tickets.reduce((s,t)=>s+(t.km||0),0);
-  const totalToll= tickets.filter(t=>t.has_toll).reduce((s,t)=>s+(t.toll||0),0);
+  let pending  = tickets.filter(t=>!t.paid);
+  let totalDue = pending.reduce((s,t)=>s+(t.total||0),0);
+  let totalKm  = tickets.reduce((s,t)=>s+(t.km||0),0);
+  let totalToll= tickets.filter(t=>t.has_toll).reduce((s,t)=>s+(t.toll||0),0);
 
   eid('dash-stats').innerHTML = `
     <div class="stat"><div class="stat-lbl">${currentUser.role==='admin'?'À percevoir':'À régler'}</div><div class="stat-val" style="color:${totalDue>0?'var(--orange)':'var(--green)'}">${fmt(totalDue)}</div><div class="stat-sub">${pending.length} en attente</div></div>
@@ -655,7 +655,7 @@ async function renderTickets() {
   if (currentUser.role!=='admin') q = q.eq('member_id', currentUser.id);
   if (currentFilter==='pending') q = q.eq('paid',false);
   if (currentFilter==='paid')    q = q.eq('paid',true);
-  const { data:tickets, error } = await q;
+  let { data:tickets, error } = await q;
 
   if (error) {
     console.error(error);
@@ -673,7 +673,7 @@ function filterTickets(f, btn) {
 }
 function renderTicketListHTML(tickets) {
   return tickets.map(t => {
-    const mn = t.members?.name||'';
+    let mn = t.members?.name||'';
     return `<div class="titem" onclick="openTicket('${t.id}')">
       <div style="flex:1;min-width:0"><div class="troute">${escHtml(t.departure)} → ${escHtml(t.destination)}</div><div class="tmeta">${fmtShort(t.date)} · ${t.km} km${mn?' · '+escHtml(mn):''}</div></div>
       <div style="flex-shrink:0"><div class="tamt">${fmt(t.total)}</div><div class="tstat ${t.paid?'spaid':'spending'}">${t.paid?'Réglé':'En attente'}</div></div>
@@ -686,13 +686,13 @@ function renderTicketListHTML(tickets) {
    TICKET DETAIL + PRINT
 ════════════════════════════════════════ */
 async function openTicket(id) {
-  const { data:t } = await sb.from('tickets').select('*, members(name)').eq('id',id).single();
+  let { data:t } = await sb.from('tickets').select('*, members(name)').eq('id',id).single();
   if (!t) { toast('Ticket introuvable','err'); return; }
   eid('td-id').textContent     = '#'+String(t.id).slice(-6).toUpperCase();
   eid('td-id-p').textContent   = '#'+String(t.id).slice(-6).toUpperCase();
   eid('td-emit').textContent   = 'Émis le '+fmtShort(t.created_at);
   eid('pf-date').textContent   = 'Généré le '+fmtShort(new Date().toISOString());
-  const badge = eid('td-badge');
+  let badge = eid('td-badge');
   badge.textContent = t.paid?'Réglé':'En attente';
   badge.className = 'badge '+(t.paid?'badge-paid':'badge-pending');
   eid('td-details').innerHTML = `
@@ -708,12 +708,12 @@ async function openTicket(id) {
   eid('td-bv').textContent = fmt(t.base);
   eid('td-fl').textContent = `${t.km} km × ${fmt(SURCHARGE)} (supplément carburant)`;
   eid('td-fv').textContent = fmt(t.fuel);
-  const tl = eid('td-tline');
+  let tl = eid('td-tline');
   if (t.has_toll && t.toll>0) { tl.style.display=''; eid('td-tv').textContent=fmt(t.toll); } else tl.style.display='none';
   eid('td-total').textContent = fmt(t.total);
-  const pd = eid('td-pdate');
+  let pd = eid('td-pdate');
   if (t.paid && t.paid_at) { pd.textContent='✓ Réglé le '+fmtDate(t.paid_at); pd.style.display=''; } else pd.style.display='none';
-  const actions = eid('td-actions');
+  let actions = eid('td-actions');
   if (currentUser?.role==='admin') {
     actions.innerHTML = (!t.paid?`<button class="btn btn-green" onclick="markPaid('${t.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Marquer réglé</button>`:'')
       +`<button class="btn btn-danger" onclick="deleteTicket('${t.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>Supprimer</button>`;
@@ -736,7 +736,7 @@ async function deleteTicket(id) {
 ════════════════════════════════════════ */
 async function initNewTicket() {
   eid('nt-date').value = new Date().toISOString().split('T')[0];
-  ['nt-km','nt-notes','nt-toll'].forEach(id=>{ const e=eid(id); if(e) e.value=''; });
+  ['nt-km','nt-notes','nt-toll'].forEach(id=>{ let e=eid(id); if(e) e.value=''; });
   eid('toll-tog').classList.remove('on');
   eid('toll-field').style.display='none';
   eid('preview-box').style.display='none';
@@ -746,20 +746,20 @@ async function initNewTicket() {
 
   // Populate member select (admin)
   if (currentUser?.role==='admin') {
-    const sel = eid('nt-member');
+    let sel = eid('nt-member');
     sel.innerHTML='<option value="">— Sélectionner —</option>';
-    const { data=[] } = await sb.from('members').select('id,name').neq('role','admin').order('name');
-    data.forEach(m=>{ const o=document.createElement('option'); o.value=m.id; o.textContent=m.name; sel.appendChild(o); });
+    let { data=[] } = await sb.from('members').select('id,name').neq('role','admin').order('name');
+    data.forEach(m=>{ let o=document.createElement('option'); o.value=m.id; o.textContent=m.name; sel.appendChild(o); });
   }
   setupMapboxGeocoders();
 }
 
 function setupMapboxGeocoders() {
   // Clear existing
-  const dw=eid('dep-geocoder'), dtw=eid('dest-geocoder');
+  let dw=eid('dep-geocoder'), dtw=eid('dest-geocoder');
   dw.innerHTML=''; dtw.innerHTML='';
 
-  const commonOpts = {
+  let commonOpts = {
     accessToken: MB_TOKEN, language:'fr', countries:'fr',
     placeholder:'Saisir une adresse…',
     mapboxgl: mapboxgl, marker:false,
@@ -799,16 +799,16 @@ async function calculateRoute() {
   }
 
   // Fetch Directions API
-  const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${depCoords[0]},${depCoords[1]};${destCoords[0]},${destCoords[1]}?geometries=geojson&language=fr&access_token=${MB_TOKEN}`;
-  const res = await fetch(url);
-  const data = await res.json();
+  let url = `https://api.mapbox.com/directions/v5/mapbox/driving/${depCoords[0]},${depCoords[1]};${destCoords[0]},${destCoords[1]}?geometries=geojson&language=fr&access_token=${MB_TOKEN}`;
+  let res = await fetch(url);
+  let data = await res.json();
   if (!data.routes || data.routes.length===0) { eid('ri-dist').textContent='Erreur itinéraire'; return; }
 
-  const route = data.routes[0];
-  const km = +(route.distance/1000).toFixed(1);
-  const mins = Math.round(route.duration/60);
-  const hrs  = Math.floor(mins/60);
-  const durStr = hrs>0 ? `${hrs}h${String(mins%60).padStart(2,'0')}` : `${mins} min`;
+  let route = data.routes[0];
+  let km = +(route.distance/1000).toFixed(1);
+  let mins = Math.round(route.duration/60);
+  let hrs  = Math.floor(mins/60);
+  let durStr = hrs>0 ? `${hrs}h${String(mins%60).padStart(2,'0')}` : `${mins} min`;
 
   eid('ri-dist').textContent = km + ' km';
   eid('ri-dur').textContent  = durStr;
@@ -825,13 +825,13 @@ async function calculateRoute() {
   }
 
   // Markers
-  ['dep-marker','dest-marker'].forEach(id => { const el=document.getElementById(id); if(el) el.remove(); });
+  ['dep-marker','dest-marker'].forEach(id => { let el=document.getElementById(id); if(el) el.remove(); });
   new mapboxgl.Marker({color:'#1a1916'}).setLngLat(depCoords).addTo(mapInstance);
   new mapboxgl.Marker({color:'#a0500f'}).setLngLat(destCoords).addTo(mapInstance);
 
   // Fit bounds
-  const coords = route.geometry.coordinates;
-  const bounds = coords.reduce((b,c)=>b.extend(c), new mapboxgl.LngLatBounds(coords[0],coords[0]));
+  let coords = route.geometry.coordinates;
+  let bounds = coords.reduce((b,c)=>b.extend(c), new mapboxgl.LngLatBounds(coords[0],coords[0]));
   mapInstance.fitBounds(bounds, {padding:40});
 }
 
@@ -844,37 +844,37 @@ function toggleToll() {
   updatePreview();
 }
 function updatePreview() {
-  const km = parseFloat(eid('nt-km').value)||0;
-  const hasToll = eid('toll-tog').classList.contains('on');
-  const toll = hasToll ? parseFloat(eid('nt-toll').value)||0 : 0;
-  const box = eid('preview-box');
+  let km = parseFloat(eid('nt-km').value)||0;
+  let hasToll = eid('toll-tog').classList.contains('on');
+  let toll = hasToll ? parseFloat(eid('nt-toll').value)||0 : 0;
+  let box = eid('preview-box');
   if (km<=0) { box.style.display='none'; return; }
-  const c = calcTicket(km,toll);
+  let c = calcTicket(km,toll);
   box.style.display='block';
   eid('pv-bl').textContent = `${km} km × ${fmt(RATE_KM)} (tarif km)`;
   eid('pv-bv').textContent = fmt(c.base);
   eid('pv-fl').textContent = `${km} km × ${fmt(SURCHARGE)} (carburant)`;
   eid('pv-fv').textContent = fmt(c.fuel);
-  const tl = eid('pv-tline');
+  let tl = eid('pv-tline');
   if (hasToll && toll>0) { tl.style.display=''; eid('pv-tv').textContent=fmt(toll); } else tl.style.display='none';
   eid('pv-total').textContent = fmt(c.total);
 }
 
 async function submitTicket() {
-  const isAdmin = currentUser?.role==='admin';
-  const memberId = isAdmin ? eid('nt-member').value : currentUser.id;
-  const dep  = depGeocoder?.inputString || eid('dep-geocoder').querySelector('input')?.value||'';
-  const dest = destGeocoder?.inputString || eid('dest-geocoder').querySelector('input')?.value||'';
-  const km   = parseFloat(eid('nt-km').value)||0;
-  const hasToll = eid('toll-tog').classList.contains('on');
-  const toll = hasToll ? parseFloat(eid('nt-toll').value)||0 : 0;
-  const notes = eid('nt-notes').value.trim();
-  const date  = eid('nt-date').value;
+  let isAdmin = currentUser?.role==='admin';
+  let memberId = isAdmin ? eid('nt-member').value : currentUser.id;
+  let dep  = depGeocoder?.inputString || eid('dep-geocoder').querySelector('input')?.value||'';
+  let dest = destGeocoder?.inputString || eid('dest-geocoder').querySelector('input')?.value||'';
+  let km   = parseFloat(eid('nt-km').value)||0;
+  let hasToll = eid('toll-tog').classList.contains('on');
+  let toll = hasToll ? parseFloat(eid('nt-toll').value)||0 : 0;
+  let notes = eid('nt-notes').value.trim();
+  let date  = eid('nt-date').value;
   if (isAdmin && !memberId) { toast('Sélectionnez un membre.','err'); return; }
   if (!dep||!dest) { toast('Départ et destination requis.','err'); return; }
   if (km<=0) { toast('Distance invalide.','err'); return; }
-  const c = calcTicket(km,toll);
-  const { error } = await sb.from('tickets').insert({ member_id:memberId, date, departure:dep, destination:dest, km, has_toll:hasToll, toll:c.toll, base:c.base, fuel:c.fuel, total:c.total, notes, paid:false });
+  let c = calcTicket(km,toll);
+  let { error } = await sb.from('tickets').insert({ member_id:memberId, date, departure:dep, destination:dest, km, has_toll:hasToll, toll:c.toll, base:c.base, fuel:c.fuel, total:c.total, notes, paid:false });
   if (error) { toast('Erreur : '+error.message,'err'); return; }
   toast('Ticket créé !'); showPage('tickets');
 }
@@ -882,16 +882,16 @@ async function submitTicket() {
    PLANNING
 ════════════════════════════════════════ */
 async function renderPlanning() {
-  const list = eid('planning-list');
+  let list = eid('planning-list');
   list.innerHTML='<div style="padding:40px;text-align:center;font-size:12px;color:var(--faint)">Chargement…</div>';
   let q = sb.from('planning').select('*, members(name)').order('event_date',{ascending:false});
-  const today = new Date().toISOString().split('T')[0];
+  let today = new Date().toISOString().split('T')[0];
   if (planningFilter==='upcoming') q=q.gte('event_date',today);
   if (planningFilter==='past')     q=q.lt('event_date',today);
-  const { data=[] } = await q;
+  let { data=[] } = await q;
   if (data.length===0) { list.innerHTML='<div class="empty">Aucun événement.</div>'; return; }
-  const dotClass = {disponible:'dot-dispo', confirmé:'dot-confirme', annulé:'dot-annule'};
-  const sClass   = {disponible:'ps-dispo',  confirmé:'ps-confirme',  annulé:'ps-annule'};
+  let dotClass = {disponible:'dot-dispo', confirmé:'dot-confirme', annulé:'dot-annule'};
+  let sClass   = {disponible:'ps-dispo',  confirmé:'ps-confirme',  annulé:'ps-annule'};
   list.innerHTML = data.map(p=>`
     <div class="pitem">
       <div class="pitem-dot ${dotClass[p.status]||'dot-dispo'}"></div>
@@ -911,15 +911,15 @@ function filterPlanning(f, btn) {
 }
 async function initNewPlanning() {
   eid('np-date').value=new Date().toISOString().split('T')[0];
-  const sel=eid('np-member');
+  let sel=eid('np-member');
   sel.innerHTML='<option value="">— À définir —</option>';
-  const { data=[] } = await sb.from('members').select('id,name').order('name');
-  data.forEach(m=>{ const o=document.createElement('option'); o.value=m.id; o.textContent=m.name; sel.appendChild(o); });
+  let { data=[] } = await sb.from('members').select('id,name').order('name');
+  data.forEach(m=>{ let o=document.createElement('option'); o.value=m.id; o.textContent=m.name; sel.appendChild(o); });
 }
 async function submitPlanning() {
-  const name=eid('np-name').value.trim(), date=eid('np-date').value;
+  let name=eid('np-name').value.trim(), date=eid('np-date').value;
   if (!name||!date) { toast('Nom et date requis.','err'); return; }
-  const { error } = await sb.from('planning').insert({
+  let { error } = await sb.from('planning').insert({
     event_name:name, event_date:date,
     start_time:eid('np-start').value||null, end_time:eid('np-end').value||null,
     location:eid('np-location').value.trim()||null,
@@ -945,11 +945,11 @@ async function renderVehicle() {
   eid('vehicle-list').innerHTML='<div style="padding:40px;text-align:center;font-size:12px;color:var(--faint)">Chargement…</div>';
   let q = sb.from('vehicle_log').select('*, members(name)').order('date',{ascending:false});
   if (currentUser?.role!=='admin') q=q.eq('driver_id',currentUser.id);
-  const { data=[] } = await q;
+  let { data=[] } = await q;
 
-  const totalKm   = data.reduce((s,r)=>s+(r.km_driven||0),0);
-  const totalFuel = data.reduce((s,r)=>s+(r.fuel_cost||0),0);
-  const lastKm    = data[0] ? data[0].km_end : '—';
+  let totalKm   = data.reduce((s,r)=>s+(r.km_driven||0),0);
+  let totalFuel = data.reduce((s,r)=>s+(r.fuel_cost||0),0);
+  let lastKm    = data[0] ? data[0].km_end : '—';
   eid('vehicle-stats').innerHTML = `
     <div class="stat"><div class="stat-lbl">Km totaux enregistrés</div><div class="stat-val">${totalKm} km</div></div>
     <div class="stat"><div class="stat-lbl">Dernier relevé</div><div class="stat-val mono">${lastKm}</div><div class="stat-sub">compteur</div></div>
@@ -971,12 +971,12 @@ async function initNewVehicle() {
   eid('nv-date').value=new Date().toISOString().split('T')[0];
   eid('fuel-tog').classList.remove('on');
   eid('fuel-fields').style.display='none';
-  ['nv-kms','nv-kme','nv-purpose','nv-liters','nv-fcost','nv-notes'].forEach(id=>{ const e=eid(id); if(e) e.value=''; });
+  ['nv-kms','nv-kme','nv-purpose','nv-liters','nv-fcost','nv-notes'].forEach(id=>{ let e=eid(id); if(e) e.value=''; });
   eid('nv-km-calc').style.display='none';
-  const sel=eid('nv-driver');
+  let sel=eid('nv-driver');
   sel.innerHTML='<option value="">— Sélectionner —</option>';
-  const { data=[] } = await sb.from('members').select('id,name').order('name');
-  data.forEach(m=>{ const o=document.createElement('option'); o.value=m.id; o.textContent=m.name; sel.appendChild(o); });
+  let { data=[] } = await sb.from('members').select('id,name').order('name');
+  data.forEach(m=>{ let o=document.createElement('option'); o.value=m.id; o.textContent=m.name; sel.appendChild(o); });
 }
 function toggleFuel() {
   eid('fuel-tog').classList.toggle('on');
@@ -985,19 +985,19 @@ function toggleFuel() {
 // Auto-calc km driven
 document.addEventListener('input', e => {
   if (e.target.id==='nv-kms'||e.target.id==='nv-kme') {
-    const s=parseInt(eid('nv-kms').value)||0, en=parseInt(eid('nv-kme').value)||0;
-    const calc=eid('nv-km-calc');
+    let s=parseInt(eid('nv-kms').value)||0, en=parseInt(eid('nv-kme').value)||0;
+    let calc=eid('nv-km-calc');
     if (s>0&&en>s) { calc.textContent='Soit '+(en-s)+' km parcourus'; calc.style.display='block'; }
     else calc.style.display='none';
   }
 });
 async function submitVehicle() {
-  const date=eid('nv-date').value;
-  const kms=parseInt(eid('nv-kms').value)||0, kme=parseInt(eid('nv-kme').value)||0;
-  const driverId = currentUser?.role==='admin' ? eid('nv-driver').value||currentUser.id : currentUser.id;
+  let date=eid('nv-date').value;
+  let kms=parseInt(eid('nv-kms').value)||0, kme=parseInt(eid('nv-kme').value)||0;
+  let driverId = currentUser?.role==='admin' ? eid('nv-driver').value||currentUser.id : currentUser.id;
   if (!date||kms<=0||kme<=0||kme<=kms) { toast('Date et kilométrages valides requis.','err'); return; }
-  const hasFuel = eid('fuel-tog').classList.contains('on');
-  const { error } = await sb.from('vehicle_log').insert({
+  let hasFuel = eid('fuel-tog').classList.contains('on');
+  let { error } = await sb.from('vehicle_log').insert({
     date, driver_id:driverId, km_start:kms, km_end:kme,
     purpose:eid('nv-purpose').value.trim()||null,
     fuel_liters:hasFuel?(parseFloat(eid('nv-liters').value)||null):null,
@@ -1018,27 +1018,27 @@ async function deleteVehicle(id) {
 ════════════════════════════════════════ */
 async function renderStats() {
   if (currentUser?.role!=='admin') return;
-  const cont = eid('stats-content');
+  let cont = eid('stats-content');
   cont.innerHTML='<div style="padding:40px;text-align:center;font-size:12px;color:var(--faint)">Chargement…</div>';
 
-  const [{ data:tickets=[] }, { data:members=[] }, { data:vlog=[] }] = await Promise.all([
+  let [{ data:tickets=[] }, { data:members=[] }, { data:vlog=[] }] = await Promise.all([
     sb.from('tickets').select('*, members(name)'),
     sb.from('members').select('id,name,role'),
     sb.from('vehicle_log').select('*')
   ]);
 
-  const totalRev   = tickets.filter(t=>t.paid).reduce((s,t)=>s+(t.total||0),0);
-  const totalPend  = tickets.filter(t=>!t.paid).reduce((s,t)=>s+(t.total||0),0);
-  const totalKm    = tickets.reduce((s,t)=>s+(t.km||0),0);
-  const totalTolls = tickets.filter(t=>t.has_toll).reduce((s,t)=>s+(t.toll||0),0);
-  const vKm        = vlog.reduce((s,r)=>s+(r.km_driven||0),0);
+  let totalRev   = tickets.filter(t=>t.paid).reduce((s,t)=>s+(t.total||0),0);
+  let totalPend  = tickets.filter(t=>!t.paid).reduce((s,t)=>s+(t.total||0),0);
+  let totalKm    = tickets.reduce((s,t)=>s+(t.km||0),0);
+  let totalTolls = tickets.filter(t=>t.has_toll).reduce((s,t)=>s+(t.toll||0),0);
+  let vKm        = vlog.reduce((s,r)=>s+(r.km_driven||0),0);
 
   // Per-member stats
-  const mstats = members.filter(m=>m.role!=='admin').map(m=>{
-    const mt = tickets.filter(t=>t.member_id===m.id);
+  let mstats = members.filter(m=>m.role!=='admin').map(m=>{
+    let mt = tickets.filter(t=>t.member_id===m.id);
     return { name:m.name, km:mt.reduce((s,t)=>s+(t.km||0),0), count:mt.length, due:mt.filter(t=>!t.paid).reduce((s,t)=>s+(t.total||0),0) };
   }).sort((a,b)=>b.km-a.km);
-  const maxKm = mstats[0]?.km||1;
+  let maxKm = mstats[0]?.km||1;
 
   cont.innerHTML = `
     <h2 style="font-family:var(--serif);font-weight:400;font-size:26px;margin-bottom:20px">Statistiques</h2>
@@ -1077,10 +1077,10 @@ async function renderStats() {
 async function renderMembers() {
   if (currentUser?.role!=='admin') return;
   eid('members-list').innerHTML='<div style="padding:40px;text-align:center;font-size:12px;color:var(--faint)">Chargement…</div>';
-  const { data:members=[] } = await sb.from('members').select('*, tickets(total,paid)').order('name');
+  let { data:members=[] } = await sb.from('members').select('*, tickets(total,paid)').order('name');
   eid('members-list').innerHTML = members.map(m=>{
-    const due  = (m.tickets||[]).filter(t=>!t.paid).reduce((s,t)=>s+(t.total||0),0);
-    const cnt  = (m.tickets||[]).length;
+    let due  = (m.tickets||[]).filter(t=>!t.paid).reduce((s,t)=>s+(t.total||0),0);
+    let cnt  = (m.tickets||[]).length;
     return `<div class="mitem">
       <div class="mavatar">${m.name[0]}</div>
       <div style="flex:1;min-width:0"><div style="font-weight:500;font-size:14px">${escHtml(m.name)}</div><div style="font-size:11px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(m.email)}${m.phone?' · '+escHtml(m.phone):''}</div></div>
@@ -1095,23 +1095,23 @@ async function deleteMember(id) {
   await sb.from('tickets').delete().eq('member_id',id);
   await sb.from('vehicle_log').delete().eq('driver_id',id);
   await sb.from('planning').delete().eq('member_id',id);
-  const { data:m } = await sb.from('members').select('auth_id').eq('id',id).single();
+  let { data:m } = await sb.from('members').select('auth_id').eq('id',id).single();
   await sb.from('members').delete().eq('id',id);
   toast('Membre supprimé.'); renderMembers();
 }
 
 async function submitMember() {
-  const name=eid('nm-name').value.trim(), email=eid('nm-email').value.trim();
-  const phone=eid('nm-phone').value.trim(), pwd=eid('nm-pwd').value.trim()||'Membre2024!';
-  const errEl=eid('nm-err'); errEl.classList.remove('show');
+  let name=eid('nm-name').value.trim(), email=eid('nm-email').value.trim();
+  let phone=eid('nm-phone').value.trim(), pwd=eid('nm-pwd').value.trim()||'Membre2024!';
+  let errEl=eid('nm-err'); errEl.classList.remove('show');
   if (!name||!email) { errEl.textContent='Nom et email requis.'; errEl.classList.add('show'); return; }
 
   // 1. Sign up via Supabase Auth
-  const { data:authData, error:authErr } = await sb.auth.signUp({ email, password:pwd, options:{ data:{ name } } });
+  let { data:authData, error:authErr } = await sb.auth.signUp({ email, password:pwd, options:{ data:{ name } } });
   if (authErr) { errEl.textContent=authErr.message; errEl.classList.add('show'); return; }
 
   // 2. Insert profile
-  const { error:profErr } = await sb.from('members').insert({ auth_id:authData.user.id, name, email, phone:phone||null, role:'member' });
+  let { error:profErr } = await sb.from('members').insert({ auth_id:authData.user.id, name, email, phone:phone||null, role:'member' });
   if (profErr) { errEl.textContent=profErr.message; errEl.classList.add('show'); return; }
 
   ['nm-name','nm-email','nm-phone'].forEach(id=>eid(id).value='');
