@@ -470,7 +470,7 @@ window.initGoogleMaps = async function() {
   } catch(e) { console.warn('Maps init error:', e); }
 };
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuuhocrv_oktg2Jq-IKp_dE1X_tHQOH3Q&callback=initGoogleMaps&libraries=places,routes"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuuhocrv_oktg2Jq-IKp_dE1X_tHQOH3Q&callback=initGoogleMaps&libraries=places"></script>
 
 <script>
 /* ══════════════════════════════════════════
@@ -753,35 +753,21 @@ async function initNewTicket() {
 }
 
 function setupAutocomplete() {
-  const { PlaceAutocompleteElement } = window._gmLibs || {};
   const depInput = document.getElementById('nt-departure');
   const destInput = document.getElementById('nt-destination');
-  if (!depInput || !destInput) return;
 
-  if (PlaceAutocompleteElement) {
-    // New API
-    ['dep-wrap','dest-wrap'].forEach(wrapId => {
-      const wrap = document.getElementById(wrapId);
-      if (!wrap) return;
-      wrap.querySelectorAll('gmp-place-autocomplete').forEach(el => el.remove());
-    });
-    const makeAc = (wrap, input) => {
-      const ac = new PlaceAutocompleteElement({ componentRestrictions: { country: 'fr' } });
-      ac.style.cssText = 'width:100%;display:block;margin-left:22px;';
-      input.style.display = 'none';
-      wrap.appendChild(ac);
-      ac.addEventListener('gmp-placeselect', async ({ place }) => {
-        await place.fetchFields({ fields: ['formattedAddress'] });
-        input.value = place.formattedAddress; triggerRouteCalc();
-      });
-      return ac;
-    };
-    makeAc(document.getElementById('dep-wrap'), depInput);
-    makeAc(document.getElementById('dest-wrap'), destInput);
-  } else {
-    // Fallback: plain inputs with change listener
-    [depInput, destInput].forEach(el => { el.style.display = ''; el.addEventListener('change', triggerRouteCalc); });
-  }
+  if (!window.google || !google.maps.places) return;
+
+  const depAutocomplete = new google.maps.places.Autocomplete(depInput, {
+    componentRestrictions: { country: 'fr' }
+  });
+
+  const destAutocomplete = new google.maps.places.Autocomplete(destInput, {
+    componentRestrictions: { country: 'fr' }
+  });
+
+  depAutocomplete.addListener('place_changed', triggerRouteCalc);
+  destAutocomplete.addListener('place_changed', triggerRouteCalc);
 }
 
 function triggerRouteCalc() {
