@@ -564,20 +564,44 @@ async function initAuth() {
 }
 
 async function loadProfile(authUser) {
-  let { data } = await sb.from('members').select('*').eq('auth_id', authUser.id).single();
+  const { data, error } = await sb
+    .from('members')
+    .select('*')
+    .eq('auth_id', authUser.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error(error);
+  }
+
   currentUser = data
-  ? {
-      id: data.id,
-      auth_id: data.auth_id,
-      name: data.name,
-      email: data.email,
-      role: data.role
-    }
-    : { id:authUser.id, auth_id:authUser.id, name:authUser.email, email:authUser.email, role:'member' };
+    ? {
+        id: data.id,
+        auth_id: data.auth_id,
+        name: data.name,
+        email: data.email,
+        role: data.role
+      }
+    : {
+        id: authUser.id,
+        auth_id: authUser.id,
+        name: authUser.email,
+        email: authUser.email,
+        role: 'member'
+      };
+
   setNavNames(currentUser.name);
-  let isAdmin = currentUser.role==='admin';
-  document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? '' : 'none');
-  if (isAdmin) { let s=eid('nav-stats-btn'); if(s) s.style.display='flex'; }
+
+  const isAdmin = currentUser.role === 'admin';
+
+  document
+    .querySelectorAll('.admin-only')
+    .forEach(el => el.style.display = isAdmin ? '' : 'none');
+
+  const s = eid('nav-stats-btn');
+  if (s) {
+    s.style.display = isAdmin ? 'flex' : 'none';
+  }
 }
 
 async function doLogin() {
