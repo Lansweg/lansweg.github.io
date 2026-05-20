@@ -945,7 +945,7 @@ function renderGrid(){
   }).join('');
   if(!liveIsReadonly)g2.innerHTML+=`<div class="p-add" onclick="addPaniers(1)" title="Ajouter 1 panier">＋</div>`;
 }
-
+// ${p.name.split(' ')[0]}
 // selectPanier gère maintenant actif ET historique (plus de viewPanierReadonly séparé)
 function selectPanier(num){
   selPanier=(selPanier===num&&!liveIsReadonly)?null:num;
