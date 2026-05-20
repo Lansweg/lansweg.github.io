@@ -65,7 +65,7 @@ select.finput option{background:var(--bg3)}
 .start-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);padding:40px;width:100%;max-width:480px}
 .start-box h2{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:6px}
 .start-box p{color:var(--muted);font-size:13px;margin-bottom:24px}
-.live-layout{flex:1;display:grid;grid-template-columns:1fr 380px;overflow:hidden}
+.live-layout{flex:1;display:grid;grid-template-columns:1fr 5px var(--panel-w,380px);overflow:hidden}
 .paniers-zone{padding:16px;overflow-y:auto}
 .paniers-topbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .live-stats-row{display:flex;gap:10px;margin-bottom:14px}
@@ -178,10 +178,13 @@ select.finput option{background:var(--bg3)}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
-.history-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;margin-bottom:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px}
+.history-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:5px 10px;margin-bottom:4px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:7px}
 .history-item:hover{border-color:var(--border2)}
 .history-item.readonly-live{border-left:3px solid var(--purple)}
 .history-view-banner{background:var(--purple-dim);border:1px solid rgba(167,139,250,.3);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--purple);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.resize-handle{width:5px;background:var(--border);cursor:col-resize;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.resize-handle:hover{background:var(--border2)}
+.resize-handle::after{content:'';width:2px;height:40px;background:var(--muted2);border-radius:2px}
 /* info-box : panneau panier clôturé verrouillé */
 .info-box{background:var(--blue-dim);border:1px solid rgba(78,158,245,.2);border-radius:var(--r);padding:12px 14px;font-size:12px;color:var(--blue);margin-bottom:12px}
 .settings-view{padding:20px;overflow-y:auto;flex:1}
@@ -325,7 +328,7 @@ select.finput option{background:var(--bg3)}
           </div>
           <div class="paniers-grid" id="paniers-grid"></div>
         </div>
-
+        <div class="resize-handle" id="panel-resize-handle" title="Glisser pour redimensionner"></div>
         <div class="panier-panel">
           <div class="pp-empty" id="pp-empty"><div class="pp-empty-icon">🛒</div><div>Cliquez sur un panier</div></div>
           <div id="pp-content" style="display:none;flex:1;flex-direction:column;overflow:hidden">
@@ -1054,10 +1057,10 @@ function renderHistory(){
     const active=l.paniers.filter(p=>p.items.length||p.note).length;
     const d=new Date(l.date).toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
     return `<div class="history-item readonly-live" onclick="viewHistory(${i})">
-      <div style="font-size:20px">📼</div>
-      <div style="flex:1">
-        <div style="font-weight:700;font-size:13px">${l.name}</div>
-        <div style="font-size:11px;color:var(--muted)">${d} · ${active} paniers · ${total}€</div>
+      <div style="font-size:13px;flex-shrink:0">📼</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.name}</div>
+        <div style="font-size:10px;color:var(--muted)">${d} · ${active}p · ${total}€</div>
       </div>
     </div>`;
   }).join('');
@@ -1523,7 +1526,38 @@ async function changeAccessCode() {
   syncSet('ok'); toast('Code d\'accès mis à jour ✓');
   setTimeout(() => { msgEl.textContent = ''; }, 4000);
 }
+// ── PANNEAU PANIER REDIMENSIONNABLE ──────────────────────────
+(function(){
+  const STOR_KEY='fce_panel_w';
+  const MIN=280,MAX=560;
+  const savedW=parseInt(localStorage.getItem(STOR_KEY))||380;
+  document.documentElement.style.setProperty('--panel-w',savedW+'px');
 
+  let dragging=false,startX=0,startW=0;
+  document.addEventListener('mousedown',e=>{
+    const h=document.getElementById('panel-resize-handle');
+    if(!h||e.target!==h)return;
+    dragging=true;startX=e.clientX;
+    const layout=document.getElementById('live-layout');
+    startW=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--panel-w'))||380;
+    document.body.style.userSelect='none';
+    document.body.style.cursor='col-resize';
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!dragging)return;
+    const delta=startX-e.clientX; // glisser à gauche = agrandir
+    const newW=Math.min(MAX,Math.max(MIN,startW+delta));
+    document.documentElement.style.setProperty('--panel-w',newW+'px');
+  });
+  document.addEventListener('mouseup',()=>{
+    if(!dragging)return;
+    dragging=false;
+    document.body.style.userSelect='';
+    document.body.style.cursor='';
+    const w=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--panel-w'))||380;
+    localStorage.setItem(STOR_KEY,w);
+  });
+})();
 // ── DÉMARRAGE ────────────────────────────────────────────────
 (async () => {
   if (checkSession()) {
