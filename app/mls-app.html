@@ -492,19 +492,26 @@ input:focus,select:focus,textarea:focus{border-color:var(--border-dark)}
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
 <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.1/mapbox-gl-geocoder.min.js"></script>
 <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.1/mapbox-gl-geocoder.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="config.js"></script>
+
 <script>
-/* ════════════════════════════════════════
-   CONFIG
-════════════════════════════════════════ */
-const RATE_KM = 0.55, SURCHARGE = 0.20;
+const RATE_KM = 0.55;
+const SURCHARGE = 0.20;
 
+const SB_URL = window.APP_CONFIG.SB_URL;
+const SB_KEY = window.APP_CONFIG.SB_KEY;
+const MB_TOKEN = window.APP_CONFIG.MB_TOKEN;
 
-const SB_URL = window.APP_CONFIG.SB_URL
-const SB_KEY = window.APP_CONFIG.SB_KEY
-const MB_TOKEN = window.APP_CONFIG.MB_TOKEN
-const sb = supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
-  mapboxgl.accessToken = MB_TOKEN;
+const sb = supabase.createClient(SB_URL, SB_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true
+  }
+});
+
+mapboxgl.accessToken = MB_TOKEN;
 /* ════════════════════════════════════════
    STATE
 ════════════════════════════════════════ */
