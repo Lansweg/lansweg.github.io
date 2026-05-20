@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet" />
 <style>
-  /* ── Reset & base ── */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --bg: #f5f4f1; --surface: #fff; --border: #e6e3de; --border-dark: #ccc9c2;
@@ -19,6 +18,7 @@
     --sans: 'DM Sans', sans-serif;
     --mono: 'DM Mono', monospace;
     --serif: 'DM Serif Display', serif;
+    --nav-h: 52px;
   }
   body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
   input, select, textarea, button { font-family: var(--sans); }
@@ -27,40 +27,95 @@
   /* ── Layout ── */
   .page { display: none; }
   .page.active { display: block; }
-  .container { max-width: 900px; margin: 0 auto; padding: 36px 24px; }
-  .container-sm { max-width: 620px; margin: 0 auto; padding: 32px 24px; }
-  .container-xs { max-width: 500px; margin: 0 auto; padding: 32px 24px; }
+  .container { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
+  .container-sm { max-width: 620px; margin: 0 auto; padding: 24px 16px; }
+  .container-xs { max-width: 500px; margin: 0 auto; padding: 24px 16px; }
 
-  /* ── Nav ── */
+  @media (min-width: 600px) {
+    .container { padding: 36px 24px; }
+    .container-sm { padding: 32px 24px; }
+    .container-xs { padding: 32px 24px; }
+  }
+
+  /* ── Nav (desktop) ── */
   nav {
     background: var(--surface); border-bottom: 1px solid var(--border);
-    padding: 0 28px; display: flex; align-items: center; gap: 4px;
-    position: sticky; top: 0; z-index: 100;
+    padding: 0 16px; display: flex; align-items: center; gap: 2px;
+    position: sticky; top: 0; z-index: 100; height: var(--nav-h);
   }
-  .nav-brand { margin-right: auto; display: flex; align-items: center; gap: 10px; padding: 14px 0; }
-  .nav-logo { width: 26px; height: 26px; border-radius: 5px; background: var(--accent); display: flex; align-items: center; justify-content: center; }
+  @media (min-width: 600px) { nav { padding: 0 28px; gap: 4px; } }
+
+  .nav-brand { margin-right: auto; display: flex; align-items: center; gap: 8px; padding: 12px 0; flex-shrink: 0; }
+  .nav-logo { width: 26px; height: 26px; border-radius: 5px; background: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .nav-title { font-family: var(--serif); font-size: 16px; }
-  .nav-btn { background: transparent; color: var(--muted); border: none; border-radius: 6px; padding: 7px 14px; font-size: 13px; font-weight: 400; display: flex; align-items: center; gap: 6px; transition: background .15s; }
+
+  /* Desktop nav buttons */
+  .nav-btn {
+    background: transparent; color: var(--muted); border: none; border-radius: 6px;
+    padding: 7px 11px; font-size: 13px; font-weight: 400;
+    display: none; /* hidden on mobile by default */
+    align-items: center; gap: 6px; transition: background .15s; white-space: nowrap;
+  }
+  @media (min-width: 600px) {
+    .nav-btn { display: flex; }
+  }
   .nav-btn:hover, .nav-btn.active { background: var(--accent-light); color: var(--text); font-weight: 500; }
-  .nav-user { margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
-  .nav-username { font-size: 12px; color: var(--faint); }
+
+  .nav-user { margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  @media (min-width: 600px) { .nav-user { margin-left: 12px; padding-left: 12px; } }
+  .nav-username { font-size: 12px; color: var(--faint); display: none; }
+  @media (min-width: 480px) { .nav-username { display: block; } }
   .nav-logout { background: transparent; border: none; color: var(--faint); display: flex; padding: 4px; }
 
+  /* ── Mobile bottom nav ── */
+  .mobile-nav {
+    display: flex;
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+  }
+  @media (min-width: 600px) { .mobile-nav { display: none; } }
+
+  .mobile-nav-btn {
+    flex: 1; background: transparent; border: none;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 4px 0; color: var(--faint); font-size: 10px; font-weight: 500;
+    letter-spacing: .04em; transition: color .15s;
+  }
+  .mobile-nav-btn.active { color: var(--text); }
+  .mobile-nav-btn svg { display: block; }
+
+  /* Page padding-bottom on mobile so content isn't hidden behind bottom nav */
+  @media (max-width: 599px) {
+    .page.active > .container,
+    .page.active > .container-sm,
+    .page.active > .container-xs {
+      padding-bottom: 80px;
+    }
+  }
+
   /* ── Sub header ── */
-  .subheader { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; gap: 12px; }
+  .subheader {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 10px 16px; display: flex; align-items: center; gap: 10px;
+  }
   .subheader h2 { margin: 0; font-size: 15px; font-weight: 500; flex: 1; }
   .back-btn { background: transparent; border: none; color: var(--muted); display: flex; padding: 2px; }
 
   /* ── Cards & boxes ── */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  @media (min-width: 600px) { .card { padding: 20px; } }
   .card + .card { margin-top: 12px; }
 
   /* ── Stat cards ── */
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 32px; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
-  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; }
-  .stat-value { font-family: var(--mono); font-size: 22px; font-weight: 500; }
-  .stat-sub { font-size: 12px; color: var(--faint); margin-top: 4px; }
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 24px; }
+  @media (min-width: 500px) { .stats { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 32px; } }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+  @media (min-width: 600px) { .stat-card { padding: 20px; } }
+  .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 6px; }
+  .stat-value { font-family: var(--mono); font-size: 18px; font-weight: 500; }
+  @media (min-width: 600px) { .stat-value { font-size: 22px; } }
+  .stat-sub { font-size: 11px; color: var(--faint); margin-top: 4px; }
 
   /* ── Divider ── */
   .divider { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
@@ -69,11 +124,17 @@
 
   /* ── Ticket list ── */
   .ticket-list { display: grid; gap: 6px; }
-  .ticket-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 13px 18px; cursor: pointer; display: flex; align-items: center; gap: 14px; transition: border-color .12s; text-decoration: none; color: inherit; }
+  .ticket-item {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+    transition: border-color .12s; text-decoration: none; color: inherit;
+  }
+  @media (min-width: 600px) { .ticket-item { padding: 13px 18px; gap: 14px; } }
   .ticket-item:hover { border-color: var(--border-dark); }
-  .ticket-route { font-weight: 500; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .ticket-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
-  .ticket-amount { font-family: var(--mono); font-weight: 500; font-size: 15px; text-align: right; }
+  .ticket-route { font-weight: 500; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  @media (min-width: 600px) { .ticket-route { font-size: 14px; } }
+  .ticket-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .ticket-amount { font-family: var(--mono); font-weight: 500; font-size: 14px; text-align: right; white-space: nowrap; }
   .ticket-status { font-size: 11px; margin-top: 3px; text-align: right; }
   .status-paid { color: var(--green); }
   .status-pending { color: var(--orange); }
@@ -88,9 +149,14 @@
   .field label { display: block; font-size: 11px; font-weight: 500; letter-spacing: .07em; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; }
   .field label .hint { color: var(--green); font-weight: 400; text-transform: none; letter-spacing: 0; }
   input[type=text], input[type=email], input[type=password], input[type=number], input[type=date], select, textarea {
-    width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;
-    font-size: 14px; color: var(--text); background: var(--surface); outline: none;
-    transition: border-color .15s;
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px;
+    font-size: 16px; /* prevent iOS zoom */ color: var(--text); background: var(--surface); outline: none;
+    transition: border-color .15s; -webkit-appearance: none;
+  }
+  @media (min-width: 600px) {
+    input[type=text], input[type=email], input[type=password], input[type=number], input[type=date], select, textarea {
+      font-size: 14px; padding: 9px 12px;
+    }
   }
   input:focus, select:focus, textarea:focus { border-color: var(--border-dark); }
   .input-icon { position: relative; }
@@ -101,54 +167,60 @@
 
   /* ── Toggle ── */
   .toggle-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-  .toggle { width: 38px; height: 21px; border-radius: 11px; background: var(--border); position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0; border: none; }
+  .toggle { width: 42px; height: 24px; border-radius: 12px; background: var(--border); position: relative; cursor: pointer; transition: background .2s; flex-shrink: 0; border: none; }
   .toggle.on { background: var(--accent); }
-  .toggle::after { content: ''; width: 15px; height: 15px; border-radius: 50%; background: #fff; position: absolute; top: 3px; left: 3px; transition: left .2s; box-shadow: 0 1px 3px rgba(0,0,0,.18); }
-  .toggle.on::after { left: 20px; }
+  .toggle::after { content: ''; width: 18px; height: 18px; border-radius: 50%; background: #fff; position: absolute; top: 3px; left: 3px; transition: left .2s; box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+  .toggle.on::after { left: 21px; }
   .toggle-label { font-size: 13px; }
 
   /* ── Buttons ── */
-  .btn { display: inline-flex; align-items: center; gap: 7px; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; border: none; transition: opacity .15s; white-space: nowrap; }
+  .btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; border: none; transition: opacity .15s; white-space: nowrap; }
   .btn:hover { opacity: .85; }
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
   .btn-green { background: var(--green); color: #fff; }
   .btn-danger { background: transparent; color: var(--red); border: 1px solid #f0c5c5; }
   .btn-full { width: 100%; justify-content: center; }
-  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
   .btn-row.mt { margin-top: 18px; }
 
   /* ── Filters ── */
   .filters { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
-  .filter-btn { font-size: 12px; font-weight: 500; background: var(--surface); color: var(--muted); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; cursor: pointer; transition: all .15s; }
+  .filter-btn { font-size: 12px; font-weight: 500; background: var(--surface); color: var(--muted); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; cursor: pointer; transition: all .15s; }
   .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
   /* ── Calc lines ── */
-  .calc-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .calc-line .cl-label { font-size: 13px; color: var(--muted); }
-  .calc-line .cl-value { font-family: var(--mono); font-size: 13px; color: var(--muted); font-weight: 500; }
+  .calc-line { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
+  .calc-line .cl-label { font-size: 12px; color: var(--muted); flex: 1; }
+  @media (min-width: 600px) { .calc-line .cl-label { font-size: 13px; } }
+  .calc-line .cl-value { font-family: var(--mono); font-size: 13px; color: var(--muted); font-weight: 500; flex-shrink: 0; }
   .calc-line.total .cl-label { font-size: 14px; font-weight: 600; color: var(--text); }
   .calc-line.total .cl-value { font-size: 17px; font-weight: 700; color: var(--text); }
   .calc-line.accent .cl-value { color: var(--orange); }
   .calc-sep { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
 
   /* ── Detail grid ── */
-  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (min-width: 500px) { .detail-grid { gap: 18px; } }
   .detail-item .dl { font-size: 10px; color: var(--faint); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
-  .detail-item .dv { font-size: 14px; color: var(--text); }
+  .detail-item .dv { font-size: 13px; color: var(--text); }
+  @media (min-width: 600px) { .detail-item .dv { font-size: 14px; } }
   .detail-item .dv.mono { font-family: var(--mono); }
   .detail-full { grid-column: 1 / -1; }
 
   /* ── Member list ── */
-  .member-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+  .member-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  @media (min-width: 600px) { .member-item { padding: 14px 20px; gap: 14px; } }
   .member-avatar { width: 36px; height: 36px; border-radius: 8px; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; flex-shrink: 0; }
   .member-name { font-weight: 500; font-size: 14px; }
-  .member-meta { font-size: 12px; color: var(--muted); margin-top: 1px; }
-  .member-due { font-family: var(--mono); font-size: 13px; font-weight: 500; text-align: right; }
+  .member-meta { font-size: 11px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+  @media (min-width: 500px) { .member-meta { max-width: none; } }
+  .member-due { font-family: var(--mono); font-size: 13px; font-weight: 500; text-align: right; white-space: nowrap; }
   .member-tickets { font-size: 11px; color: var(--faint); text-align: right; margin-top: 2px; }
 
   /* ── Tariff box ── */
-  .tariff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
+  .tariff-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  @media (min-width: 500px) { .tariff-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; } }
   .tariff-label { font-size: 11px; color: var(--faint); margin-bottom: 3px; }
   .tariff-value { font-family: var(--mono); font-size: 14px; color: var(--text); }
 
@@ -157,66 +229,79 @@
   .alert-error.show { display: block; }
 
   /* ── Toast ── */
-  #toast { position: fixed; top: 20px; right: 20px; z-index: 9999; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,.13); display: none; }
+  #toast { position: fixed; top: 16px; right: 16px; z-index: 9999; padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,.13); display: none; max-width: calc(100vw - 32px); }
   #toast.show { display: block; }
   #toast.ok { background: var(--green); }
   #toast.err { background: var(--red); }
 
   /* ── Login ── */
-  .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px 16px; }
   .login-box { width: 100%; max-width: 360px; }
   .login-logo { width: 48px; height: 48px; border-radius: 10px; background: var(--accent); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
   .login-title { font-family: var(--serif); font-size: 24px; font-weight: 400; text-align: center; }
   .login-sub { font-size: 11px; color: var(--faint); text-align: center; margin: 5px 0 28px; letter-spacing: .1em; text-transform: uppercase; }
-  .login-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 26px; }
+  .login-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; }
+  @media (min-width: 400px) { .login-card { padding: 26px; } }
   .login-hint { font-size: 11px; color: var(--faint); text-align: center; margin-top: 14px; }
 
   /* ── Map ── */
   #route-map-wrap { margin-bottom: 18px; display: none; }
-  #route-map { width: 100%; height: 220px; border-radius: 10px 10px 0 0; border: 1px solid var(--border); }
-  #route-info { background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; padding: 10px 16px; display: flex; align-items: center; gap: 16px; }
-  .route-info-sep { width: 1px; height: 32px; background: var(--border); }
+  #route-map { width: 100%; height: 200px; border-radius: 10px 10px 0 0; border: 1px solid var(--border); }
+  @media (min-width: 600px) { #route-map { height: 220px; } }
+  #route-info { background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .route-info-sep { width: 1px; height: 32px; background: var(--border); display: none; }
+  @media (min-width: 400px) { .route-info-sep { display: block; } }
   .route-info-label { font-size: 10px; color: var(--faint); text-transform: uppercase; letter-spacing: .07em; }
   .route-info-val { font-family: var(--mono); font-size: 18px; font-weight: 500; }
   .route-info-dur { font-family: var(--mono); font-size: 14px; color: var(--muted); }
-  #route-loading { display: none; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: var(--muted); padding: 80px 0; }
   #km-auto-hint { font-size: 11px; color: var(--green); }
+
+  /* ── Places autocomplete (new API) ── */
+  .pac-wrap { position: relative; }
+  gmp-place-autocomplete {
+    width: 100%;
+    --gmp-input-padding: 10px 12px 10px 36px;
+    --gmp-input-font-size: 16px;
+    --gmp-input-border-radius: 6px;
+    --gmp-input-border-color: var(--border);
+    --gmp-input-focus-border-color: var(--border-dark);
+    --gmp-input-background-color: var(--surface);
+    --gmp-input-color: var(--text);
+    font-family: var(--sans);
+  }
+  @media (min-width: 600px) {
+    gmp-place-autocomplete { --gmp-input-font-size: 14px; }
+  }
+  /* Fallback for plain input used when new API not available */
+  .input-icon gmp-place-autocomplete { display: block; }
+
+  /* ── Page header ── */
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; flex-wrap: wrap; gap: 10px; }
+  .page-title { font-family: var(--serif); font-weight: 400; font-size: 24px; }
+  @media (min-width: 600px) { .page-title { font-size: 26px; } .page-header { margin-bottom: 22px; } }
+  .empty { text-align: center; padding: 48px 20px; font-size: 13px; color: var(--faint); }
+  .sep-line { height: 1px; background: var(--border); margin: 24px 0; }
+  @media (min-width: 600px) { .sep-line { margin: 32px 0; } }
+  .mono { font-family: var(--mono); }
+  .ticket-id { font-family: var(--mono); font-size: 11px; color: var(--faint); }
 
   /* ── Print ── */
   @media print {
-    nav, .subheader, .screen-only { display: none !important; }
+    nav, .subheader, .screen-only, .mobile-nav { display: none !important; }
     body, .page { background: #fff !important; }
-    .print-zone { display: block !important; }
     #print-header { display: flex !important; }
-    #print-footer { display: block !important; }
+    #print-footer { display: flex !important; }
     #route-map-wrap { display: none !important; }
   }
   #print-header { display: none; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 2px solid var(--text); }
-  #print-footer { display: none; margin-top: 40px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 10px; color: var(--faint); display: none; justify-content: space-between; }
-
-  /* ── Google autocomplete ── */
-  .pac-container { z-index: 99999 !important; border-radius: 8px !important; box-shadow: 0 4px 24px rgba(0,0,0,.12) !important; border: 1px solid var(--border) !important; margin-top: 4px !important; font-family: var(--sans) !important; }
-  .pac-item { padding: 8px 14px !important; font-size: 13px !important; cursor: pointer !important; }
-  .pac-item:hover { background: var(--bg) !important; }
-  .pac-item-query { font-weight: 500 !important; color: var(--text) !important; }
-
-  /* ── Misc ── */
-  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; flex-wrap: wrap; gap: 12px; }
-  .page-title { font-family: var(--serif); font-weight: 400; font-size: 26px; }
-  .empty { text-align: center; padding: 48px 20px; font-size: 13px; color: var(--faint); }
-  .sep-line { height: 1px; background: var(--border); margin: 32px 0; }
-  .mono { font-family: var(--mono); }
-  .ticket-id { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+  #print-footer { display: none; margin-top: 40px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 10px; color: var(--faint); justify-content: space-between; }
 </style>
 </head>
 <body>
 
-<!-- ══ TOAST ══ -->
 <div id="toast"></div>
 
-<!-- ══════════════════════════════════════════════════
-     PAGE: LOGIN
-══════════════════════════════════════════════════ -->
+<!-- ══ LOGIN ══ -->
 <div id="page-login" class="page active">
   <div class="login-wrap">
     <div class="login-box">
@@ -229,11 +314,11 @@
         <div id="login-error" class="alert-error"></div>
         <div class="field">
           <label>Adresse e-mail</label>
-          <input type="email" id="login-email" placeholder="prenom.nom@exemple.fr" />
+          <input type="email" id="login-email" placeholder="prenom.nom@exemple.fr" autocomplete="email" />
         </div>
         <div class="field">
           <label>Mot de passe</label>
-          <input type="password" id="login-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+          <input type="password" id="login-pwd" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" />
         </div>
         <button class="btn btn-primary btn-full" onclick="doLogin()">Se connecter</button>
         <p class="login-hint">Mot de passe par défaut : <span class="mono">membre2024</span></p>
@@ -242,46 +327,34 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     PAGE: DASHBOARD
-══════════════════════════════════════════════════ -->
+<!-- ══ DASHBOARD ══ -->
 <div id="page-dashboard" class="page">
-  <nav>
+  <nav id="nav-dashboard">
     <div class="nav-brand">
       <div class="nav-logo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/></svg></div>
       <span class="nav-title">MLS</span>
     </div>
-    <button class="nav-btn active" onclick="showPage('dashboard')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Tableau de bord
-    </button>
-    <button class="nav-btn" onclick="showPage('tickets')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 010 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 010-4V7a2 2 0 00-2-2H5z"/></svg>Tickets
-    </button>
-    <button class="nav-btn admin-only" onclick="showPage('members')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/></svg>Membres
-    </button>
+    <button class="nav-btn active" onclick="showPage('dashboard')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Tableau de bord</button>
+    <button class="nav-btn" onclick="showPage('tickets')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 010 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 010-4V7a2 2 0 00-2-2H5z"/></svg>Tickets</button>
+    <button class="nav-btn admin-only" onclick="showPage('members')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/></svg>Membres</button>
     <div class="nav-user">
       <span class="nav-username" id="nav-name"></span>
-      <button class="nav-logout" onclick="doLogout()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-      </button>
+      <button class="nav-logout" onclick="doLogout()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></button>
     </div>
   </nav>
   <div class="container">
-    <div style="margin-bottom:28px">
-      <h2 style="font-family:var(--serif);font-size:28px;font-weight:400" id="dash-greeting">Bonjour</h2>
+    <div style="margin-bottom:22px">
+      <h2 style="font-family:var(--serif);font-size:26px;font-weight:400" id="dash-greeting">Bonjour</h2>
       <p style="margin-top:4px;font-size:13px;color:var(--muted)" id="dash-subtitle"></p>
     </div>
     <div class="stats" id="dash-stats"></div>
     <div class="divider"><span>Derniers trajets</span></div>
     <div id="dash-tickets"></div>
     <div class="btn-row mt">
-      <button class="btn btn-primary" onclick="showPage('new-ticket')">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Nouveau ticket
-      </button>
+      <button class="btn btn-primary" onclick="showPage('new-ticket')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Nouveau ticket</button>
       <button class="btn btn-ghost" onclick="showPage('tickets')">Tous les tickets</button>
     </div>
-    <div class="card" style="margin-top:36px">
+    <div class="card" style="margin-top:28px">
       <p style="font-size:11px;font-weight:500;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:14px">Grille tarifaire en vigueur</p>
       <div class="tariff-grid">
         <div><div class="tariff-label">Tarif kilométrique</div><div class="tariff-value">0,55 €/km</div></div>
@@ -291,11 +364,17 @@
       </div>
     </div>
   </div>
+  <!-- Mobile bottom nav -->
+  <nav class="mobile-nav" id="mob-nav-d">
+    <button class="mobile-nav-btn active" onclick="showPage('dashboard')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Accueil</button>
+    <button class="mobile-nav-btn" onclick="showPage('tickets')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 010 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 010-4V7a2 2 0 00-2-2H5z"/></svg>Tickets</button>
+    <button class="mobile-nav-btn" onclick="showPage('new-ticket')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Nouveau</button>
+    <button class="mobile-nav-btn admin-only" onclick="showPage('members')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/></svg>Membres</button>
+    <button class="mobile-nav-btn" onclick="doLogout()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Sortir</button>
+  </nav>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     PAGE: TICKETS
-══════════════════════════════════════════════════ -->
+<!-- ══ TICKETS ══ -->
 <div id="page-tickets" class="page">
   <nav>
     <div class="nav-brand">
@@ -322,11 +401,16 @@
     </div>
     <div id="tickets-list"></div>
   </div>
+  <nav class="mobile-nav">
+    <button class="mobile-nav-btn" onclick="showPage('dashboard')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Accueil</button>
+    <button class="mobile-nav-btn active" onclick="showPage('tickets')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 010 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 010-4V7a2 2 0 00-2-2H5z"/></svg>Tickets</button>
+    <button class="mobile-nav-btn" onclick="showPage('new-ticket')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Nouveau</button>
+    <button class="mobile-nav-btn admin-only" onclick="showPage('members')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/></svg>Membres</button>
+    <button class="mobile-nav-btn" onclick="doLogout()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Sortir</button>
+  </nav>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     PAGE: NEW TICKET
-══════════════════════════════════════════════════ -->
+<!-- ══ NEW TICKET ══ -->
 <div id="page-new-ticket" class="page">
   <div class="subheader">
     <button class="back-btn" onclick="showPage('tickets')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg></button>
@@ -343,20 +427,19 @@
     </div>
     <div class="field">
       <label>Adresse de départ</label>
-      <div class="input-icon">
+      <div class="input-icon pac-wrap" id="dep-wrap">
         <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4zm7-4v16m8-12v16"/></svg>
         <input type="text" id="nt-departure" placeholder="Ex : 1 place de la Victoire, Dunkerque" />
       </div>
     </div>
     <div class="field">
       <label>Adresse de destination</label>
-      <div class="input-icon">
+      <div class="input-icon pac-wrap" id="dest-wrap">
         <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4zm7-4v16m8-12v16"/></svg>
         <input type="text" id="nt-destination" placeholder="Ex : Mairie de Gravelines" />
       </div>
     </div>
 
-    <!-- Map zone -->
     <div id="route-map-wrap">
       <div id="route-map"></div>
       <div id="route-info">
@@ -369,7 +452,7 @@
           <div class="route-info-label">Durée estimée</div>
           <div class="route-info-dur" id="ri-dur">—</div>
         </div>
-        <button class="btn btn-ghost" style="margin-left:auto;padding:6px 10px" onclick="recalcRoute()">
+        <button class="btn btn-ghost" style="margin-left:auto;padding:8px 10px" onclick="recalcRoute()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>Recalculer
         </button>
       </div>
@@ -395,7 +478,6 @@
       <input type="text" id="nt-notes" placeholder="Motif, précisions…" />
     </div>
 
-    <!-- Preview -->
     <div class="card" id="preview-box" style="display:none;margin-bottom:18px">
       <p style="font-size:11px;font-weight:500;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:12px">Aperçu du montant</p>
       <div class="calc-line"><span class="cl-label" id="prev-base-label">—</span><span class="cl-value" id="prev-base">—</span></div>
@@ -405,25 +487,22 @@
       <div class="calc-line total"><span class="cl-label">Total dû</span><span class="cl-value" id="prev-total">—</span></div>
     </div>
 
-    <button class="btn btn-primary btn-full" onclick="submitTicket()">
+    <button class="btn btn-primary btn-full" style="padding:14px" onclick="submitTicket()">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Créer le ticket
     </button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     PAGE: TICKET DETAIL
-══════════════════════════════════════════════════ -->
+<!-- ══ TICKET DETAIL ══ -->
 <div id="page-ticket-detail" class="page">
   <div class="subheader">
     <button class="back-btn" onclick="showPage('tickets')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg></button>
     <h2>Détail du ticket</h2>
-    <button class="btn btn-ghost screen-only" onclick="window.print()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>Imprimer / PDF
+    <button class="btn btn-ghost screen-only" style="padding:7px 10px" onclick="window.print()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg><span style="display:none" class="print-label">Imprimer</span>
     </button>
   </div>
   <div id="print-zone" class="container-sm">
-    <!-- Print header -->
     <div id="print-header">
       <div>
         <div style="font-family:var(--serif);font-size:22px">Mobilité Littorale &amp; SAM</div>
@@ -435,19 +514,11 @@
         <div style="font-size:11px;color:var(--muted);margin-top:2px" id="td-emitted"></div>
       </div>
     </div>
-
-    <!-- Status row -->
-    <div class="screen-only" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <div class="screen-only" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
       <span class="ticket-id" id="td-id"></span>
       <span class="badge" id="td-badge"></span>
     </div>
-
-    <!-- Details card -->
-    <div class="card">
-      <div class="detail-grid" id="td-details"></div>
-    </div>
-
-    <!-- Calc card -->
+    <div class="card"><div class="detail-grid" id="td-details"></div></div>
     <div class="card" style="margin-top:12px">
       <p style="font-size:11px;font-weight:500;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:14px">Décompte</p>
       <div class="calc-line"><span class="cl-label" id="td-base-lbl"></span><span class="cl-value" id="td-base"></span></div>
@@ -457,21 +528,12 @@
       <div class="calc-line total"><span class="cl-label">Montant total dû</span><span class="cl-value" id="td-total"></span></div>
       <p id="td-paid-date" style="margin-top:10px;font-size:12px;color:var(--green);display:none"></p>
     </div>
-
-    <!-- Print footer -->
-    <div id="print-footer" style="display:flex;justify-content:space-between">
-      <span>Mobilité Littorale &amp; SAM — Association loi 1901</span>
-      <span id="pf-date"></span>
-    </div>
-
-    <!-- Actions -->
+    <div id="print-footer"><span>Mobilité Littorale &amp; SAM — Association loi 1901</span><span id="pf-date"></span></div>
     <div class="btn-row" style="margin-top:20px" id="td-actions"></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     PAGE: MEMBERS
-══════════════════════════════════════════════════ -->
+<!-- ══ MEMBERS ══ -->
 <div id="page-members" class="page">
   <nav>
     <div class="nav-brand">
@@ -493,11 +555,16 @@
     </div>
     <div id="members-list"></div>
   </div>
+  <nav class="mobile-nav">
+    <button class="mobile-nav-btn" onclick="showPage('dashboard')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Accueil</button>
+    <button class="mobile-nav-btn" onclick="showPage('tickets')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 010 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 010-4V7a2 2 0 00-2-2H5z"/></svg>Tickets</button>
+    <button class="mobile-nav-btn" onclick="showPage('new-ticket')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Nouveau</button>
+    <button class="mobile-nav-btn active admin-only" onclick="showPage('members')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/></svg>Membres</button>
+    <button class="mobile-nav-btn" onclick="doLogout()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>Sortir</button>
+  </nav>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     PAGE: NEW MEMBER
-══════════════════════════════════════════════════ -->
+<!-- ══ NEW MEMBER ══ -->
 <div id="page-new-member" class="page">
   <div class="subheader">
     <button class="back-btn" onclick="showPage('members')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg></button>
@@ -510,33 +577,38 @@
     <div class="field"><label>Téléphone</label><input type="text" id="nm-phone" placeholder="06 xx xx xx xx" /></div>
     <div class="field"><label>Mot de passe initial</label><input type="text" id="nm-pwd" value="membre2024" /></div>
     <p style="font-size:12px;color:var(--faint);margin-top:-8px;margin-bottom:18px">Le membre se connecte avec cet e-mail et ce mot de passe.</p>
-    <button class="btn btn-primary btn-full" onclick="submitMember()">
+    <button class="btn btn-primary btn-full" style="padding:14px" onclick="submitMember()">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/></svg>Créer le membre
     </button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     GOOGLE MAPS
-══════════════════════════════════════════════════ -->
+<!-- ══ GOOGLE MAPS (new Places API + Routes) ══ -->
 <script>
-window.initGoogleMaps = function() { window._gmapsReady = true; setupAutocomplete(); }
+(async () => {
+  const { Map } = await google.maps.importLibrary("maps");
+  const { DirectionsService, DirectionsRenderer, TravelMode } = await google.maps.importLibrary("routes");
+  const { PlaceAutocompleteElement } = await google.maps.importLibrary("places");
+  window._gmLibs = { Map, DirectionsService, DirectionsRenderer, TravelMode, PlaceAutocompleteElement };
+  window._gmapsReady = true;
+  if (window._pendingAutocomplete) setupAutocomplete();
+})().catch(err => {
+  console.warn('Google Maps failed to load:', err);
+  window._gmapsReady = false;
+});
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuuhocrv_oktg2Jq-IKp_dE1X_tHQOH3Q&libraries=places&callback=initGoogleMaps" async defer></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDuuhocrv_oktg2Jq-IKp_dE1X_tHQOH3Q&loading=async&libraries=places,routes"></script>
 
 <script>
-/* ══════════════════════════════════════════════════
-   STATE
-══════════════════════════════════════════════════ */
+/* ══ STATE ══ */
 const RATE_KM = 0.55, SURCHARGE = 0.20;
 const STORAGE_KEY = 'mls-html-v1';
-
 let DB = load();
 let currentUser = null;
 let currentFilter = 'all';
 let mapInstance = null, directionsRenderer = null;
-let autocompleteDep = null, autocompleteDest = null;
 let routeDebounce = null;
+let acDep = null, acDest = null;
 
 function load() {
   try { const d = localStorage.getItem(STORAGE_KEY); return d ? JSON.parse(d) : defaultDB(); }
@@ -550,7 +622,6 @@ function defaultDB() {
 }
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }
 
-/* ══ Helpers ══ */
 const fmt = n => parseFloat(n).toFixed(2).replace('.', ',') + ' €';
 const fmtDate = iso => new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
 const fmtShort = iso => new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -565,9 +636,11 @@ function toast(msg, type = 'ok') {
   el.textContent = msg; el.className = 'show ' + type;
   setTimeout(() => el.className = '', 3000);
 }
-function qs(sel) { return document.querySelector(sel); }
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-/* ══ Auth ══ */
+/* ══ AUTH ══ */
 function doLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pwd = document.getElementById('login-pwd').value;
@@ -580,15 +653,14 @@ function doLogin() {
   currentUser = m;
   document.getElementById('login-email').value = '';
   document.getElementById('login-pwd').value = '';
-  // Update nav names
   ['nav-name','nav-name-t','nav-name-m'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = m.name.split(' ')[0]; });
-  // Admin-only elements
-  document.querySelectorAll('.admin-only').forEach(el => el.style.display = m.role === 'admin' ? '' : 'none');
+  const isAdmin = m.role === 'admin';
+  document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? '' : 'none');
   showPage('dashboard');
 }
 function doLogout() { currentUser = null; showPage('login'); }
 
-/* ══ Pages ══ */
+/* ══ PAGES ══ */
 function showPage(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const el = document.getElementById('page-' + page);
@@ -600,7 +672,7 @@ function showPage(page) {
   window.scrollTo(0, 0);
 }
 
-/* ══ Dashboard ══ */
+/* ══ DASHBOARD ══ */
 function renderDashboard() {
   if (!currentUser) return;
   const tickets = currentUser.role === 'admin' ? DB.tickets : DB.tickets.filter(t => t.memberId === currentUser.id);
@@ -608,11 +680,8 @@ function renderDashboard() {
   const totalDue = pending.reduce((s, t) => s + t.total, 0);
   const totalKm = tickets.reduce((s, t) => s + t.km, 0);
   const totalToll = tickets.filter(t => t.hasToll).reduce((s, t) => s + t.toll, 0);
-
   document.getElementById('dash-greeting').textContent = 'Bonjour, ' + currentUser.name.split(' ')[0];
   document.getElementById('dash-subtitle').textContent = currentUser.role === 'admin' ? 'Vue administrateur — ensemble des tickets' : 'Votre espace personnel';
-
-  const statsEl = document.getElementById('dash-stats');
   let html = `
     <div class="stat-card">
       <div class="stat-label">${currentUser.role === 'admin' ? 'Total à percevoir' : 'Montant à régler'}</div>
@@ -625,15 +694,14 @@ function renderDashboard() {
       <div class="stat-sub">${tickets.length} trajet${tickets.length > 1 ? 's' : ''}</div>
     </div>`;
   if (totalToll > 0) html += `<div class="stat-card"><div class="stat-label">Péages avancés</div><div class="stat-value" style="color:var(--orange)">${fmt(totalToll)}</div><div class="stat-sub">À rembourser</div></div>`;
-  statsEl.innerHTML = html;
-
+  document.getElementById('dash-stats').innerHTML = html;
   const recent = [...tickets].reverse().slice(0, 6);
   document.getElementById('dash-tickets').innerHTML = recent.length === 0
     ? '<div class="empty">Aucun ticket enregistré.</div>'
     : renderTicketList(recent);
 }
 
-/* ══ Tickets ══ */
+/* ══ TICKETS ══ */
 function renderTickets() {
   if (!currentUser) return;
   const all = currentUser.role === 'admin' ? DB.tickets : DB.tickets.filter(t => t.memberId === currentUser.id);
@@ -656,7 +724,7 @@ function renderTicketList(tickets) {
         <div class="ticket-route">${escHtml(t.departure)} → ${escHtml(t.destination)}</div>
         <div class="ticket-meta">${fmtShort(t.date)} · ${t.km} km${m ? ' · ' + escHtml(m.name) : ''}</div>
       </div>
-      <div>
+      <div style="flex-shrink:0">
         <div class="ticket-amount">${fmt(t.total)}</div>
         <div class="ticket-status ${t.paid ? 'status-paid' : 'status-pending'}">${t.paid ? 'Réglé' : 'En attente'}</div>
       </div>
@@ -665,7 +733,7 @@ function renderTicketList(tickets) {
   }).join('');
 }
 
-/* ══ Ticket detail ══ */
+/* ══ TICKET DETAIL ══ */
 function openTicket(id) {
   const t = DB.tickets.find(t => t.id === id);
   if (!t) return;
@@ -674,13 +742,10 @@ function openTicket(id) {
   document.getElementById('td-id-print').textContent = '#' + t.id.slice(-6).toUpperCase();
   document.getElementById('td-emitted').textContent = 'Émis le ' + fmtShort(t.createdAt);
   document.getElementById('pf-date').textContent = 'Document généré le ' + fmtShort(new Date().toISOString());
-
   const badge = document.getElementById('td-badge');
   badge.textContent = t.paid ? 'Réglé' : 'En attente';
   badge.className = 'badge ' + (t.paid ? 'badge-paid' : 'badge-pending');
-
-  const details = document.getElementById('td-details');
-  details.innerHTML = `
+  document.getElementById('td-details').innerHTML = `
     <div class="detail-item"><div class="dl">Membre</div><div class="dv">${escHtml(m?.name||'—')}</div></div>
     <div class="detail-item"><div class="dl">Date du trajet</div><div class="dv">${fmtDate(t.date)}</div></div>
     <div class="detail-item"><div class="dl">Départ</div><div class="dv">${escHtml(t.departure)}</div></div>
@@ -689,33 +754,24 @@ function openTicket(id) {
     <div class="detail-item"><div class="dl">Péage avancé</div><div class="dv mono">${t.hasToll ? fmt(t.toll) : '—'}</div></div>
     ${t.notes ? `<div class="detail-item detail-full"><div class="dl">Notes</div><div class="dv">${escHtml(t.notes)}</div></div>` : ''}
   `;
-
   document.getElementById('td-base-lbl').textContent = `${t.km} km × ${fmt(RATE_KM)} (tarif kilométrique)`;
   document.getElementById('td-base').textContent = fmt(t.base);
   document.getElementById('td-fuel-lbl').textContent = `${t.km} km × ${fmt(SURCHARGE)} (supplément carburant)`;
   document.getElementById('td-fuel').textContent = fmt(t.fuel);
-
   const tollLine = document.getElementById('td-toll-line');
   if (t.hasToll && t.toll > 0) { tollLine.style.display = ''; document.getElementById('td-toll').textContent = fmt(t.toll); }
   else tollLine.style.display = 'none';
-
   document.getElementById('td-total').textContent = fmt(t.total);
-
   const paidDate = document.getElementById('td-paid-date');
   if (t.paid && t.paidAt) { paidDate.textContent = '✓ Réglé le ' + fmtDate(t.paidAt); paidDate.style.display = ''; }
   else paidDate.style.display = 'none';
-
   const actions = document.getElementById('td-actions');
   if (currentUser?.role === 'admin') {
     let html = '';
     if (!t.paid) html += `<button class="btn btn-green" onclick="markPaid('${t.id}')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Marquer réglé</button>`;
     html += `<button class="btn btn-danger" onclick="deleteTicket('${t.id}')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>Supprimer</button>`;
-    actions.innerHTML = html;
-    actions.style.display = '';
-  } else {
-    actions.style.display = 'none';
-  }
-
+    actions.innerHTML = html; actions.style.display = '';
+  } else { actions.style.display = 'none'; }
   showPage('ticket-detail');
 }
 function markPaid(id) {
@@ -730,79 +786,91 @@ function deleteTicket(id) {
   save(); toast('Ticket supprimé.'); showPage('tickets');
 }
 
-/* ══ New Ticket ══ */
+/* ══ NEW TICKET — AUTOCOMPLETE (new PlaceAutocompleteElement) ══ */
 function initNewTicket() {
-  // Set today's date
   document.getElementById('nt-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('nt-km').value = '';
-  document.getElementById('nt-notes').value = '';
-  document.getElementById('nt-toll').value = '';
-  document.getElementById('nt-departure').value = '';
-  document.getElementById('nt-destination').value = '';
+  ['nt-km','nt-notes','nt-toll','nt-departure','nt-destination'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
   document.getElementById('toll-toggle').classList.remove('on');
   document.getElementById('toll-field').style.display = 'none';
   document.getElementById('preview-box').style.display = 'none';
   document.getElementById('route-map-wrap').style.display = 'none';
   document.getElementById('km-auto-hint').textContent = '';
-
-  // Populate member select
   const sel = document.getElementById('nt-member');
   sel.innerHTML = '<option value="">— Sélectionner —</option>';
   DB.members.filter(m => m.role !== 'admin').forEach(m => {
     const opt = document.createElement('option');
     opt.value = m.id; opt.textContent = m.name; sel.appendChild(opt);
   });
-  if (currentUser?.role !== 'admin') {
-    sel.value = currentUser?.id || '';
-  }
-
-  // Setup autocomplete if Maps ready
+  if (currentUser?.role !== 'admin') sel.value = currentUser?.id || '';
   if (window._gmapsReady) setupAutocomplete();
+  else window._pendingAutocomplete = true;
 }
 
 function setupAutocomplete() {
+  const { PlaceAutocompleteElement } = window._gmLibs || {};
+  if (!PlaceAutocompleteElement) return setupFallbackAutocomplete();
+
+  // Remove old autocomplete elements if present
+  ['dep-wrap','dest-wrap'].forEach(wrapId => {
+    const wrap = document.getElementById(wrapId);
+    if (!wrap) return;
+    const existing = wrap.querySelector('gmp-place-autocomplete');
+    if (existing) existing.remove();
+  });
+
+  // Departure
+  const depWrap = document.getElementById('dep-wrap');
   const depInput = document.getElementById('nt-departure');
+  const depAc = new PlaceAutocompleteElement({ componentRestrictions: { country: 'fr' } });
+  depAc.style.cssText = 'width:100%;display:block;';
+  // Hide the plain input, show the element
+  depInput.style.display = 'none';
+  depWrap.appendChild(depAc);
+  depAc.addEventListener('gmp-placeselect', async ({ place }) => {
+    await place.fetchFields({ fields: ['formattedAddress'] });
+    depInput.value = place.formattedAddress;
+    triggerRouteCalc();
+  });
+
+  // Destination
+  const destWrap = document.getElementById('dest-wrap');
   const destInput = document.getElementById('nt-destination');
-  if (!depInput || !destInput || !window.google?.maps?.places) return;
+  const destAc = new PlaceAutocompleteElement({ componentRestrictions: { country: 'fr' } });
+  destAc.style.cssText = 'width:100%;display:block;';
+  destInput.style.display = 'none';
+  destWrap.appendChild(destAc);
+  destAc.addEventListener('gmp-placeselect', async ({ place }) => {
+    await place.fetchFields({ fields: ['formattedAddress'] });
+    destInput.value = place.formattedAddress;
+    triggerRouteCalc();
+  });
 
-  const opts = { componentRestrictions: { country: 'fr' }, fields: ['formatted_address', 'geometry'] };
+  acDep = depAc; acDest = destAc;
+}
 
-  if (!autocompleteDep) {
-    autocompleteDep = new google.maps.places.Autocomplete(depInput, opts);
-    autocompleteDep.addListener('place_changed', () => {
-      const p = autocompleteDep.getPlace();
-      if (p.formatted_address) { depInput.value = p.formatted_address; triggerRouteCalc(); }
-    });
-  }
-  if (!autocompleteDest) {
-    autocompleteDest = new google.maps.places.Autocomplete(destInput, opts);
-    autocompleteDest.addListener('place_changed', () => {
-      const p = autocompleteDest.getPlace();
-      if (p.formatted_address) { destInput.value = p.formatted_address; triggerRouteCalc(); }
-    });
-  }
-
-  depInput.addEventListener('change', () => triggerRouteCalc());
-  destInput.addEventListener('change', () => triggerRouteCalc());
+// Fallback to plain text inputs if new API unavailable
+function setupFallbackAutocomplete() {
+  ['nt-departure','nt-destination'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display = ''; el.addEventListener('change', triggerRouteCalc); }
+  });
 }
 
 function triggerRouteCalc() {
   if (routeDebounce) clearTimeout(routeDebounce);
-  routeDebounce = setTimeout(calculateRoute, 800);
+  routeDebounce = setTimeout(calculateRoute, 600);
 }
 
 function calculateRoute() {
   const dep = document.getElementById('nt-departure').value.trim();
   const dest = document.getElementById('nt-destination').value.trim();
   if (!dep || !dest || dep.length < 4 || dest.length < 4) return;
-  if (!window.google?.maps) return;
-
+  const { Map, DirectionsService, DirectionsRenderer, TravelMode } = window._gmLibs || {};
+  if (!Map) return;
   const mapWrap = document.getElementById('route-map-wrap');
   mapWrap.style.display = 'block';
-
-  // Init map if needed
   if (!mapInstance) {
-    mapInstance = new google.maps.Map(document.getElementById('route-map'), {
+    mapInstance = new Map(document.getElementById('route-map'), {
       zoom: 10, center: { lat: 50.95, lng: 2.33 },
       disableDefaultUI: true, zoomControl: true,
       styles: [
@@ -817,18 +885,13 @@ function calculateRoute() {
     });
   }
   if (directionsRenderer) directionsRenderer.setMap(null);
-  directionsRenderer = new google.maps.DirectionsRenderer({
+  directionsRenderer = new DirectionsRenderer({
     map: mapInstance,
     polylineOptions: { strokeColor: '#1a1916', strokeWeight: 3, strokeOpacity: 0.8 }
   });
-
   document.getElementById('ri-dist').textContent = '…';
   document.getElementById('ri-dur').textContent = '…';
-
-  new google.maps.DirectionsService().route({
-    origin: dep, destination: dest,
-    travelMode: google.maps.TravelMode.DRIVING
-  }, (result, status) => {
+  new DirectionsService().route({ origin: dep, destination: dest, travelMode: TravelMode.DRIVING }, (result, status) => {
     if (status !== 'OK') { document.getElementById('ri-dist').textContent = 'Erreur itinéraire'; return; }
     directionsRenderer.setDirections(result);
     const leg = result.routes[0].legs[0];
@@ -880,33 +943,28 @@ function submitTicket() {
   const hasToll = document.getElementById('toll-toggle').classList.contains('on');
   const toll = hasToll ? (parseFloat(document.getElementById('nt-toll').value) || 0) : 0;
   const notes = document.getElementById('nt-notes').value.trim();
-
   if (isAdmin && !memberId) { toast('Sélectionnez un membre.', 'err'); return; }
   if (!dep || !dest) { toast('Départ et destination requis.', 'err'); return; }
   if (km <= 0) { toast('Distance invalide.', 'err'); return; }
-
   const c = calcTicket(km, toll);
-  DB.tickets.push({
-    id: Date.now().toString(), memberId, date, departure: dep, destination: dest,
-    km, hasToll, toll, notes, ...c, paid: false, createdAt: new Date().toISOString()
-  });
+  DB.tickets.push({ id: Date.now().toString(), memberId, date, departure: dep, destination: dest, km, hasToll, toll, notes, ...c, paid: false, createdAt: new Date().toISOString() });
   save(); toast('Ticket créé !'); showPage('tickets');
 }
 
-/* ══ Members ══ */
+/* ══ MEMBERS ══ */
 function renderMembers() {
   const list = document.getElementById('members-list');
   list.innerHTML = DB.members.map(m => {
     const mt = DB.tickets.filter(t => t.memberId === m.id);
     const due = mt.filter(t => !t.paid).reduce((s, t) => s + t.total, 0);
-    const delBtn = m.role !== 'admin' ? `<button class="btn btn-danger" style="padding:6px 10px;margin-left:8px" onclick="deleteMember('${m.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>` : '';
+    const delBtn = m.role !== 'admin' ? `<button class="btn btn-danger" style="padding:8px 10px;flex-shrink:0" onclick="deleteMember('${m.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>` : '';
     return `<div class="member-item">
       <div class="member-avatar">${m.name[0]}</div>
       <div style="flex:1;min-width:0">
         <div class="member-name">${escHtml(m.name)}</div>
         <div class="member-meta">${escHtml(m.email)}${m.phone ? ' · ' + escHtml(m.phone) : ''}</div>
       </div>
-      <div>
+      <div style="flex-shrink:0">
         <div class="member-due" style="color:${due > 0 ? 'var(--orange)' : 'var(--green)'}">${due > 0 ? fmt(due) + ' dû' : 'À jour'}</div>
         <div class="member-tickets">${mt.length} ticket${mt.length > 1 ? 's' : ''}</div>
       </div>
@@ -930,16 +988,9 @@ function submitMember() {
   if (DB.members.find(m => m.email.toLowerCase() === email.toLowerCase())) { errEl.textContent = 'Cet email est déjà utilisé.'; errEl.classList.add('show'); return; }
   DB.members.push({ id: Date.now().toString(), name, email, phone, password: pwd || 'membre2024', role: 'member', createdAt: new Date().toISOString() });
   save();
-  document.getElementById('nm-name').value = '';
-  document.getElementById('nm-email').value = '';
-  document.getElementById('nm-phone').value = '';
+  ['nm-name','nm-email','nm-phone'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('nm-pwd').value = 'membre2024';
   toast('Membre créé !'); showPage('members');
-}
-
-/* ══ Utils ══ */
-function escHtml(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 </script>
 </body>
