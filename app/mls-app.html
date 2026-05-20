@@ -16,7 +16,7 @@
 <script>
 console.log(window.MapboxGeocoder);
 </script>
-<script>
+<script>f
 console.log("MapboxGeocoder =", window.MapboxGeocoder);
 </script>
 
@@ -1099,22 +1099,66 @@ async function deleteMember(id) {
 }
 
 async function submitMember() {
-  let name=eid('nm-name').value.trim(), email=eid('nm-email').value.trim();
-  let phone=eid('nm-phone').value.trim(), pwd=eid('nm-pwd').value.trim()||'Membre2024!';
-  let errEl=eid('nm-err'); errEl.classList.remove('show');
-  if (!name||!email) { errEl.textContent='Nom et email requis.'; errEl.classList.add('show'); return; }
+  const name = eid('nm-name').value.trim();
+  const email = eid('nm-email').value.trim();
+  const phone = eid('nm-phone').value.trim();
+  const pwd = eid('nm-pwd').value.trim() || 'Membre2024!';
 
-  // 1. Sign up via Supabase Auth
-  let { data:authData, error:authErr } = await sb.auth.signUp({ email, password:pwd, options:{ data:{ name } } });
-  if (authErr) { errEl.textContent=authErr.message; errEl.classList.add('show'); return; }
+  const errEl = eid('nm-err');
+  errEl.classList.remove('show');
 
-  // 2. Insert profile
-  let { error:profErr } = await sb.from('members').insert({ auth_id:authData.user.id, name, email, phone:phone||null, role:'member' });
-  if (profErr) { errEl.textContent=profErr.message; errEl.classList.add('show'); return; }
+  if (!name || !email) {
+    errEl.textContent = 'Nom et email requis.';
+    errEl.classList.add('show');
+    return;
+  }
 
-  ['nm-name','nm-email','nm-phone'].forEach(id=>eid(id).value='');
-  eid('nm-pwd').value='Membre2024!';
-  toast('Membre créé ! Il doit confirmer son email.'); showPage('members');
+  // Création compte auth
+  const { data: authData, error: authErr } = await sb.auth.signUp({
+    email,
+    password: pwd,
+    options: {
+      data: { name }
+    }
+  });
+
+  if (authErr) {
+    errEl.textContent = authErr.message;
+    errEl.classList.add('show');
+    return;
+  }
+
+  // Vérifie user
+  if (!authData?.user) {
+    errEl.textContent =
+      "Compte créé mais utilisateur introuvable. Vérifie la confirmation email Supabase.";
+    errEl.classList.add('show');
+    return;
+  }
+
+  // Création profil membre
+  const { error: profErr } = await sb.from('members').insert({
+    auth_id: authData.user.id,
+    name,
+    email,
+    phone: phone || null,
+    role: 'member'
+  });
+
+  if (profErr) {
+    errEl.textContent = profErr.message;
+    errEl.classList.add('show');
+    return;
+  }
+
+  ['nm-name', 'nm-email', 'nm-phone'].forEach(id => {
+    eid(id).value = '';
+  });
+
+  eid('nm-pwd').value = 'Membre2024!';
+
+  toast('Membre créé !');
+  showPage('members');
 }
 
 /* ════════════════════════════════════════
