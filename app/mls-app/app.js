@@ -8,9 +8,9 @@
 // CONFIG — remplace par tes vraies clés
 // ============================================================
 const CONFIG = {
-  mapboxToken:   localStorage.getItem('ml_mapbox')    || 'VOTRE_TOKEN_MAPBOX_ICI',
-  supabaseUrl:   localStorage.getItem('ml_sb_url')    || '',
-  supabaseKey:   localStorage.getItem('ml_sb_key')    || '',
+  mapboxToken:   localStorage.getItem('ml_mapbox')    || 'pk.eyJ1IjoibGFuc3dlZyIsImEiOiJjbXBkaHJ6ZTYwMzQ2MnRzZTBtb25nYXl5In0._V1wF9WwBfZnxdemWuWbUQ',
+  supabaseUrl:   localStorage.getItem('ml_sb_url')    || 'https://rixsenvshgconhvgevix.supabase.co',
+  supabaseKey:   localStorage.getItem('ml_sb_key')    || 'sb_publishable_9DbMPtt6ZwzQ21-ADtyB2w_V0VKAw9N',
   tarifBase:     parseFloat(localStorage.getItem('ml_tarif_base'))  || 0.55,
   tarifSuppl:    parseFloat(localStorage.getItem('ml_tarif_suppl')) || 0.20,
   prixCarburant: parseFloat(localStorage.getItem('ml_carburant'))   || 2.30,
