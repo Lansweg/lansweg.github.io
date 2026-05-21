@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -5,275 +7,278 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Mobilité Littorale & SAM</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
-<!-- Mapbox GL -->
-<link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
-<script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-
-<!-- Geocoder -->
-<link
-  rel="stylesheet"
-  href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css"
-/>
-
-<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
-
-<!-- Ton app -->
-<script src="config.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet"/>
+<link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" rel="stylesheet"/>
 <style>
+/* ─── Reset & Tokens ─── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f5f4f1;--surface:#fff;--border:#e6e3de;--border-dark:#ccc9c2;
-  --text:#1a1916;--muted:#78746e;--faint:#b0aca5;
-  --accent:#1a1916;--al:#efede9;
-  --green:#2d6a4f;--gbg:#eef7f2;
-  --orange:#a0500f;--obg:#fdf3ec;
-  --red:#8b1a1a;
-  --sans:'DM Sans',sans-serif;
+  --bg:#f7f6f3;
+  --surface:#ffffff;
+  --surface2:#f0efe9;
+  --border:#e4e2db;
+  --border-md:#cbc9c1;
+  --text:#18181b;
+  --muted:#6b6967;
+  --faint:#a8a5a0;
+  --accent:#1c6b45;
+  --accent-bg:#e8f5ee;
+  --accent-text:#145736;
+  --warn:#b45309;
+  --warn-bg:#fef3c7;
+  --warn-text:#92400e;
+  --danger:#be2d2d;
+  --danger-bg:#fee2e2;
+  --info:#1d4ed8;
+  --sans:'Syne',sans-serif;
   --mono:'DM Mono',monospace;
-  --serif:'DM Serif Display',serif;
+  --r4:4px;--r6:6px;--r8:8px;--r12:12px;--r16:16px;
 }
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;-webkit-text-size-adjust:100%}
-*{font-family:var(--sans)}
-button{cursor:pointer}
 
-/* ── Splash ── */
-#splash{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:14px;transition:opacity .4s}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font-family:var(--sans)}
+button{cursor:pointer}
+a{color:var(--accent)}
+
+/* ─── Splash ─── */
+#splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:9999;transition:opacity .35s}
 #splash.out{opacity:0;pointer-events:none}
-.spl-logo{width:56px;height:56px;border-radius:14px;background:var(--accent);display:flex;align-items:center;justify-content:center}
-.spl-title{font-family:var(--serif);font-size:22px}
-.spl-sub{font-size:11px;color:var(--faint);letter-spacing:.1em;text-transform:uppercase}
-.spin{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:rot .7s linear infinite}
+.spl-icon{width:64px;height:64px;border-radius:var(--r16);background:var(--accent);display:flex;align-items:center;justify-content:center}
+.spl-name{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.spl-sub{font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.12em}
+.spin{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:rot .65s linear infinite}
 @keyframes rot{to{transform:rotate(360deg)}}
 
-/* ── Pages ── */
-.pg{display:none}.pg.on{display:block}
-.wrap  {max-width:960px;margin:0 auto;padding:24px 16px}
+/* ─── Pages ─── */
+.pg{display:none}
+.pg.on{display:block}
+.wrap{max-width:960px;margin:0 auto;padding:24px 16px}
 .wrap-m{max-width:640px;margin:0 auto;padding:24px 16px}
-.wrap-s{max-width:520px;margin:0 auto;padding:24px 16px}
-@media(min-width:600px){.wrap,.wrap-m,.wrap-s{padding:36px 24px}}
+.wrap-s{max-width:480px;margin:0 auto;padding:24px 16px}
+@media(min-width:600px){.wrap,.wrap-m,.wrap-s{padding:32px 24px}}
 @media(max-width:599px){.pg.on .wrap,.pg.on .wrap-m,.pg.on .wrap-s{padding-bottom:88px}}
 
-/* ── Top nav ── */
-.tnav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;gap:2px;position:sticky;top:0;z-index:200;height:52px}
-@media(min-width:600px){.tnav{padding:0 28px;gap:4px}}
-.nbrand{margin-right:auto;display:flex;align-items:center;gap:8px;flex-shrink:0}
-.nlogo{width:28px;height:28px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.ntitle{font-family:var(--serif);font-size:16px}
-.nbtn{background:transparent;color:var(--muted);border:none;border-radius:6px;padding:7px 10px;font-size:13px;display:none;align-items:center;gap:6px;transition:background .15s;white-space:nowrap;cursor:pointer}
+/* ─── Top nav ─── */
+.tnav{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  height:54px;padding:0 16px;
+  display:flex;align-items:center;gap:2px;
+  position:sticky;top:0;z-index:200;
+}
+@media(min-width:600px){.tnav{padding:0 24px;gap:4px}}
+.nbrand{display:flex;align-items:center;gap:9px;margin-right:auto;flex-shrink:0;text-decoration:none;color:inherit}
+.nlogo{width:30px;height:30px;border-radius:var(--r8);background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nname{font-size:15px;font-weight:700;letter-spacing:-.2px}
+.nbtn{
+  display:none;align-items:center;gap:6px;
+  background:transparent;border:none;border-radius:var(--r8);
+  padding:7px 11px;font-size:13px;font-weight:500;color:var(--muted);
+  transition:background .12s,color .12s;white-space:nowrap;cursor:pointer;
+}
 @media(min-width:600px){.nbtn{display:flex}}
-.nbtn:hover,.nbtn.on{background:var(--al);color:var(--text);font-weight:500}
-.nuser{margin-left:8px;padding-left:8px;border-left:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.nbtn:hover,.nbtn.on{background:var(--accent-bg);color:var(--accent-text)}
+.nuser{margin-left:8px;padding-left:10px;border-left:1px solid var(--border);display:flex;align-items:center;gap:8px}
 .nuname{font-size:12px;color:var(--faint);display:none}
 @media(min-width:480px){.nuname{display:block}}
-.nout{background:transparent;border:none;color:var(--faint);display:flex;padding:4px;cursor:pointer}
+.nout{background:transparent;border:none;color:var(--faint);padding:4px;display:flex;cursor:pointer;border-radius:var(--r4);transition:color .12s}
+.nout:hover{color:var(--danger)}
 
-/* ── Bottom nav mobile ── */
-.bnav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--surface);border-top:1px solid var(--border);padding:4px 0 max(4px,env(safe-area-inset-bottom))}
+/* ─── Bottom nav ─── */
+.bnav{
+  display:flex;position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:4px 0 max(4px,env(safe-area-inset-bottom));
+}
 @media(min-width:600px){.bnav{display:none}}
-.bbtn{flex:1;background:transparent;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 2px;color:var(--faint);font-size:9px;font-weight:500;letter-spacing:.04em;cursor:pointer;transition:color .15s}
-.bbtn.on{color:var(--text)}
+.bbtn{
+  flex:1;background:transparent;border:none;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:5px 2px;font-size:9px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--faint);cursor:pointer;transition:color .12s;
+}
+.bbtn.on{color:var(--accent)}
+.bbtn svg{transition:transform .15s}
+.bbtn:active svg{transform:scale(.92)}
 
-/* ── Sub header ── */
-.shdr{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200}
-.shdr h2{margin:0;font-size:15px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bback{background:transparent;border:none;color:var(--muted);display:flex;padding:4px;flex-shrink:0;cursor:pointer}
+/* ─── Sub-header ─── */
+.shdr{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  height:52px;padding:0 16px;
+  display:flex;align-items:center;gap:10px;
+  position:sticky;top:0;z-index:200;
+}
+.shdr h2{flex:1;font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bback{background:transparent;border:none;color:var(--muted);display:flex;padding:4px;cursor:pointer;border-radius:var(--r4);transition:color .12s}
+.bback:hover{color:var(--text)}
 
-/* ── Cards ── */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+/* ─── Cards ─── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r12);padding:16px}
 @media(min-width:600px){.card{padding:20px}}
 .card+.card{margin-top:12px}
+.card-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:14px}
 
-/* ── Stats ── */
+/* ─── Stats grid ─── */
 .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
-@media(min-width:480px){.stats{grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:24px}}
-.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
-.slbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
-.sval{font-family:var(--mono);font-size:18px;font-weight:500;line-height:1.2}
-@media(min-width:600px){.sval{font-size:22px}}
+@media(min-width:480px){.stats{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--r12);padding:14px 16px}
+.slbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:6px}
+.sval{font-family:var(--mono);font-size:20px;font-weight:500;line-height:1.2;color:var(--text)}
+@media(min-width:600px){.sval{font-size:24px}}
 .ssub{font-size:11px;color:var(--faint);margin-top:4px}
 
-/* ── Divider ── */
-.div{display:flex;align-items:center;gap:12px;margin-bottom:14px;margin-top:4px}
-.div span{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
-.div::after{content:'';flex:1;height:1px;background:var(--border)}
-
-/* ── Page header ── */
-.phdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
-.ptit{font-family:var(--serif);font-weight:400;font-size:22px}
+/* ─── Page header ─── */
+.phdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.ptit{font-size:22px;font-weight:700;letter-spacing:-.3px}
 @media(min-width:600px){.ptit{font-size:26px}}
 
-/* ── Buttons ── */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:6px;font-size:13px;font-weight:500;border:none;cursor:pointer;white-space:nowrap;transition:opacity .15s}
-.btn:hover{opacity:.82}
-.btn:active{opacity:.7}
+/* ─── Section divider ─── */
+.sdiv{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);margin-bottom:10px;margin-top:4px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+
+/* ─── Buttons ─── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:var(--r8);font-size:13px;font-weight:600;border:none;cursor:pointer;white-space:nowrap;transition:opacity .12s,transform .1s;letter-spacing:.01em}
+.btn:active{transform:scale(.98)}
+.btn:hover{opacity:.85}
 .bp{background:var(--accent);color:#fff}
 .bg{background:transparent;color:var(--muted);border:1px solid var(--border)}
-.bv{background:var(--green);color:#fff}
-.bd{background:transparent;color:var(--red);border:1px solid #f0c5c5}
-.bf{width:100%;justify-content:center;padding:11px}
+.bg:hover{background:var(--surface2);opacity:1}
+.bv{background:var(--accent);color:#fff}
+.bd{background:transparent;color:var(--danger);border:1px solid #fca5a5}
+.bd:hover{background:var(--danger-bg);opacity:1}
+.bf{width:100%;justify-content:center;padding:12px}
 .brow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 
-/* ── Forms ── */
-.field{margin-bottom:13px}
-.field label{display:block;font-size:11px;font-weight:500;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:5px}
-.hint-lbl{color:var(--green);font-weight:400;text-transform:none;letter-spacing:0;font-size:11px}
+/* ─── Forms ─── */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.hint-lbl{color:var(--accent);font-weight:500;text-transform:none;letter-spacing:0;font-size:11px}
 input,select,textarea{
-  width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;
+  width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r8);
   font-size:16px;color:var(--text);background:var(--surface);outline:none;
-  transition:border-color .15s;-webkit-appearance:none;appearance:none;
-  font-family:var(--sans)
+  transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;appearance:none;
 }
 @media(min-width:600px){input,select,textarea{font-size:14px;padding:9px 12px}}
-input:focus,select:focus,textarea:focus{border-color:var(--border-dark)}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(28,107,69,.12)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.fhint{font-size:11px;color:var(--faint);margin-top:4px}
+.fhint{font-size:11px;color:var(--faint);margin-top:4px;line-height:1.5}
 
-/* ── Toggle ── */
-.togw{display:flex;align-items:center;gap:10px;margin-bottom:13px}
-.tog{width:42px;height:24px;border-radius:12px;background:var(--border);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none}
+/* ─── Toggle ─── */
+.togw{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.tog{width:40px;height:22px;border-radius:11px;background:var(--border);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none;padding:0}
 .tog.on{background:var(--accent)}
-.tog::after{content:'';width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.tog::after{content:'';width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
 .tog.on::after{left:21px}
 
-/* ── Filters ── */
+/* ─── Filter pills ─── */
 .filt{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
-.fb{font-size:12px;font-weight:500;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:6px 13px;cursor:pointer;transition:all .15s}
+.fb{font-size:12px;font-weight:600;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:6px 14px;cursor:pointer;transition:all .12s}
 .fb.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 
-/* ── Calc lines ── */
-.cl{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:12px}
-.cl .clb{font-size:12px;color:var(--muted);flex:1;line-height:1.4}
+/* ─── Calc lines ─── */
+.cl{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:9px;gap:12px}
+.cl .clb{font-size:12px;color:var(--muted);flex:1;line-height:1.5}
 .cl .clv{font-family:var(--mono);font-size:13px;color:var(--muted);font-weight:500;flex-shrink:0;text-align:right}
-.cl.tot .clb{font-size:14px;font-weight:600;color:var(--text)}
-.cl.tot .clv{font-size:18px;font-weight:700;color:var(--text)}
-.cl.ora .clv{color:var(--orange)}
+.cl.tot .clb{font-size:14px;font-weight:700;color:var(--text)}
+.cl.tot .clv{font-size:19px;font-weight:600;color:var(--text);font-family:var(--mono)}
+.cl.warn .clv{color:var(--warn)}
 .csep{border:none;border-top:1px solid var(--border);margin:10px 0}
 
-/* ── Detail grid ── */
+/* ─── Detail grid ─── */
 .dg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(min-width:500px){.dg{gap:18px}}
-.di .dl{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
-.di .dv{font-size:13px;color:var(--text);word-break:break-word}
+.di .dl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);margin-bottom:3px}
+.di .dv{font-size:13px;color:var(--text)}
 .di .dv.m{font-family:var(--mono)}
 .dfw{grid-column:1/-1}
 
-/* ── Ticket items ── */
-.ti{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:border-color .12s;margin-bottom:6px}
-.ti:hover{border-color:var(--border-dark)}
-.trt{font-weight:500;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ─── Ticket rows ─── */
+.ti{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r12);
+  padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;
+  transition:border-color .12s,box-shadow .12s;margin-bottom:6px;
+}
+.ti:hover{border-color:var(--border-md);box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.trt{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tmt{font-size:11px;color:var(--muted);margin-top:2px}
 .tam{font-family:var(--mono);font-weight:500;font-size:14px;text-align:right;white-space:nowrap}
-.tst{font-size:11px;margin-top:3px;text-align:right}
-.sp{color:var(--green)}.spe{color:var(--orange)}
+.tst{font-size:11px;margin-top:3px;text-align:right;font-weight:600}
+.st-ok{color:var(--accent)}.st-pend{color:var(--warn)}
 
-/* ── Badge ── */
-.badge{display:inline-block;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:4px 12px;border-radius:20px}
-.bp2{background:var(--gbg);color:var(--green);border:1px solid #b7dfc8}
-.bpe{background:var(--obg);color:var(--orange);border:1px solid #f5c9a0}
+/* ─── Badge ─── */
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:4px 11px;border-radius:20px}
+.bk{background:var(--accent-bg);color:var(--accent-text);border:1px solid #a7d9be}
+.bw{background:var(--warn-bg);color:var(--warn-text);border:1px solid #fcd34d}
 
-/* ── Member items ── */
-.mi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.mav{width:36px;height:36px;border-radius:8px;background:var(--al);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0}
+/* ─── Member rows ─── */
+.mi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r12);padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.mav{width:38px;height:38px;border-radius:var(--r8);background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--accent-text);flex-shrink:0}
 
-/* ── Planning items ── */
-.pi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
-.pdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.pd-d{background:#a3c9a8}.pd-c{background:var(--green)}.pd-a{background:var(--faint)}
-.pst{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
-.psd{background:#eef7f2;color:var(--green)}
-.psc{background:var(--gbg);color:var(--green)}
-.psa{background:var(--al);color:var(--muted)}
+/* ─── Planning rows ─── */
+.pi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r12);padding:13px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.pdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dot-d{background:#86efac}.dot-c{background:var(--accent)}.dot-a{background:var(--faint)}
+.pst{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em}
+.pst-d{background:var(--accent-bg);color:var(--accent-text)}
+.pst-c{background:#d1fae5;color:#065f46}
+.pst-a{background:var(--surface2);color:var(--muted)}
 
-/* ── Vehicle items ── */
-.vi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+/* ─── Vehicle rows ─── */
+.vi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r12);padding:12px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
 
-/* ── Alert / Toast ── */
-.aerr{background:#fdf2f2;border:1px solid #f0c5c5;border-radius:6px;padding:9px 12px;margin-bottom:12px;font-size:13px;color:var(--red);display:none}
+/* ─── Alert / Toast ─── */
+.aerr{background:var(--danger-bg);border:1px solid #fca5a5;border-radius:var(--r8);padding:10px 13px;margin-bottom:13px;font-size:13px;color:var(--danger);display:none;font-weight:500}
 .aerr.on{display:block}
-#toast{position:fixed;top:16px;right:16px;z-index:9999;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:500;color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.14);display:none;max-width:calc(100vw - 32px)}
+#toast{position:fixed;top:16px;right:16px;z-index:9999;padding:11px 18px;border-radius:var(--r8);font-size:13px;font-weight:600;color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.16);display:none;max-width:calc(100vw - 32px);letter-spacing:.01em}
 #toast.on{display:block}
-#toast.ok{background:var(--green)}
-#toast.er{background:var(--red)}
+#toast.ok{background:var(--accent)}
+#toast.er{background:var(--danger)}
 
-/* ── Login ── */
-.lw{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
-.lb{width:100%;max-width:360px}
-.llogo{width:52px;height:52px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
-.ltit{font-family:var(--serif);font-size:24px;font-weight:400;text-align:center}
-.lsub{font-size:11px;color:var(--faint);text-align:center;margin:5px 0 26px;letter-spacing:.1em;text-transform:uppercase}
-.lcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px}
+/* ─── Login ─── */
+.lw{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;background:var(--bg)}
+.lb{width:100%;max-width:380px}
+.llogo{width:56px;height:56px;border-radius:var(--r16);background:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.ltit{font-size:26px;font-weight:700;letter-spacing:-.5px;text-align:center}
+.lsub{font-size:11px;color:var(--faint);text-align:center;margin:5px 0 28px;letter-spacing:.12em;text-transform:uppercase}
+.lcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r16);padding:24px}
 
-/* ══ MAP SECTION ══
-   Les géocodeurs sont placés AU-DESSUS de la carte dans le DOM.
-   La carte est en position relative, les suggestions ont z-index élevé.
-*/
-.map-section{margin-bottom:16px}
-.map-inputs{display:flex;flex-direction:column;gap:0;margin-bottom:0}
+/* ─── Mapbox geocoder ─── */
+.map-section{margin-bottom:14px}
+.map-inputs{display:flex;flex-direction:column;gap:10px;margin-bottom:0}
 .map-input-row{position:relative;z-index:20}
-.map-input-row+.map-input-row{margin-top:8px}
-.map-canvas-wrap{position:relative;z-index:1;border-radius:0 0 10px 10px;overflow:hidden;border:1px solid var(--border);border-top:none;display:none}
+.map-canvas-wrap{position:relative;z-index:1;border-radius:0 0 var(--r12) var(--r12);overflow:hidden;border:1px solid var(--border);border-top:none;display:none}
 .map-canvas-wrap.vis{display:block}
 #route-map{width:100%;height:200px}
-@media(min-width:600px){#route-map{height:230px}}
-.map-info{background:var(--surface);border:1px solid var(--border);border-top:none;padding:10px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.rilbl{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:.07em}
+@media(min-width:600px){#route-map{height:240px}}
+.map-info{background:var(--surface2);border-top:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.rilbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--faint)}
 .rival{font-family:var(--mono);font-size:18px;font-weight:500}
-.ridur{font-family:var(--mono);font-size:14px;color:var(--muted)}
-
-/* Géocodeur Mapbox — reset complet pour s'intégrer dans notre style */
-.mapboxgl-ctrl-geocoder{
-  font-family:var(--sans)!important;
-  border-radius:6px!important;
-  box-shadow:none!important;
-  border:1px solid var(--border)!important;
-  width:100%!important;
-  max-width:100%!important;
-  min-width:unset!important;
-  background:var(--surface)!important;
-}
-.mapboxgl-ctrl-geocoder--input{
-  font-size:16px!important;
-  padding:10px 36px 10px 40px!important;
-  height:auto!important;
-  font-family:var(--sans)!important;
-  color:var(--text)!important;
-}
-@media(min-width:600px){
-  .mapboxgl-ctrl-geocoder--input{font-size:14px!important;padding:9px 36px 9px 40px!important}
-}
-.mapboxgl-ctrl-geocoder--input:focus{border-color:var(--border-dark)!important;outline:none!important}
+.ridur{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.mapboxgl-ctrl-geocoder{font-family:var(--sans)!important;border-radius:var(--r8)!important;box-shadow:none!important;border:1px solid var(--border)!important;width:100%!important;max-width:100%!important;min-width:unset!important;background:var(--surface)!important}
+.mapboxgl-ctrl-geocoder--input{font-size:16px!important;padding:10px 36px 10px 40px!important;height:auto!important;font-family:var(--sans)!important;color:var(--text)!important}
+@media(min-width:600px){.mapboxgl-ctrl-geocoder--input{font-size:14px!important;padding:9px 36px 9px 40px!important}}
+.mapboxgl-ctrl-geocoder--input:focus{border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(28,107,69,.12)!important;outline:none!important}
 .mapboxgl-ctrl-geocoder--icon{fill:var(--faint)!important;top:50%!important;transform:translateY(-50%)!important;left:10px!important}
 .mapboxgl-ctrl-geocoder--button{top:50%!important;transform:translateY(-50%)!important}
-/* Suggestions bien au-dessus */
-.mapboxgl-ctrl-geocoder .suggestions{
-  z-index:9999!important;
-  border-radius:8px!important;
-  box-shadow:0 4px 20px rgba(0,0,0,.12)!important;
-  border:1px solid var(--border)!important;
-  margin-top:4px!important;
-  font-family:var(--sans)!important;
-}
-.mapboxgl-ctrl-geocoder .suggestions li{padding:0!important}
+.mapboxgl-ctrl-geocoder .suggestions{z-index:9999!important;border-radius:var(--r8)!important;box-shadow:0 4px 20px rgba(0,0,0,.1)!important;border:1px solid var(--border)!important;margin-top:4px!important;font-family:var(--sans)!important}
 .mapboxgl-ctrl-geocoder .suggestions li a{padding:9px 14px!important;font-size:13px!important}
-.mapboxgl-ctrl-geocoder .suggestions li.active a{background:var(--al)!important;color:var(--text)!important}
+.mapboxgl-ctrl-geocoder .suggestions li.active a,.mapboxgl-ctrl-geocoder .suggestions li a:hover{background:var(--accent-bg)!important;color:var(--accent-text)!important}
 .mapboxgl-ctrl-logo{display:none!important}
 
-/* ── Tariff ── */
+/* ─── Tarif card ─── */
 .tgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-@media(min-width:500px){.tgrid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}}
-.tlbl{font-size:11px;color:var(--faint);margin-bottom:3px}
-.tval{font-family:var(--mono);font-size:14px}
+@media(min-width:500px){.tgrid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}}
+.tlbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);margin-bottom:4px}
+.tval{font-family:var(--mono);font-size:15px;font-weight:500}
 
-/* ── Stats chart ── */
-.cbwrap{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+/* ─── Stats bars ─── */
+.cbwrap{display:flex;flex-direction:column;gap:8px;margin-top:10px}
 .cbrow{display:flex;align-items:center;gap:10px}
-.cblbl{font-size:12px;color:var(--muted);min-width:70px;text-align:right;flex-shrink:0}
-.cbtrack{flex:1;background:var(--al);border-radius:4px;height:18px;overflow:hidden}
-.cbfill{height:100%;border-radius:4px;background:var(--accent);transition:width .5s}
-.cbval{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap;flex-shrink:0;min-width:46px}
+.cblbl{font-size:12px;color:var(--muted);min-width:80px;text-align:right;flex-shrink:0}
+.cbtrack{flex:1;background:var(--surface2);border-radius:4px;height:16px;overflow:hidden}
+.cbfill{height:100%;border-radius:4px;background:var(--accent);transition:width .5s cubic-bezier(.25,1,.5,1)}
+.cbval{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap;flex-shrink:0;min-width:50px}
 
-/* ── Print ── */
+/* ─── Print ─── */
 @media print{
   nav,.shdr,.no-print,.bnav{display:none!important}
   .pg.on{display:block!important}
@@ -285,84 +290,99 @@ input:focus,select:focus,textarea:focus{border-color:var(--border-dark)}
 #ph{display:none;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:20px;border-bottom:2px solid var(--text)}
 #pf{display:none;margin-top:36px;padding-top:12px;border-top:1px solid var(--border);font-size:10px;color:var(--faint);justify-content:space-between}
 
-/* ── Misc ── */
+/* ─── Misc ─── */
 .empty{text-align:center;padding:40px 20px;font-size:13px;color:var(--faint)}
 .mono{font-family:var(--mono)}
-.tid{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.tid{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.05em}
+.separator{border:none;border-top:1px solid var(--border);margin:16px 0}
 </style>
 </head>
 <body>
 
 <!-- Splash -->
 <div id="splash">
-  <div class="spl-logo">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/></svg>
+  <div class="spl-icon">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/></svg>
   </div>
-  <div class="spl-title">Mobilité Littorale</div>
-  <div class="spl-sub">& SAM</div>
+  <div class="spl-name">Mobilité Littorale</div>
+  <div class="spl-sub">& SAM — Espace membres</div>
   <div class="spin"></div>
 </div>
 <div id="toast"></div>
 
-<!-- ══ SVG icônes réutilisables ══ -->
+<!-- ══ SVG icons ══ -->
 <svg style="display:none">
-  <symbol id="i-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/></symbol>
-  <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></symbol>
-  <symbol id="i-ticket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 010 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 010-4V7a2 2 0 00-2-2H5z"/></symbol>
-  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/></symbol>
-  <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
-  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
-  <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></symbol>
-  <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></symbol>
-  <symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></symbol>
-  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></symbol>
-  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></symbol>
-  <symbol id="i-print" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></symbol>
-  <symbol id="i-ref" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></symbol>
+  <symbol id="ic-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11L6.5 6.5h11L19 11M5 11H3v3h1v1.5a.5.5 0 001 0V14h12v.5a.5.5 0 001 0V14h1v-3h-2M5 11h14M7 14.5a1 1 0 110-2 1 1 0 010 2zm10 0a1 1 0 110-2 1 1 0 010 2z"/></symbol>
+  <symbol id="ic-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
+  <symbol id="ic-ticket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 010 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 010-4V7a2 2 0 00-2-2H5z"/></symbol>
+  <symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4z"/></symbol>
+  <symbol id="ic-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+  <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="ic-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></symbol>
+  <symbol id="ic-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></symbol>
+  <symbol id="ic-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></symbol>
+  <symbol id="ic-print" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></symbol>
+  <symbol id="ic-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></symbol>
+  <symbol id="ic-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></symbol>
 </svg>
 
-<!-- ════════ LOGIN ════════ -->
+<!-- ════ LOGIN ════ -->
 <div id="pg-login" class="pg">
   <div class="lw">
     <div class="lb">
-      <div class="llogo"><svg width="22" height="22"><use href="#i-car"/></svg></div>
-      <h1 class="ltit">Mobilité Littorale & SAM</h1>
-      <p class="lsub">Espace membres</p>
+      <div class="llogo"><svg width="24" height="24"><use href="#ic-car"/></svg></div>
+      <h1 class="ltit">Mobilité Littorale &amp; SAM</h1>
+      <p class="lsub">Connexion espace membres</p>
       <div class="lcard">
         <div id="lerr" class="aerr"></div>
-        <div class="field"><label>E-mail</label><input type="email" id="lemail" placeholder="prenom.nom@exemple.fr" autocomplete="email"/></div>
-        <div class="field"><label>Mot de passe</label><input type="password" id="lpwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-        <button class="btn bp bf" id="lbtn" onclick="doLogin()">Se connecter</button>
+        <div class="field">
+          <label>E-mail</label>
+          <input type="email" id="lemail" placeholder="prenom.nom@exemple.fr" autocomplete="email"/>
+        </div>
+        <div class="field">
+          <label>Mot de passe</label>
+          <input type="password" id="lpwd" placeholder="••••••••" autocomplete="current-password"
+                 onkeydown="if(event.key==='Enter')doLogin()"/>
+        </div>
+        <button class="btn bp bf" id="lbtn" onclick="doLogin()">
+          <svg width="15" height="15"><use href="#ic-check"/></svg>Se connecter
+        </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ════════ DASHBOARD ════════ -->
+<!-- ════ DASHBOARD ════ -->
 <div id="pg-dashboard" class="pg">
   <nav class="tnav">
-    <div class="nbrand"><div class="nlogo"><svg width="14" height="14"><use href="#i-car"/></svg></div><span class="ntitle">MLS</span></div>
-    <button class="nbtn on" onclick="go('dashboard')"><svg width="14" height="14"><use href="#i-grid"/></svg>Accueil</button>
-    <button class="nbtn" onclick="go('tickets')"><svg width="14" height="14"><use href="#i-ticket"/></svg>Tickets</button>
-    <button class="nbtn" onclick="go('planning')"><svg width="14" height="14"><use href="#i-list"/></svg>Planning</button>
-    <button class="nbtn" onclick="go('vehicle')"><svg width="14" height="14"><use href="#i-car"/></svg>Véhicule</button>
-    <button class="nbtn admin-only" onclick="go('members')"><svg width="14" height="14"><use href="#i-user"/></svg>Membres</button>
-    <div class="nuser"><span class="nuname" id="nn1"></span><button class="nout" onclick="doLogout()"><svg width="15" height="15"><use href="#i-out"/></svg></button></div>
+    <div class="nbrand"><div class="nlogo"><svg width="15" height="15"><use href="#ic-car"/></svg></div><span class="nname">MLS</span></div>
+    <button class="nbtn on"   onclick="go('dashboard')"><svg width="14" height="14"><use href="#ic-grid"/></svg>Accueil</button>
+    <button class="nbtn"      onclick="go('tickets')"><svg width="14" height="14"><use href="#ic-ticket"/></svg>Tickets</button>
+    <button class="nbtn"      onclick="go('planning')"><svg width="14" height="14"><use href="#ic-list"/></svg>Planning</button>
+    <button class="nbtn"      onclick="go('vehicle')"><svg width="14" height="14"><use href="#ic-car"/></svg>Véhicule</button>
+    <button class="nbtn admin-only" onclick="go('members')"><svg width="14" height="14"><use href="#ic-user"/></svg>Membres</button>
+    <div class="nuser">
+      <span class="nuname" id="nn1"></span>
+      <button class="nout" onclick="doLogout()" title="Se déconnecter"><svg width="15" height="15"><use href="#ic-out"/></svg></button>
+    </div>
   </nav>
   <div class="wrap">
-    <div style="margin-bottom:18px">
-      <h2 id="dgreet" style="font-family:var(--serif);font-size:26px;font-weight:400">Bonjour</h2>
-      <p id="dsub" style="margin-top:4px;font-size:13px;color:var(--muted)"></p>
+    <div style="margin-bottom:22px">
+      <h2 id="dgreet" style="font-size:28px;font-weight:700;letter-spacing:-.4px">Bonjour</h2>
+      <p id="dsub" style="margin-top:5px;font-size:13px;color:var(--muted)"></p>
     </div>
-    <div class="stats" id="dstats"></div>
-    <div class="div"><span>Derniers trajets</span></div>
+    <div class="stats" id="dstats">
+      <div class="stat" style="grid-column:1/-1"><div class="spin" style="margin:0 auto"></div></div>
+    </div>
+    <p class="sdiv">Derniers trajets</p>
     <div id="dtix"></div>
     <div class="brow">
-      <button class="btn bp" onclick="go('new-ticket')"><svg width="14" height="14"><use href="#i-plus"/></svg>Nouveau ticket</button>
+      <button class="btn bp" onclick="go('new-ticket')"><svg width="14" height="14"><use href="#ic-plus"/></svg>Nouveau ticket</button>
       <button class="btn bg" onclick="go('tickets')">Tous les tickets</button>
     </div>
-    <div class="card" style="margin-top:22px">
-      <p style="font-size:11px;font-weight:500;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:12px">Tarif en vigueur</p>
+    <div class="card" style="margin-top:20px">
+      <p class="card-title">Tarif en vigueur</p>
       <div class="tgrid">
         <div><div class="tlbl">Tarif km</div><div class="tval">0,55 €/km</div></div>
         <div><div class="tlbl">Suppl. carburant</div><div class="tval">+0,20 €/km</div></div>
@@ -372,27 +392,30 @@ input:focus,select:focus,textarea:focus{border-color:var(--border-dark)}
     </div>
   </div>
   <nav class="bnav">
-    <button class="bbtn on" onclick="go('dashboard')"><svg width="18" height="18"><use href="#i-grid"/></svg>Accueil</button>
-    <button class="bbtn" onclick="go('tickets')"><svg width="18" height="18"><use href="#i-ticket"/></svg>Tickets</button>
-    <button class="bbtn" onclick="go('new-ticket')"><svg width="18" height="18"><use href="#i-plus"/></svg>Nouveau</button>
-    <button class="bbtn" onclick="go('planning')"><svg width="18" height="18"><use href="#i-list"/></svg>Planning</button>
-    <button class="bbtn admin-only" onclick="go('members')"><svg width="18" height="18"><use href="#i-user"/></svg>Membres</button>
+    <button class="bbtn on" onclick="go('dashboard')"><svg width="18" height="18"><use href="#ic-grid"/></svg>Accueil</button>
+    <button class="bbtn" onclick="go('tickets')"><svg width="18" height="18"><use href="#ic-ticket"/></svg>Tickets</button>
+    <button class="bbtn" onclick="go('new-ticket')"><svg width="18" height="18"><use href="#ic-plus"/></svg>Nouveau</button>
+    <button class="bbtn" onclick="go('planning')"><svg width="18" height="18"><use href="#ic-list"/></svg>Planning</button>
+    <button class="bbtn admin-only" onclick="go('members')"><svg width="18" height="18"><use href="#ic-user"/></svg>Membres</button>
   </nav>
 </div>
 
-<!-- ════════ TICKETS ════════ -->
+<!-- ════ TICKETS ════ -->
 <div id="pg-tickets" class="pg">
   <nav class="tnav">
-    <div class="nbrand"><div class="nlogo"><svg width="14" height="14"><use href="#i-car"/></svg></div><span class="ntitle">MLS</span></div>
-    <button class="nbtn" onclick="go('dashboard')"><svg width="14" height="14"><use href="#i-grid"/></svg>Accueil</button>
-    <button class="nbtn on" onclick="go('tickets')"><svg width="14" height="14"><use href="#i-ticket"/></svg>Tickets</button>
-    <button class="nbtn" onclick="go('planning')"><svg width="14" height="14"><use href="#i-list"/></svg>Planning</button>
-    <button class="nbtn" onclick="go('vehicle')"><svg width="14" height="14"><use href="#i-car"/></svg>Véhicule</button>
-    <button class="nbtn admin-only" onclick="go('members')"><svg width="14" height="14"><use href="#i-user"/></svg>Membres</button>
-    <div class="nuser"><span class="nuname" id="nn2"></span><button class="nout" onclick="doLogout()"><svg width="15" height="15"><use href="#i-out"/></svg></button></div>
+    <div class="nbrand"><div class="nlogo"><svg width="15" height="15"><use href="#ic-car"/></svg></div><span class="nname">MLS</span></div>
+    <button class="nbtn"   onclick="go('dashboard')"><svg width="14" height="14"><use href="#ic-grid"/></svg>Accueil</button>
+    <button class="nbtn on" onclick="go('tickets')"><svg width="14" height="14"><use href="#ic-ticket"/></svg>Tickets</button>
+    <button class="nbtn"   onclick="go('planning')"><svg width="14" height="14"><use href="#ic-list"/></svg>Planning</button>
+    <button class="nbtn"   onclick="go('vehicle')"><svg width="14" height="14"><use href="#ic-car"/></svg>Véhicule</button>
+    <button class="nbtn admin-only" onclick="go('members')"><svg width="14" height="14"><use href="#ic-user"/></svg>Membres</button>
+    <div class="nuser"><span class="nuname" id="nn2"></span><button class="nout" onclick="doLogout()"><svg width="15" height="15"><use href="#ic-out"/></svg></button></div>
   </nav>
   <div class="wrap">
-    <div class="phdr"><h2 class="ptit">Tickets de trajet</h2><button class="btn bp" onclick="go('new-ticket')"><svg width="14" height="14"><use href="#i-plus"/></svg>Nouveau</button></div>
+    <div class="phdr">
+      <h2 class="ptit">Tickets de trajet</h2>
+      <button class="btn bp" onclick="go('new-ticket')"><svg width="14" height="14"><use href="#ic-plus"/></svg>Nouveau</button>
+    </div>
     <div class="filt">
       <button class="fb on" onclick="filtTix('all',this)">Tous</button>
       <button class="fb" onclick="filtTix('pending',this)">En attente</button>
@@ -401,29 +424,30 @@ input:focus,select:focus,textarea:focus{border-color:var(--border-dark)}
     <div id="tixlist"></div>
   </div>
   <nav class="bnav">
-    <button class="bbtn" onclick="go('dashboard')"><svg width="18" height="18"><use href="#i-grid"/></svg>Accueil</button>
-    <button class="bbtn on" onclick="go('tickets')"><svg width="18" height="18"><use href="#i-ticket"/></svg>Tickets</button>
-    <button class="bbtn" onclick="go('new-ticket')"><svg width="18" height="18"><use href="#i-plus"/></svg>Nouveau</button>
-    <button class="bbtn" onclick="go('planning')"><svg width="18" height="18"><use href="#i-list"/></svg>Planning</button>
-    <button class="bbtn admin-only" onclick="go('members')"><svg width="18" height="18"><use href="#i-user"/></svg>Membres</button>
+    <button class="bbtn" onclick="go('dashboard')"><svg width="18" height="18"><use href="#ic-grid"/></svg>Accueil</button>
+    <button class="bbtn on" onclick="go('tickets')"><svg width="18" height="18"><use href="#ic-ticket"/></svg>Tickets</button>
+    <button class="bbtn" onclick="go('new-ticket')"><svg width="18" height="18"><use href="#ic-plus"/></svg>Nouveau</button>
+    <button class="bbtn" onclick="go('planning')"><svg width="18" height="18"><use href="#ic-list"/></svg>Planning</button>
+    <button class="bbtn admin-only" onclick="go('members')"><svg width="18" height="18"><use href="#ic-user"/></svg>Membres</button>
   </nav>
 </div>
 
-<!-- ════════ NEW TICKET ════════ -->
+<!-- ════ NEW TICKET ════ -->
 <div id="pg-new-ticket" class="pg">
   <div class="shdr">
-    <button class="bback" onclick="go('tickets')"><svg width="20" height="20"><use href="#i-back"/></svg></button>
+    <button class="bback" onclick="go('tickets')"><svg width="20" height="20"><use href="#ic-back"/></svg></button>
     <h2>Nouveau ticket de trajet</h2>
   </div>
   <div class="wrap-m">
-    <!-- Membre (admin seulement) -->
     <div class="field admin-only" id="nt-mwrap">
       <label>Membre</label>
       <select id="nt-member"><option value="">— Sélectionner —</option></select>
     </div>
-    <div class="field"><label>Date</label><input type="date" id="nt-date"/></div>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="nt-date"/>
+    </div>
 
-    <!-- Section carte : géocodeurs au-dessus, carte en-dessous -->
     <div class="map-section">
       <div class="map-inputs">
         <div class="field" style="margin-bottom:0">
@@ -435,14 +459,21 @@ input:focus,select:focus,textarea:focus{border-color:var(--border-dark)}
           <div class="map-input-row" id="dest-gc"></div>
         </div>
       </div>
-      <!-- Carte et infos SOUS les inputs -->
       <div class="map-canvas-wrap" id="map-wrap">
         <div id="route-map"></div>
         <div class="map-info">
-          <div><div class="rilbl">Distance</div><div class="rival" id="ri-dist">—</div></div>
-          <div style="width:1px;height:30px;background:var(--border);flex-shrink:0"></div>
-          <div><div class="rilbl">Durée estimée</div><div class="ridur" id="ri-dur">—</div></div>
-          <button class="btn bg no-print" style="margin-left:auto;padding:7px 10px" onclick="recalc()"><svg width="13" height="13"><use href="#i-ref"/></svg>Recalculer</button>
+          <div>
+            <div class="rilbl">Distance</div>
+            <div class="rival" id="ri-dist">—</div>
+          </div>
+          <div style="width:1px;height:28px;background:var(--border);flex-shrink:0"></div>
+          <div>
+            <div class="rilbl">Durée estimée</div>
+            <div class="ridur" id="ri-dur">—</div>
+          </div>
+          <button class="btn bg no-print" style="margin-left:auto;padding:7px 11px;font-size:12px" onclick="recalc()">
+            <svg width="13" height="13"><use href="#ic-refresh"/></svg>Recalculer
+          </button>
         </div>
       </div>
     </div>
@@ -455,84 +486,95 @@ input:focus,select:focus,textarea:focus{border-color:var(--border-dark)}
 
     <div class="togw">
       <button class="tog" id="toll-tog" onclick="togToll()"></button>
-      <span style="font-size:13px">Péage avancé par l'association</span>
+      <span style="font-size:13px;color:var(--text)">Péage avancé par le conducteur</span>
     </div>
     <div class="field" id="toll-f" style="display:none">
       <label>Montant péage (€)</label>
       <input type="number" id="nt-toll" placeholder="0,00" step="0.01" oninput="updatePrev()"/>
     </div>
 
-    <div class="field"><label>Notes (optionnel)</label><input type="text" id="nt-notes" placeholder="Motif, précisions…"/></div>
+    <div class="field">
+      <label>Notes (optionnel)</label>
+      <input type="text" id="nt-notes" placeholder="Motif, précisions…"/>
+    </div>
 
     <div class="card" id="prev-box" style="display:none;margin-bottom:16px">
-      <p style="font-size:11px;font-weight:500;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:12px">Aperçu du montant</p>
+      <p class="card-title">Aperçu du montant</p>
       <div class="cl"><span class="clb" id="pbl">—</span><span class="clv" id="pbv">—</span></div>
       <div class="cl"><span class="clb" id="pfl">—</span><span class="clv" id="pfv">—</span></div>
-      <div class="cl ora" id="ptl" style="display:none"><span class="clb">Péage à rembourser</span><span class="clv" id="ptv">—</span></div>
+      <div class="cl warn" id="ptl" style="display:none"><span class="clb">Péage à rembourser</span><span class="clv" id="ptv">—</span></div>
       <hr class="csep"/>
       <div class="cl tot"><span class="clb">Total dû</span><span class="clv" id="ptot">—</span></div>
     </div>
-    <button class="btn bp bf" onclick="submitTicket()"><svg width="14" height="14"><use href="#i-check"/></svg>Créer le ticket</button>
+
+    <button class="btn bp bf" onclick="submitTicket()">
+      <svg width="15" height="15"><use href="#ic-check"/></svg>Créer le ticket
+    </button>
   </div>
 </div>
 
-<!-- ════════ TICKET DETAIL ════════ -->
+<!-- ════ TICKET DETAIL ════ -->
 <div id="pg-ticket-detail" class="pg">
   <div class="shdr">
-    <button class="bback" onclick="go('tickets')"><svg width="20" height="20"><use href="#i-back"/></svg></button>
+    <button class="bback" onclick="go('tickets')"><svg width="20" height="20"><use href="#ic-back"/></svg></button>
     <h2>Détail du ticket</h2>
-    <button class="btn bg no-print" style="padding:7px 10px" onclick="window.print()"><svg width="14" height="14"><use href="#i-print"/></svg><span style="display:none" id="print-lbl">Imprimer</span></button>
+    <button class="btn bg no-print" style="padding:7px 11px" onclick="window.print()">
+      <svg width="14" height="14"><use href="#ic-print"/></svg>
+    </button>
   </div>
   <div id="pzone" class="wrap-m">
-    <!-- En-tête impression -->
+    <!-- Print header -->
     <div id="ph">
       <div>
-        <div style="font-family:var(--serif);font-size:22px">Mobilité Littorale &amp; SAM</div>
+        <div style="font-size:20px;font-weight:700">Mobilité Littorale &amp; SAM</div>
         <div style="font-size:11px;color:var(--muted);margin-top:3px">Association loi 1901 — Dunkerque</div>
       </div>
       <div style="text-align:right">
-        <div style="font-size:10px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase">Ticket de trajet</div>
+        <div style="font-size:10px;letter-spacing:.09em;color:var(--muted);text-transform:uppercase">Ticket de trajet</div>
         <div class="mono" style="font-size:14px;margin-top:3px" id="td-idp"></div>
         <div style="font-size:11px;color:var(--muted);margin-top:2px" id="td-emit"></div>
       </div>
     </div>
-    <!-- Statut (écran) -->
+    <!-- Screen header -->
     <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
       <span class="tid" id="td-id"></span>
       <span class="badge" id="td-badge"></span>
     </div>
-    <!-- Détails -->
+    <!-- Details -->
     <div class="card"><div class="dg" id="td-details"></div></div>
-    <!-- Calcul -->
+    <!-- Calc -->
     <div class="card" style="margin-top:12px">
-      <p style="font-size:11px;font-weight:500;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:12px">Décompte</p>
+      <p class="card-title">Décompte</p>
       <div class="cl"><span class="clb" id="tdbl"></span><span class="clv" id="tdbv"></span></div>
       <div class="cl"><span class="clb" id="tdfl"></span><span class="clv" id="tdfv"></span></div>
-      <div class="cl ora" id="tdtl" style="display:none"><span class="clb">Péage avancé — à rembourser</span><span class="clv" id="tdtv"></span></div>
+      <div class="cl warn" id="tdtl" style="display:none"><span class="clb">Péage avancé — à rembourser</span><span class="clv" id="tdtv"></span></div>
       <hr class="csep"/>
       <div class="cl tot"><span class="clb">Montant total dû</span><span class="clv" id="tdtot"></span></div>
-      <p id="tdpd" style="margin-top:10px;font-size:12px;color:var(--green);display:none"></p>
+      <p id="tdpd" style="margin-top:10px;font-size:12px;color:var(--accent);font-weight:600;display:none"></p>
     </div>
-    <!-- Pied impression -->
+    <!-- Print footer -->
     <div id="pf"><span>Mobilité Littorale &amp; SAM — Association loi 1901</span><span id="pfdate"></span></div>
     <!-- Actions -->
     <div class="brow no-print" id="td-actions"></div>
   </div>
 </div>
 
-<!-- ════════ PLANNING SAM ════════ -->
+<!-- ════ PLANNING ════ -->
 <div id="pg-planning" class="pg">
   <nav class="tnav">
-    <div class="nbrand"><div class="nlogo"><svg width="14" height="14"><use href="#i-car"/></svg></div><span class="ntitle">MLS</span></div>
-    <button class="nbtn" onclick="go('dashboard')"><svg width="14" height="14"><use href="#i-grid"/></svg>Accueil</button>
-    <button class="nbtn" onclick="go('tickets')"><svg width="14" height="14"><use href="#i-ticket"/></svg>Tickets</button>
-    <button class="nbtn on" onclick="go('planning')"><svg width="14" height="14"><use href="#i-list"/></svg>Planning</button>
-    <button class="nbtn" onclick="go('vehicle')"><svg width="14" height="14"><use href="#i-car"/></svg>Véhicule</button>
-    <button class="nbtn admin-only" onclick="go('members')"><svg width="14" height="14"><use href="#i-user"/></svg>Membres</button>
-    <div class="nuser"><span class="nuname" id="nn3"></span><button class="nout" onclick="doLogout()"><svg width="15" height="15"><use href="#i-out"/></svg></button></div>
+    <div class="nbrand"><div class="nlogo"><svg width="15" height="15"><use href="#ic-car"/></svg></div><span class="nname">MLS</span></div>
+    <button class="nbtn" onclick="go('dashboard')"><svg width="14" height="14"><use href="#ic-grid"/></svg>Accueil</button>
+    <button class="nbtn" onclick="go('tickets')"><svg width="14" height="14"><use href="#ic-ticket"/></svg>Tickets</button>
+    <button class="nbtn on" onclick="go('planning')"><svg width="14" height="14"><use href="#ic-list"/></svg>Planning</button>
+    <button class="nbtn" onclick="go('vehicle')"><svg width="14" height="14"><use href="#ic-car"/></svg>Véhicule</button>
+    <button class="nbtn admin-only" onclick="go('members')"><svg width="14" height="14"><use href="#ic-user"/></svg>Membres</button>
+    <div class="nuser"><span class="nuname" id="nn3"></span><button class="nout" onclick="doLogout()"><svg width="15" height="15"><use href="#ic-out"/></svg></button></div>
   </nav>
   <div class="wrap">
-    <div class="phdr"><h2 class="ptit">Planning SAM</h2><button class="btn bp admin-only" onclick="go('new-planning')"><svg width="14" height="14"><use href="#i-plus"/></svg>Ajouter</button></div>
+    <div class="phdr">
+      <h2 class="ptit">Planning SAM</h2>
+      <button class="btn bp admin-only" onclick="go('new-planning')"><svg width="14" height="14"><use href="#ic-plus"/></svg>Ajouter</button>
+    </div>
     <div class="filt">
       <button class="fb on" onclick="filtPlan('all',this)">Tous</button>
       <button class="fb" onclick="filtPlan('upcoming',this)">À venir</button>
@@ -541,17 +583,20 @@ input:focus,select:focus,textarea:focus{border-color:var(--border-dark)}
     <div id="planlist"></div>
   </div>
   <nav class="bnav">
-    <button class="bbtn" onclick="go('dashboard')"><svg width="18" height="18"><use href="#i-grid"/></svg>Accueil</button>
-    <button class="bbtn" onclick="go('tickets')"><svg width="18" height="18"><use href="#i-ticket"/></svg>Tickets</button>
-    <button class="bbtn" onclick="go('new-ticket')"><svg width="18" height="18"><use href="#i-plus"/></svg>Nouveau</button>
-    <button class="bbtn on" onclick="go('planning')"><svg width="18" height="18"><use href="#i-list"/></svg>Planning</button>
-    <button class="bbtn admin-only" onclick="go('members')"><svg width="18" height="18"><use href="#i-user"/></svg>Membres</button>
+    <button class="bbtn" onclick="go('dashboard')"><svg width="18" height="18"><use href="#ic-grid"/></svg>Accueil</button>
+    <button class="bbtn" onclick="go('tickets')"><svg width="18" height="18"><use href="#ic-ticket"/></svg>Tickets</button>
+    <button class="bbtn" onclick="go('new-ticket')"><svg width="18" height="18"><use href="#ic-plus"/></svg>Nouveau</button>
+    <button class="bbtn on" onclick="go('planning')"><svg width="18" height="18"><use href="#ic-list"/></svg>Planning</button>
+    <button class="bbtn admin-only" onclick="go('members')"><svg width="18" height="18"><use href="#ic-user"/></svg>Membres</button>
   </nav>
 </div>
 
-<!-- ════════ NEW PLANNING ════════ -->
+<!-- ════ NEW PLANNING ════ -->
 <div id="pg-new-planning" class="pg">
-  <div class="shdr"><button class="bback" onclick="go('planning')"><svg width="20" height="20"><use href="#i-back"/></svg></button><h2>Nouvel événement SAM</h2></div>
+  <div class="shdr">
+    <button class="bback" onclick="go('planning')"><svg width="20" height="20"><use href="#ic-back"/></svg></button>
+    <h2>Nouvel événement SAM</h2>
+  </div>
   <div class="wrap-s">
     <div class="field"><label>Nom de l'événement *</label><input type="text" id="np-name" placeholder="Carnaval de Dunkerque…"/></div>
     <div class="field"><label>Date *</label><input type="date" id="np-date"/></div>
@@ -570,49 +615,61 @@ input:focus,select:focus,textarea:focus{border-color:var(--border-dark)}
       </select>
     </div>
     <div class="field"><label>Notes</label><input type="text" id="np-notes" placeholder="Infos complémentaires…"/></div>
-    <button class="btn bp bf" onclick="submitPlanning()"><svg width="14" height="14"><use href="#i-check"/></svg>Enregistrer</button>
+    <button class="btn bp bf" onclick="submitPlanning()"><svg width="15" height="15"><use href="#ic-check"/></svg>Enregistrer</button>
   </div>
 </div>
 
-<!-- ════════ VEHICLE ════════ -->
+<!-- ════ VEHICLE ════ -->
 <div id="pg-vehicle" class="pg">
   <nav class="tnav">
-    <div class="nbrand"><div class="nlogo"><svg width="14" height="14"><use href="#i-car"/></svg></div><span class="ntitle">MLS</span></div>
-    <button class="nbtn" onclick="go('dashboard')"><svg width="14" height="14"><use href="#i-grid"/></svg>Accueil</button>
-    <button class="nbtn" onclick="go('tickets')"><svg width="14" height="14"><use href="#i-ticket"/></svg>Tickets</button>
-    <button class="nbtn" onclick="go('planning')"><svg width="14" height="14"><use href="#i-list"/></svg>Planning</button>
-    <button class="nbtn on" onclick="go('vehicle')"><svg width="14" height="14"><use href="#i-car"/></svg>Véhicule</button>
-    <button class="nbtn admin-only" onclick="go('members')"><svg width="14" height="14"><use href="#i-user"/></svg>Membres</button>
-    <div class="nuser"><span class="nuname" id="nn4"></span><button class="nout" onclick="doLogout()"><svg width="15" height="15"><use href="#i-out"/></svg></button></div>
+    <div class="nbrand"><div class="nlogo"><svg width="15" height="15"><use href="#ic-car"/></svg></div><span class="nname">MLS</span></div>
+    <button class="nbtn" onclick="go('dashboard')"><svg width="14" height="14"><use href="#ic-grid"/></svg>Accueil</button>
+    <button class="nbtn" onclick="go('tickets')"><svg width="14" height="14"><use href="#ic-ticket"/></svg>Tickets</button>
+    <button class="nbtn" onclick="go('planning')"><svg width="14" height="14"><use href="#ic-list"/></svg>Planning</button>
+    <button class="nbtn on" onclick="go('vehicle')"><svg width="14" height="14"><use href="#ic-car"/></svg>Véhicule</button>
+    <button class="nbtn admin-only" onclick="go('members')"><svg width="14" height="14"><use href="#ic-user"/></svg>Membres</button>
+    <div class="nuser"><span class="nuname" id="nn4"></span><button class="nout" onclick="doLogout()"><svg width="15" height="15"><use href="#ic-out"/></svg></button></div>
   </nav>
   <div class="wrap">
-    <div class="phdr"><h2 class="ptit">Suivi véhicule</h2><button class="btn bp" onclick="go('new-vehicle')"><svg width="14" height="14"><use href="#i-plus"/></svg>Nouvelle entrée</button></div>
+    <div class="phdr">
+      <h2 class="ptit">Suivi véhicule</h2>
+      <button class="btn bp" onclick="go('new-vehicle')"><svg width="14" height="14"><use href="#ic-plus"/></svg>Nouvelle entrée</button>
+    </div>
     <div class="stats" id="vstats"></div>
-    <div class="div"><span>Historique</span></div>
+    <p class="sdiv">Historique</p>
     <div id="vlist"></div>
   </div>
   <nav class="bnav">
-    <button class="bbtn" onclick="go('dashboard')"><svg width="18" height="18"><use href="#i-grid"/></svg>Accueil</button>
-    <button class="bbtn" onclick="go('tickets')"><svg width="18" height="18"><use href="#i-ticket"/></svg>Tickets</button>
-    <button class="bbtn" onclick="go('new-ticket')"><svg width="18" height="18"><use href="#i-plus"/></svg>Nouveau</button>
-    <button class="bbtn" onclick="go('planning')"><svg width="18" height="18"><use href="#i-list"/></svg>Planning</button>
-    <button class="bbtn on" onclick="go('vehicle')"><svg width="18" height="18"><use href="#i-car"/></svg>Véhicule</button>
+    <button class="bbtn" onclick="go('dashboard')"><svg width="18" height="18"><use href="#ic-grid"/></svg>Accueil</button>
+    <button class="bbtn" onclick="go('tickets')"><svg width="18" height="18"><use href="#ic-ticket"/></svg>Tickets</button>
+    <button class="bbtn" onclick="go('new-ticket')"><svg width="18" height="18"><use href="#ic-plus"/></svg>Nouveau</button>
+    <button class="bbtn" onclick="go('planning')"><svg width="18" height="18"><use href="#ic-list"/></svg>Planning</button>
+    <button class="bbtn on" onclick="go('vehicle')"><svg width="18" height="18"><use href="#ic-car"/></svg>Véhicule</button>
   </nav>
 </div>
 
-<!-- ════════ NEW VEHICLE ════════ -->
+<!-- ════ NEW VEHICLE ════ -->
 <div id="pg-new-vehicle" class="pg">
-  <div class="shdr"><button class="bback" onclick="go('vehicle')"><svg width="20" height="20"><use href="#i-back"/></svg></button><h2>Nouvelle entrée véhicule</h2></div>
+  <div class="shdr">
+    <button class="bback" onclick="go('vehicle')"><svg width="20" height="20"><use href="#ic-back"/></svg></button>
+    <h2>Nouvelle entrée véhicule</h2>
+  </div>
   <div class="wrap-s">
     <div class="field"><label>Date *</label><input type="date" id="nv-date"/></div>
-    <div class="field admin-only"><label>Conducteur</label><select id="nv-drv"><option value="">— Sélectionner —</option></select></div>
+    <div class="field admin-only">
+      <label>Conducteur</label>
+      <select id="nv-drv"><option value="">— Sélectionner —</option></select>
+    </div>
     <div class="g2">
       <div class="field"><label>Km compteur début *</label><input type="number" id="nv-ks" placeholder="45 320" oninput="calcKm()"/></div>
       <div class="field"><label>Km compteur fin *</label><input type="number" id="nv-ke" placeholder="45 420" oninput="calcKm()"/></div>
     </div>
-    <div id="nv-kc" style="font-family:var(--mono);font-size:13px;color:var(--green);margin-top:-8px;margin-bottom:12px;display:none"></div>
+    <div id="nv-kc" style="font-family:var(--mono);font-size:13px;color:var(--accent);margin-top:-8px;margin-bottom:12px;font-weight:500;display:none"></div>
     <div class="field"><label>Motif</label><input type="text" id="nv-purpose" placeholder="Transport, réunion, courses…"/></div>
-    <div class="togw"><button class="tog" id="fuel-tog" onclick="togFuel()"></button><span style="font-size:13px">Plein de carburant effectué</span></div>
+    <div class="togw">
+      <button class="tog" id="fuel-tog" onclick="togFuel()"></button>
+      <span style="font-size:13px">Plein de carburant effectué</span>
+    </div>
     <div id="fuel-f" style="display:none">
       <div class="g2">
         <div class="field"><label>Litres</label><input type="number" id="nv-lit" placeholder="0,00" step="0.01"/></div>
@@ -620,136 +677,166 @@ input:focus,select:focus,textarea:focus{border-color:var(--border-dark)}
       </div>
     </div>
     <div class="field"><label>Notes</label><input type="text" id="nv-notes" placeholder="Remarques…"/></div>
-    <button class="btn bp bf" onclick="submitVehicle()"><svg width="14" height="14"><use href="#i-check"/></svg>Enregistrer</button>
+    <button class="btn bp bf" onclick="submitVehicle()"><svg width="15" height="15"><use href="#ic-check"/></svg>Enregistrer</button>
   </div>
 </div>
 
-<!-- ════════ STATS ════════ -->
+<!-- ════ STATS ════ -->
 <div id="pg-stats" class="pg">
-  <div class="shdr"><button class="bback" onclick="go('dashboard')"><svg width="20" height="20"><use href="#i-back"/></svg></button><h2>Statistiques</h2></div>
+  <div class="shdr">
+    <button class="bback" onclick="go('members')"><svg width="20" height="20"><use href="#ic-back"/></svg></button>
+    <h2>Statistiques</h2>
+  </div>
   <div class="wrap" id="stats-wrap"></div>
 </div>
 
-<!-- ════════ MEMBERS ════════ -->
+<!-- ════ MEMBERS ════ -->
 <div id="pg-members" class="pg">
   <nav class="tnav">
-    <div class="nbrand"><div class="nlogo"><svg width="14" height="14"><use href="#i-car"/></svg></div><span class="ntitle">MLS</span></div>
-    <button class="nbtn" onclick="go('dashboard')"><svg width="14" height="14"><use href="#i-grid"/></svg>Accueil</button>
-    <button class="nbtn" onclick="go('tickets')"><svg width="14" height="14"><use href="#i-ticket"/></svg>Tickets</button>
-    <button class="nbtn" onclick="go('planning')"><svg width="14" height="14"><use href="#i-list"/></svg>Planning</button>
-    <button class="nbtn" onclick="go('vehicle')"><svg width="14" height="14"><use href="#i-car"/></svg>Véhicule</button>
-    <button class="nbtn on admin-only" onclick="go('members')"><svg width="14" height="14"><use href="#i-user"/></svg>Membres</button>
-    <div class="nuser"><span class="nuname" id="nn5"></span><button class="nout" onclick="doLogout()"><svg width="15" height="15"><use href="#i-out"/></svg></button></div>
+    <div class="nbrand"><div class="nlogo"><svg width="15" height="15"><use href="#ic-car"/></svg></div><span class="nname">MLS</span></div>
+    <button class="nbtn" onclick="go('dashboard')"><svg width="14" height="14"><use href="#ic-grid"/></svg>Accueil</button>
+    <button class="nbtn" onclick="go('tickets')"><svg width="14" height="14"><use href="#ic-ticket"/></svg>Tickets</button>
+    <button class="nbtn" onclick="go('planning')"><svg width="14" height="14"><use href="#ic-list"/></svg>Planning</button>
+    <button class="nbtn" onclick="go('vehicle')"><svg width="14" height="14"><use href="#ic-car"/></svg>Véhicule</button>
+    <button class="nbtn on admin-only" onclick="go('members')"><svg width="14" height="14"><use href="#ic-user"/></svg>Membres</button>
+    <div class="nuser"><span class="nuname" id="nn5"></span><button class="nout" onclick="doLogout()"><svg width="15" height="15"><use href="#ic-out"/></svg></button></div>
   </nav>
   <div class="wrap">
     <div class="phdr">
       <h2 class="ptit">Membres</h2>
-      <div class="brow" style="margin-top:0">
-        <button class="btn bp" onclick="go('new-member')"><svg width="14" height="14"><use href="#i-plus"/></svg>Nouveau</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn bp" onclick="go('new-member')"><svg width="14" height="14"><use href="#ic-plus"/></svg>Nouveau</button>
         <button class="btn bg" onclick="go('stats')">Statistiques</button>
       </div>
     </div>
     <div id="mlist"></div>
   </div>
   <nav class="bnav">
-    <button class="bbtn" onclick="go('dashboard')"><svg width="18" height="18"><use href="#i-grid"/></svg>Accueil</button>
-    <button class="bbtn" onclick="go('tickets')"><svg width="18" height="18"><use href="#i-ticket"/></svg>Tickets</button>
-    <button class="bbtn" onclick="go('new-ticket')"><svg width="18" height="18"><use href="#i-plus"/></svg>Nouveau</button>
-    <button class="bbtn" onclick="go('planning')"><svg width="18" height="18"><use href="#i-list"/></svg>Planning</button>
-    <button class="bbtn on admin-only" onclick="go('members')"><svg width="18" height="18"><use href="#i-user"/></svg>Membres</button>
+    <button class="bbtn" onclick="go('dashboard')"><svg width="18" height="18"><use href="#ic-grid"/></svg>Accueil</button>
+    <button class="bbtn" onclick="go('tickets')"><svg width="18" height="18"><use href="#ic-ticket"/></svg>Tickets</button>
+    <button class="bbtn" onclick="go('new-ticket')"><svg width="18" height="18"><use href="#ic-plus"/></svg>Nouveau</button>
+    <button class="bbtn" onclick="go('planning')"><svg width="18" height="18"><use href="#ic-list"/></svg>Planning</button>
+    <button class="bbtn on admin-only" onclick="go('members')"><svg width="18" height="18"><use href="#ic-user"/></svg>Membres</button>
   </nav>
 </div>
 
-<!-- ════════ NEW MEMBER ════════ -->
+<!-- ════ NEW MEMBER ════ -->
 <div id="pg-new-member" class="pg">
-  <div class="shdr"><button class="bback" onclick="go('members')"><svg width="20" height="20"><use href="#i-back"/></svg></button><h2>Nouveau membre</h2></div>
+  <div class="shdr">
+    <button class="bback" onclick="go('members')"><svg width="20" height="20"><use href="#ic-back"/></svg></button>
+    <h2>Nouveau membre</h2>
+  </div>
   <div class="wrap-s">
     <div id="nmerr" class="aerr"></div>
     <div class="field"><label>Nom complet *</label><input type="text" id="nm-name" placeholder="Marie Dupont"/></div>
     <div class="field"><label>E-mail *</label><input type="email" id="nm-email" placeholder="marie@exemple.fr"/></div>
     <div class="field"><label>Téléphone</label><input type="text" id="nm-phone" placeholder="06 xx xx xx xx"/></div>
-    <div class="field"><label>Mot de passe initial *</label><input type="text" id="nm-pwd" value="Membre2024!"/></div>
-    <p style="font-size:12px;color:var(--faint);margin-top:-6px;margin-bottom:16px">Le membre recevra un e-mail de confirmation. Il pourra se connecter avec ce mot de passe.</p>
-    <button class="btn bp bf" onclick="submitMember()"><svg width="14" height="14"><use href="#i-user"/></svg>Créer le membre</button>
+    <div class="field">
+      <label>Mot de passe initial *</label>
+      <input type="text" id="nm-pwd" value="Membre2024!"/>
+    </div>
+    <p style="font-size:12px;color:var(--faint);margin-top:-6px;margin-bottom:18px;line-height:1.6">
+      Le membre devra confirmer son e-mail avant de se connecter.
+    </p>
+    <button class="btn bp bf" onclick="submitMember()"><svg width="15" height="15"><use href="#ic-check"/></svg>Créer le membre</button>
   </div>
 </div>
 
-<!-- ════════ SCRIPTS ════════ -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- ════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.1/mapbox-gl-geocoder.min.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
 
 <script>
 'use strict';
-/* ═══════════════════════════════════════════
-   CONFIG
-═══════════════════════════════════════════ */
-const SB_URL   = 'https://rixsenvshgconhvgevix.supabase.co';
-const SB_KEY   = 'sb_publishable_9DbMPtt6ZwzQ21-ADtyB2w_V0VKAw9N';
-const MB_TOKEN = 'pk.eyJ1IjoibGFuc3dlZyIsImEiOiJjbXBkaHJ6ZTYwMzQ2MnRzZTBtb25nYXl5In0._V1wF9WwBfZnxdemWuWbUQ';
-const RATE     = 0.55;
-const SURCH    = 0.20;
 
+/* ══ CONFIG — remplacez par vos vraies valeurs ══
+   SB_KEY  = Project Settings > API > anon public key
+   MB_TOKEN = votre token Mapbox public
+*/
+const SB_URL   = 'https://rixsenvshgconhvgevix.supabase.co';           // ex: https://xxxx.supabase.co
+const SB_KEY   = 'sb_publishable_9DbMPtt6ZwzQ21-ADtyB2w_V0VKAw9N';      // anon public key
+const MB_TOKEN = 'pk.eyJ1IjoibGFuc3dlZyIsImEiOiJjbXBkaHJ6ZTYwMzQ2MnRzZTBtb25nYXl5In0._V1wF9WwBfZnxdemWuWbUQ';            // pk.eyJ1...
+  
+const RATE  = 0.55;   // €/km tarif de base
+const SURCH = 0.20;   // €/km supplément carburant
+
+/* ── Supabase client ── */
 const sb = supabase.createClient(SB_URL, SB_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, storageKey: 'mls-auth' }
+  auth: {
+    persistSession:   true,
+    autoRefreshToken: true,
+    storageKey:       'mls-auth-v2',
+  },
 });
+
+/* ── Mapbox token ── */
 mapboxgl.accessToken = MB_TOKEN;
 
-/* ═══════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════ */
-let CU       = null;   // currentUser
-let tixFilter = 'all';
+/* ══ STATE ══ */
+let CU         = null;   // utilisateur courant
+let tixFilter  = 'all';
 let planFilter = 'all';
-let mapInst  = null;
-let gcDep    = null, gcDest = null;
-let cDep     = null, cDest  = null;
-let rdTimer  = null;
+let mapInst    = null;   // instance mapboxgl.Map
+let gcDep      = null;   // geocoder départ
+let gcDest     = null;   // geocoder destination
+let cDep       = null;   // coords [lng,lat] départ
+let cDest      = null;   // coords [lng,lat] destination
+let rdTimer    = null;   // debounce calcRoute
 
-/* ═══════════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════════ */
-const fmt     = n => parseFloat(n||0).toFixed(2).replace('.',',') + ' €';
-const fmtKm   = n => parseFloat(n||0).toFixed(1) + ' km';
-const fmtDate = iso => new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
-const fmtS    = iso => new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'});
-const esc     = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const eid     = id => document.getElementById(id);
+/* ══ HELPERS ══ */
+const fmt     = n => parseFloat(n || 0).toFixed(2).replace('.', ',') + '\u00a0€';
+const fmtKm   = n => parseFloat(n || 0).toFixed(1) + '\u00a0km';
+const fmtDate = iso => new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+const fmtS    = iso => new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+const esc     = s  => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const $       = id => document.getElementById(id);
 
 function calcT(km, toll) {
-  const b = +((km * RATE).toFixed(2));
-  const f = +((km * SURCH).toFixed(2));
-  const t = parseFloat(toll)||0;
-  return { base:b, fuel:f, toll:t, total:+((b+f+t).toFixed(2)) };
+  const base = +((km * RATE).toFixed(2));
+  const fuel = +((km * SURCH).toFixed(2));
+  const t    = parseFloat(toll) || 0;
+  return { base, fuel, toll: t, total: +((base + fuel + t).toFixed(2)) };
 }
 
-function toast(msg, type='ok') {
-  const el = eid('toast');
+function toast(msg, type = 'ok') {
+  const el = $('toast');
   el.textContent = msg;
-  el.className = 'on ' + type;
+  el.className   = 'on ' + type;
   clearTimeout(el._t);
-  el._t = setTimeout(() => el.className = '', 3200);
+  el._t = setTimeout(() => el.className = '', 3400);
 }
 
 function hideSplash() {
-  const s = eid('splash');
+  const s = $('splash');
   s.classList.add('out');
-  setTimeout(() => s.style.display='none', 400);
+  setTimeout(() => s.style.display = 'none', 380);
 }
 
 function setNames(name) {
-  const fn = name.split(' ')[0];
-  ['nn1','nn2','nn3','nn4','nn5'].forEach(id => { const e=eid(id); if(e) e.textContent=fn; });
+  const first = (name || '').split(' ')[0];
+  ['nn1', 'nn2', 'nn3', 'nn4', 'nn5'].forEach(id => {
+    const el = $(id); if (el) el.textContent = first;
+  });
 }
 
-function isAdmin() { return CU?.role === 'admin'; }
+function isAdmin() {
+  return CU?.role === 'admin';
+}
 
-/* ═══════════════════════════════════════════
-   AUTH
-═══════════════════════════════════════════ */
+function applyAdminVisibility() {
+  const admin = isAdmin();
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.style.display = admin ? '' : 'none';
+  });
+}
+
+/* ══ AUTH ══ */
 async function boot() {
   try {
-    const { data:{ session } } = await sb.auth.getSession();
+    const { data: { session } } = await sb.auth.getSession();
     if (session) {
       await loadProfile(session.user);
       hideSplash();
@@ -758,8 +845,8 @@ async function boot() {
       hideSplash();
       go('login');
     }
-  } catch(e) {
-    console.error('Boot error:', e);
+  } catch (e) {
+    console.error('boot error:', e);
     hideSplash();
     go('login');
   }
@@ -775,51 +862,60 @@ async function boot() {
 }
 
 async function loadProfile(authUser) {
-  const { data, error } = await sb.from('members')
+  const { data, error } = await sb
+    .from('members')
     .select('*')
     .eq('auth_id', authUser.id)
     .maybeSingle();
 
   if (data) {
-    CU = { id:data.id, auth_id:data.auth_id, name:data.name, email:data.email, role:data.role };
+    CU = { id: data.id, auth_id: data.auth_id, name: data.name, email: data.email, role: data.role };
   } else {
-    // Profil pas encore créé (trigger peut être en retard)
+    /* Profil en cours de création par le trigger */
     CU = {
-      id: authUser.id,
+      id:      authUser.id,
       auth_id: authUser.id,
-      name: authUser.user_metadata?.name || authUser.email.split('@')[0],
-      email: authUser.email,
-      role: authUser.user_metadata?.role || 'member'
+      name:    authUser.user_metadata?.name || authUser.email.split('@')[0],
+      email:   authUser.email,
+      role:    authUser.user_metadata?.role || 'member',
     };
   }
 
   setNames(CU.name);
-  const admin = isAdmin();
-  document.querySelectorAll('.admin-only').forEach(el => {
-    el.style.display = admin ? '' : 'none';
-  });
+  applyAdminVisibility();
 }
 
 async function doLogin() {
-  const email = eid('lemail').value.trim();
-  const pwd   = eid('lpwd').value;
-  const err   = eid('lerr');
-  const btn   = eid('lbtn');
-  err.classList.remove('on');
+  const email = $('lemail').value.trim();
+  const pwd   = $('lpwd').value;
+  const errEl = $('lerr');
+  const btn   = $('lbtn');
+  errEl.classList.remove('on');
 
-  if (!email || !pwd) { err.textContent='Veuillez remplir tous les champs.'; err.classList.add('on'); return; }
-
-  btn.textContent = 'Connexion…'; btn.disabled = true;
-  const { data, error } = await sb.auth.signInWithPassword({ email, password:pwd });
-  btn.textContent = 'Se connecter'; btn.disabled = false;
-
-  if (error) {
-    err.textContent = error.message.includes('Invalid') ? 'E-mail ou mot de passe incorrect.' : error.message;
-    err.classList.add('on');
+  if (!email || !pwd) {
+    errEl.textContent = 'Veuillez remplir tous les champs.';
+    errEl.classList.add('on');
     return;
   }
-  eid('lemail').value = '';
-  eid('lpwd').value = '';
+
+  btn.textContent = 'Connexion…';
+  btn.disabled    = true;
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
+
+  btn.textContent = 'Se connecter';
+  btn.disabled    = false;
+
+  if (error) {
+    errEl.textContent = error.message.includes('Invalid') || error.message.includes('invalid')
+      ? 'E-mail ou mot de passe incorrect.'
+      : error.message;
+    errEl.classList.add('on');
+    return;
+  }
+
+  $('lemail').value = '';
+  $('lpwd').value   = '';
   await loadProfile(data.user);
   go('dashboard');
 }
@@ -830,83 +926,79 @@ async function doLogout() {
   go('login');
 }
 
-/* ═══════════════════════════════════════════
-   ROUTING
-═══════════════════════════════════════════ */
-const PAGES = {
-  dashboard: renderDashboard,
-  tickets: renderTickets,
-  'new-ticket': initNewTicket,
-  'ticket-detail': null,
-  planning: renderPlanning,
-  'new-planning': initNewPlanning,
-  vehicle: renderVehicle,
-  'new-vehicle': initNewVehicle,
-  members: renderMembers,
-  'new-member': null,
-  stats: renderStats,
-  login: null,
+/* ══ ROUTING ══ */
+const ROUTES = {
+  'dashboard':      renderDashboard,
+  'tickets':        renderTickets,
+  'new-ticket':     initNewTicket,
+  'ticket-detail':  null,
+  'planning':       renderPlanning,
+  'new-planning':   initNewPlanning,
+  'vehicle':        renderVehicle,
+  'new-vehicle':    initNewVehicle,
+  'members':        renderMembers,
+  'new-member':     null,
+  'stats':          renderStats,
+  'login':          null,
 };
 
 function go(page) {
   document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
-  const el = eid('pg-' + page);
+  const el = $('pg-' + page);
   if (el) el.classList.add('on');
-  if (PAGES[page]) PAGES[page]();
+  if (ROUTES[page]) ROUTES[page]();
   window.scrollTo(0, 0);
 }
 
-/* ═══════════════════════════════════════════
-   DASHBOARD
-═══════════════════════════════════════════ */
+/* ══ DASHBOARD ══ */
 async function renderDashboard() {
   if (!CU) return;
-  eid('dgreet').textContent = 'Bonjour, ' + CU.name.split(' ')[0];
-  eid('dsub').textContent   = isAdmin() ? 'Vue administrateur' : 'Votre espace personnel';
-  eid('dstats').innerHTML   = '<div style="grid-column:1/-1;padding:20px;text-align:center;font-size:12px;color:var(--faint)">Chargement…</div>';
+  $('dgreet').textContent = 'Bonjour, ' + CU.name.split(' ')[0];
+  $('dsub').textContent   = isAdmin() ? 'Vue administrateur — Mobilité Littorale & SAM' : 'Votre espace personnel';
+  $('dstats').innerHTML   = '<div style="grid-column:1/-1;padding:20px;text-align:center"><div class="spin" style="margin:0 auto"></div></div>';
 
-  let q = sb.from('tickets').select('*, members(name)').order('created_at',{ascending:false}).limit(8);
+  let q = sb.from('tickets').select('*, members(name)').order('created_at', { ascending: false }).limit(8);
   if (!isAdmin()) q = q.eq('member_id', CU.id);
   const { data: tix = [] } = await q;
 
-  const pend   = tix.filter(t => !t.paid);
-  const due    = pend.reduce((s,t)=>s+(t.total||0), 0);
-  const km     = tix.reduce((s,t)=>s+(t.km||0), 0);
-  const tolls  = tix.filter(t=>t.has_toll).reduce((s,t)=>s+(t.toll||0), 0);
+  const pend  = tix.filter(t => !t.paid);
+  const due   = pend.reduce((s, t) => s + (t.total || 0), 0);
+  const km    = tix.reduce((s, t) => s + (t.km || 0), 0);
+  const tolls = tix.filter(t => t.has_toll).reduce((s, t) => s + (t.toll || 0), 0);
 
-  eid('dstats').innerHTML = `
+  $('dstats').innerHTML = `
     <div class="stat">
-      <div class="slbl">${isAdmin()?'Total à percevoir':'Montant à régler'}</div>
-      <div class="sval" style="color:${due>0?'var(--orange)':'var(--green)'}">${fmt(due)}</div>
+      <div class="slbl">${isAdmin() ? 'Total à percevoir' : 'Montant à régler'}</div>
+      <div class="sval" style="color:${due > 0 ? 'var(--warn)' : 'var(--accent)'}">${fmt(due)}</div>
       <div class="ssub">${pend.length} en attente</div>
     </div>
     <div class="stat">
       <div class="slbl">Kilomètres</div>
       <div class="sval">${fmtKm(km)}</div>
-      <div class="ssub">${tix.length} trajet${tix.length!==1?'s':''}</div>
+      <div class="ssub">${tix.length} trajet${tix.length !== 1 ? 's' : ''}</div>
     </div>
-    ${tolls>0?`<div class="stat"><div class="slbl">Péages avancés</div><div class="sval" style="color:var(--orange)">${fmt(tolls)}</div><div class="ssub">À rembourser</div></div>`:''}
+    ${tolls > 0 ? `<div class="stat"><div class="slbl">Péages avancés</div><div class="sval" style="color:var(--warn)">${fmt(tolls)}</div><div class="ssub">À rembourser</div></div>` : ''}
   `;
-  eid('dtix').innerHTML = tix.length === 0
+
+  $('dtix').innerHTML = tix.length === 0
     ? '<div class="empty">Aucun ticket enregistré.</div>'
     : tixHTML(tix);
 }
 
-/* ═══════════════════════════════════════════
-   TICKETS
-═══════════════════════════════════════════ */
+/* ══ TICKETS ══ */
 async function renderTickets() {
   if (!CU) return;
-  eid('tixlist').innerHTML = '<div style="padding:40px;text-align:center;font-size:12px;color:var(--faint)">Chargement…</div>';
+  $('tixlist').innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto"></div></div>';
 
-  let q = sb.from('tickets').select('*, members(name)').order('date',{ascending:false});
+  let q = sb.from('tickets').select('*, members(name)').order('date', { ascending: false });
   if (!isAdmin()) q = q.eq('member_id', CU.id);
   if (tixFilter === 'pending') q = q.eq('paid', false);
   if (tixFilter === 'paid')    q = q.eq('paid', true);
 
   const { data: tix = [], error } = await q;
-  if (error) { toast('Erreur chargement','er'); return; }
-  eid('tixlist').innerHTML = tix.length === 0
+  if (error) { toast('Erreur chargement', 'er'); return; }
+
+  $('tixlist').innerHTML = tix.length === 0
     ? '<div class="empty">Aucun ticket dans cette catégorie.</div>'
     : tixHTML(tix);
 }
@@ -924,67 +1016,67 @@ function tixHTML(arr) {
     return `<div class="ti" onclick="openTicket('${t.id}')">
       <div style="flex:1;min-width:0">
         <div class="trt">${esc(t.departure)} → ${esc(t.destination)}</div>
-        <div class="tmt">${fmtS(t.date)} · ${t.km} km${mn?' · '+esc(mn):''}</div>
+        <div class="tmt">${fmtS(t.date)} · ${t.km} km${mn ? ' · ' + esc(mn) : ''}</div>
       </div>
-      <div style="flex-shrink:0">
+      <div style="flex-shrink:0;text-align:right">
         <div class="tam">${fmt(t.total)}</div>
-        <div class="tst ${t.paid?'sp':'spe'}">${t.paid?'Réglé':'En attente'}</div>
+        <div class="tst ${t.paid ? 'st-ok' : 'st-pend'}">${t.paid ? '✓ Réglé' : 'En attente'}</div>
       </div>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      <svg width="14" height="14"><use href="#ic-chev"/></svg>
     </div>`;
   }).join('');
 }
 
-/* ═══════════════════════════════════════════
-   TICKET DETAIL
-═══════════════════════════════════════════ */
+/* ══ TICKET DETAIL ══ */
 async function openTicket(id) {
-  const { data: t, error } = await sb.from('tickets')
+  const { data: t, error } = await sb
+    .from('tickets')
     .select('*, members(name)')
     .eq('id', id)
     .single();
-  if (error || !t) { toast('Ticket introuvable','er'); return; }
+
+  if (error || !t) { toast('Ticket introuvable', 'er'); return; }
 
   const sid = '#' + String(t.id).slice(-6).toUpperCase();
-  eid('td-id').textContent   = sid;
-  eid('td-idp').textContent  = sid;
-  eid('td-emit').textContent = 'Émis le ' + fmtS(t.created_at);
-  eid('pfdate').textContent  = 'Généré le ' + fmtS(new Date().toISOString());
+  $('td-id').textContent   = sid;
+  $('td-idp').textContent  = sid;
+  $('td-emit').textContent = 'Émis le ' + fmtS(t.created_at);
+  $('pfdate').textContent  = 'Généré le ' + fmtS(new Date().toISOString());
 
-  const badge = eid('td-badge');
+  const badge = $('td-badge');
   badge.textContent = t.paid ? 'Réglé' : 'En attente';
-  badge.className   = 'badge ' + (t.paid ? 'bp2' : 'bpe');
+  badge.className   = 'badge ' + (t.paid ? 'bk' : 'bw');
 
-  eid('td-details').innerHTML = `
-    <div class="di"><div class="dl">Membre</div><div class="dv">${esc(t.members?.name||'—')}</div></div>
+  $('td-details').innerHTML = `
+    <div class="di"><div class="dl">Membre</div><div class="dv">${esc(t.members?.name || '—')}</div></div>
     <div class="di"><div class="dl">Date</div><div class="dv">${fmtDate(t.date)}</div></div>
     <div class="di"><div class="dl">Départ</div><div class="dv">${esc(t.departure)}</div></div>
     <div class="di"><div class="dl">Destination</div><div class="dv">${esc(t.destination)}</div></div>
     <div class="di"><div class="dl">Distance</div><div class="dv m">${t.km} km</div></div>
-    <div class="di"><div class="dl">Péage avancé</div><div class="dv m">${t.has_toll?fmt(t.toll):'—'}</div></div>
-    ${t.notes?`<div class="di dfw"><div class="dl">Notes</div><div class="dv">${esc(t.notes)}</div></div>`:''}
+    <div class="di"><div class="dl">Péage avancé</div><div class="dv m">${t.has_toll ? fmt(t.toll) : '—'}</div></div>
+    ${t.notes ? `<div class="di dfw"><div class="dl">Notes</div><div class="dv">${esc(t.notes)}</div></div>` : ''}
   `;
 
-  eid('tdbl').textContent = `${t.km} km × ${fmt(RATE)} (tarif kilométrique)`;
-  eid('tdbv').textContent = fmt(t.base);
-  eid('tdfl').textContent = `${t.km} km × ${fmt(SURCH)} (supplément carburant)`;
-  eid('tdfv').textContent = fmt(t.fuel);
+  $('tdbl').textContent = `${t.km} km × ${fmt(RATE)} (tarif kilométrique)`;
+  $('tdbv').textContent = fmt(t.base);
+  $('tdfl').textContent = `${t.km} km × ${fmt(SURCH)} (supplément carburant)`;
+  $('tdfv').textContent = fmt(t.fuel);
 
-  const tl = eid('tdtl');
-  if (t.has_toll && t.toll > 0) { tl.style.display=''; eid('tdtv').textContent=fmt(t.toll); }
+  const tl = $('tdtl');
+  if (t.has_toll && t.toll > 0) { tl.style.display = ''; $('tdtv').textContent = fmt(t.toll); }
   else tl.style.display = 'none';
 
-  eid('tdtot').textContent = fmt(t.total);
+  $('tdtot').textContent = fmt(t.total);
 
-  const pd = eid('tdpd');
-  if (t.paid && t.paid_at) { pd.textContent='✓ Réglé le '+fmtDate(t.paid_at); pd.style.display=''; }
-  else pd.style.display='none';
+  const pd = $('tdpd');
+  if (t.paid && t.paid_at) { pd.textContent = '✓ Réglé le ' + fmtDate(t.paid_at); pd.style.display = ''; }
+  else pd.style.display = 'none';
 
-  const acts = eid('td-actions');
+  const acts = $('td-actions');
   if (isAdmin()) {
     acts.innerHTML =
-      (!t.paid ? `<button class="btn bv" onclick="markPaid('${t.id}')"><svg width="14" height="14"><use href="#i-check"/></svg>Marquer réglé</button>` : '') +
-      `<button class="btn bd" onclick="delTicket('${t.id}')"><svg width="14" height="14"><use href="#i-trash"/></svg>Supprimer</button>`;
+      (!t.paid ? `<button class="btn bv" onclick="markPaid('${t.id}')"><svg width="15" height="15"><use href="#ic-check"/></svg>Marquer réglé</button>` : '') +
+      `<button class="btn bd" onclick="delTicket('${t.id}')"><svg width="14" height="14"><use href="#ic-trash"/></svg>Supprimer</button>`;
     acts.style.display = '';
   } else {
     acts.style.display = 'none';
@@ -997,7 +1089,7 @@ async function markPaid(id) {
   const { error } = await sb.from('tickets')
     .update({ paid: true, paid_at: new Date().toISOString() })
     .eq('id', id);
-  if (error) { toast('Erreur mise à jour','er'); return; }
+  if (error) { toast('Erreur mise à jour', 'er'); return; }
   toast('Ticket marqué comme réglé !');
   go('tickets');
 }
@@ -1005,31 +1097,33 @@ async function markPaid(id) {
 async function delTicket(id) {
   if (!confirm('Supprimer ce ticket définitivement ?')) return;
   const { error } = await sb.from('tickets').delete().eq('id', id);
-  if (error) { toast('Erreur suppression','er'); return; }
+  if (error) { toast('Erreur suppression', 'er'); return; }
   toast('Ticket supprimé.');
   go('tickets');
 }
 
-/* ═══════════════════════════════════════════
-   NEW TICKET + MAPBOX GEOCODERS
-═══════════════════════════════════════════ */
+/* ══ NEW TICKET + MAPBOX ══ */
 async function initNewTicket() {
-  eid('nt-date').value = new Date().toISOString().split('T')[0];
-  ['nt-km','nt-notes','nt-toll'].forEach(id => { const e=eid(id); if(e) e.value=''; });
-  eid('toll-tog').classList.remove('on');
-  eid('toll-f').style.display    = 'none';
-  eid('prev-box').style.display  = 'none';
-  eid('map-wrap').classList.remove('vis');
-  eid('kmhint').textContent = '';
+  $('nt-date').value = new Date().toISOString().split('T')[0];
+  ['nt-km', 'nt-notes', 'nt-toll'].forEach(id => { const el = $(id); if (el) el.value = ''; });
+  $('toll-tog').classList.remove('on');
+  $('toll-f').style.display   = 'none';
+  $('prev-box').style.display = 'none';
+  $('map-wrap').classList.remove('vis');
+  $('kmhint').textContent = '';
   cDep = null; cDest = null;
 
   if (isAdmin()) {
-    const sel = eid('nt-member');
+    const sel = $('nt-member');
     sel.innerHTML = '<option value="">— Sélectionner —</option>';
-    const { data = [] } = await sb.from('members').select('id,name').neq('role','admin').order('name');
+    const { data = [] } = await sb.from('members')
+      .select('id,name')
+      .neq('role', 'admin')
+      .order('name');
     data.forEach(m => {
       const o = document.createElement('option');
-      o.value = m.id; o.textContent = m.name; sel.appendChild(o);
+      o.value = m.id; o.textContent = m.name;
+      sel.appendChild(o);
     });
   }
 
@@ -1037,59 +1131,66 @@ async function initNewTicket() {
 }
 
 function setupGeocoders() {
-  // Nettoyer les geocoders précédents
-  const dw = eid('dep-gc'), dtw = eid('dest-gc');
-  dw.innerHTML = ''; dtw.innerHTML = '';
-  gcDep = null; gcDest = null;
+  /* Vider les conteneurs — détruire les geocoders précédents proprement */
+  const dw  = $('dep-gc');
+  const dtw = $('dest-gc');
+  dw.innerHTML  = '';
+  dtw.innerHTML = '';
+  gcDep  = null;
+  gcDest = null;
 
-  const opts = {
+  const baseOpts = {
     accessToken: MB_TOKEN,
-    language: 'fr',
-    countries: 'fr',
-    mapboxgl: mapboxgl,
-    marker: false,
-    // Bounding box centrée sur le Nord / Dunkerque
-    bbox: [1.2, 50.3, 3.8, 51.6],
-    placeholder: 'Saisir une adresse…',
-    flyTo: false,
+    language:    'fr',
+    countries:   'fr',
+    mapboxgl:    mapboxgl,
+    marker:      false,
+    flyTo:       false,
+    bbox:        [1.2, 50.3, 3.8, 51.6],  // Nord-Pas-de-Calais
   };
 
-  gcDep = new MapboxGeocoder({ ...opts, placeholder: 'Adresse de départ' });
-  gcDep.addTo('#dep-gc');
-  gcDep.on('result', e => { cDep = e.result.center; schedulRoute(); });
+  gcDep = new MapboxGeocoder({
+    ...baseOpts,
+    placeholder: 'Adresse de départ',
+  });
+  gcDep.addTo(dw);  /* passer l'élément DOM directement */
+  gcDep.on('result', e => { cDep = e.result.center; scheduleRoute(); });
   gcDep.on('clear',  () => { cDep = null; });
 
-  gcDest = new MapboxGeocoder({ ...opts, placeholder: 'Adresse de destination' });
-  gcDest.addTo('#dest-gc');
-  gcDest.on('result', e => { cDest = e.result.center; schedulRoute(); });
+  gcDest = new MapboxGeocoder({
+    ...baseOpts,
+    placeholder: 'Adresse de destination',
+  });
+  gcDest.addTo(dtw);
+  gcDest.on('result', e => { cDest = e.result.center; scheduleRoute(); });
   gcDest.on('clear',  () => { cDest = null; });
 }
 
-function schedulRoute() {
+function scheduleRoute() {
   clearTimeout(rdTimer);
-  rdTimer = setTimeout(calcRoute, 500);
+  rdTimer = setTimeout(calcRoute, 600);
 }
 
 async function calcRoute() {
   if (!cDep || !cDest) return;
-  eid('map-wrap').classList.add('vis');
-  eid('ri-dist').textContent = '…';
-  eid('ri-dur').textContent  = '…';
+  $('map-wrap').classList.add('vis');
+  $('ri-dist').textContent = '…';
+  $('ri-dur').textContent  = '…';
 
-  // Initialiser la carte si nécessaire
+  /* Initialiser la carte si besoin */
   if (!mapInst) {
     mapInst = new mapboxgl.Map({
-      container: 'route-map',
-      style: 'mapbox://styles/mapbox/light-v11',
-      center: [2.35, 50.95],
-      zoom: 9,
+      container:          'route-map',
+      style:              'mapbox://styles/mapbox/light-v11',
+      center:             [2.35, 50.95],
+      zoom:               9,
       attributionControl: false,
     });
     mapInst.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
     await new Promise(r => mapInst.on('load', r));
   }
 
-  // API Directions Mapbox
+  /* API Directions */
   const url = `https://api.mapbox.com/directions/v5/mapbox/driving/`
     + `${cDep[0]},${cDep[1]};${cDest[0]},${cDest[1]}`
     + `?geometries=geojson&language=fr&access_token=${MB_TOKEN}`;
@@ -1098,13 +1199,13 @@ async function calcRoute() {
   try {
     const r = await fetch(url);
     data = await r.json();
-  } catch(e) {
-    eid('ri-dist').textContent = 'Erreur réseau';
+  } catch (e) {
+    $('ri-dist').textContent = 'Erreur réseau';
     return;
   }
 
-  if (!data.routes || !data.routes.length) {
-    eid('ri-dist').textContent = 'Itinéraire introuvable';
+  if (!data.routes?.length) {
+    $('ri-dist').textContent = 'Itinéraire introuvable';
     return;
   }
 
@@ -1112,142 +1213,159 @@ async function calcRoute() {
   const km    = +(route.distance / 1000).toFixed(1);
   const mins  = Math.round(route.duration / 60);
   const hrs   = Math.floor(mins / 60);
-  const dur   = hrs > 0 ? `${hrs}h${String(mins%60).padStart(2,'0')}` : `${mins} min`;
+  const dur   = hrs > 0 ? `${hrs}h${String(mins % 60).padStart(2, '0')}` : `${mins} min`;
 
-  eid('ri-dist').textContent   = km + ' km';
-  eid('ri-dur').textContent    = dur;
-  eid('nt-km').value           = km;
-  eid('kmhint').textContent    = '— calculé automatiquement';
+  $('ri-dist').textContent = km + ' km';
+  $('ri-dur').textContent  = dur;
+  $('nt-km').value         = km;
+  $('kmhint').textContent  = '— calculé automatiquement';
   updatePrev();
 
-  // Tracer l'itinéraire
+  /* Tracer la route */
+  const geom = { type: 'Feature', geometry: route.geometry };
   if (mapInst.getSource('route')) {
-    mapInst.getSource('route').setData({ type:'Feature', geometry: route.geometry });
+    mapInst.getSource('route').setData(geom);
   } else {
-    mapInst.addSource('route', { type:'geojson', data:{ type:'Feature', geometry: route.geometry } });
+    mapInst.addSource('route', { type: 'geojson', data: geom });
     mapInst.addLayer({
-      id: 'route', type: 'line', source: 'route',
-      layout: { 'line-join':'round', 'line-cap':'round' },
-      paint: { 'line-color':'#1a1916', 'line-width':3, 'line-opacity':.8 }
+      id:     'route',
+      type:   'line',
+      source: 'route',
+      layout: { 'line-join': 'round', 'line-cap': 'round' },
+      paint:  { 'line-color': '#1c6b45', 'line-width': 3.5, 'line-opacity': .85 },
     });
   }
 
-  // Supprimer anciens marqueurs
-  document.querySelectorAll('.mbox-mk').forEach(el => el.remove());
+  /* Marqueurs — nettoyer les anciens */
+  document.querySelectorAll('.mls-mk').forEach(el => el.remove());
 
-  const mkDep  = document.createElement('div');
-  mkDep.className = 'mbox-mk';
-  mkDep.innerHTML = `<svg width="22" height="28" viewBox="0 0 22 28"><circle cx="11" cy="11" r="9" fill="#1a1916" stroke="#fff" stroke-width="2"/><line x1="11" y1="20" x2="11" y2="28" stroke="#1a1916" stroke-width="2"/></svg>`;
-  new mapboxgl.Marker({ element: mkDep, anchor:'bottom' }).setLngLat(cDep).addTo(mapInst);
+  const mkEl = (color) => {
+    const el = document.createElement('div');
+    el.className = 'mls-mk';
+    el.innerHTML = `<svg width="22" height="28" viewBox="0 0 22 28" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,.3))"><circle cx="11" cy="11" r="9" fill="${color}" stroke="#fff" stroke-width="2"/><line x1="11" y1="20" x2="11" y2="28" stroke="${color}" stroke-width="2"/></svg>`;
+    return el;
+  };
 
-  const mkDest = document.createElement('div');
-  mkDest.className = 'mbox-mk';
-  mkDest.innerHTML = `<svg width="22" height="28" viewBox="0 0 22 28"><circle cx="11" cy="11" r="9" fill="#a0500f" stroke="#fff" stroke-width="2"/><line x1="11" y1="20" x2="11" y2="28" stroke="#a0500f" stroke-width="2"/></svg>`;
-  new mapboxgl.Marker({ element: mkDest, anchor:'bottom' }).setLngLat(cDest).addTo(mapInst);
+  new mapboxgl.Marker({ element: mkEl('#1c6b45'), anchor: 'bottom' }).setLngLat(cDep).addTo(mapInst);
+  new mapboxgl.Marker({ element: mkEl('#b45309'), anchor: 'bottom' }).setLngLat(cDest).addTo(mapInst);
 
-  // Ajuster la vue
+  /* Ajuster la vue */
   const coords = route.geometry.coordinates;
-  const bounds = coords.reduce((b,c) => b.extend(c), new mapboxgl.LngLatBounds(coords[0], coords[0]));
+  const bounds = coords.reduce(
+    (b, c) => b.extend(c),
+    new mapboxgl.LngLatBounds(coords[0], coords[0])
+  );
   mapInst.fitBounds(bounds, { padding: 50, maxZoom: 14 });
 }
 
 function recalc() { calcRoute(); }
 
 function togToll() {
-  eid('toll-tog').classList.toggle('on');
-  const on = eid('toll-tog').classList.contains('on');
-  eid('toll-f').style.display = on ? 'block' : 'none';
-  if (!on) eid('nt-toll').value = '';
+  $('toll-tog').classList.toggle('on');
+  const on = $('toll-tog').classList.contains('on');
+  $('toll-f').style.display = on ? 'block' : 'none';
+  if (!on) $('nt-toll').value = '';
   updatePrev();
 }
 
 function updatePrev() {
-  const km     = parseFloat(eid('nt-km').value) || 0;
-  const hasToll = eid('toll-tog').classList.contains('on');
-  const toll   = hasToll ? parseFloat(eid('nt-toll').value) || 0 : 0;
-  const box    = eid('prev-box');
+  const km      = parseFloat($('nt-km').value) || 0;
+  const hasToll = $('toll-tog').classList.contains('on');
+  const toll    = hasToll ? parseFloat($('nt-toll').value) || 0 : 0;
+  const box     = $('prev-box');
+
   if (km <= 0) { box.style.display = 'none'; return; }
+
   const c = calcT(km, toll);
   box.style.display = 'block';
-  eid('pbl').textContent  = `${km} km × ${fmt(RATE)} (tarif km)`;
-  eid('pbv').textContent  = fmt(c.base);
-  eid('pfl').textContent  = `${km} km × ${fmt(SURCH)} (supplément carburant)`;
-  eid('pfv').textContent  = fmt(c.fuel);
-  const tl = eid('ptl');
-  if (hasToll && toll > 0) { tl.style.display=''; eid('ptv').textContent=fmt(toll); }
+  $('pbl').textContent = `${km} km × ${fmt(RATE)} (tarif kilométrique)`;
+  $('pbv').textContent = fmt(c.base);
+  $('pfl').textContent = `${km} km × ${fmt(SURCH)} (supplément carburant)`;
+  $('pfv').textContent = fmt(c.fuel);
+
+  const tl = $('ptl');
+  if (hasToll && toll > 0) { tl.style.display = ''; $('ptv').textContent = fmt(toll); }
   else tl.style.display = 'none';
-  eid('ptot').textContent = fmt(c.total);
+
+  $('ptot').textContent = fmt(c.total);
 }
 
 async function submitTicket() {
   const admin    = isAdmin();
-  const memberId = admin ? eid('nt-member').value : CU.id;
-  // Récupérer l'adresse depuis le geocoder (inputString) ou le champ input directement
-  const depInput  = eid('dep-gc').querySelector('input');
-  const destInput = eid('dest-gc').querySelector('input');
-  const dep  = (gcDep?._inputEl?.value || depInput?.value  || '').trim();
-  const dest = (gcDest?._inputEl?.value || destInput?.value || '').trim();
-  const km   = parseFloat(eid('nt-km').value) || 0;
-  const hasToll = eid('toll-tog').classList.contains('on');
-  const toll = hasToll ? parseFloat(eid('nt-toll').value) || 0 : 0;
-  const notes = eid('nt-notes').value.trim();
-  const date  = eid('nt-date').value;
+  const memberId = admin ? $('nt-member').value : CU.id;
 
-  if (admin && !memberId) { toast('Sélectionnez un membre.','er'); return; }
-  if (!dep || !dest) { toast('Départ et destination requis.','er'); return; }
-  if (km <= 0) { toast('Distance invalide — vérifiez les adresses.','er'); return; }
-  if (!date) { toast('Date requise.','er'); return; }
+  /* Récupérer la valeur saisie dans le geocoder */
+  const depEl   = $('dep-gc').querySelector('input');
+  const destEl  = $('dest-gc').querySelector('input');
+  const dep     = (depEl?.value   || '').trim();
+  const dest    = (destEl?.value  || '').trim();
+  const km      = parseFloat($('nt-km').value) || 0;
+  const hasToll = $('toll-tog').classList.contains('on');
+  const toll    = hasToll ? parseFloat($('nt-toll').value) || 0 : 0;
+  const notes   = $('nt-notes').value.trim();
+  const date    = $('nt-date').value;
+
+  if (admin && !memberId) { toast('Sélectionnez un membre.', 'er'); return; }
+  if (!dep || !dest)      { toast('Départ et destination requis.', 'er'); return; }
+  if (km <= 0)            { toast('Distance invalide.', 'er'); return; }
+  if (!date)              { toast('Date requise.', 'er'); return; }
 
   const c = calcT(km, toll);
+
   const { error } = await sb.from('tickets').insert({
-    member_id: memberId,
-    date, departure: dep, destination: dest,
-    km, has_toll: hasToll, toll: c.toll,
-    base: c.base, fuel: c.fuel, total: c.total,
-    notes: notes || null, paid: false
+    member_id:   memberId,
+    date,
+    departure:   dep,
+    destination: dest,
+    km,
+    has_toll:    hasToll,
+    toll:        c.toll,
+    base:        c.base,
+    fuel:        c.fuel,
+    total:       c.total,
+    notes:       notes || null,
+    paid:        false,
   });
 
-  if (error) { toast('Erreur : ' + error.message,'er'); return; }
-  toast('Ticket créé !');
+  if (error) { toast('Erreur : ' + error.message, 'er'); return; }
+  toast('Ticket créé avec succès !');
   go('tickets');
 }
 
-/* ═══════════════════════════════════════════
-   PLANNING
-═══════════════════════════════════════════ */
+/* ══ PLANNING ══ */
 async function renderPlanning() {
-  const list = eid('planlist');
-  list.innerHTML = '<div style="padding:40px;text-align:center;font-size:12px;color:var(--faint)">Chargement…</div>';
+  const list = $('planlist');
+  list.innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto"></div></div>';
 
   const today = new Date().toISOString().split('T')[0];
-  let q = sb.from('planning').select('*, members(name)').order('event_date', {ascending: true});
+  let q = sb.from('planning').select('*, members(name)').order('event_date', { ascending: true });
   if (planFilter === 'upcoming') q = q.gte('event_date', today);
   if (planFilter === 'past')     q = q.lt('event_date', today);
 
   const { data = [], error } = await q;
-  if (error) { list.innerHTML='<div class="empty">Erreur de chargement.</div>'; return; }
-  if (!data.length) { list.innerHTML='<div class="empty">Aucun événement.</div>'; return; }
+  if (error) { list.innerHTML = '<div class="empty">Erreur de chargement.</div>'; return; }
+  if (!data.length) { list.innerHTML = '<div class="empty">Aucun événement.</div>'; return; }
 
-  const dotC  = { disponible:'pd-d', confirmé:'pd-c', annulé:'pd-a' };
-  const statC = { disponible:'psd',  confirmé:'psc',  annulé:'psa' };
+  const dotClass  = { disponible: 'dot-d', confirmé: 'dot-c', annulé: 'dot-a' };
+  const statClass = { disponible: 'pst-d', confirmé: 'pst-c', annulé: 'pst-a' };
 
   list.innerHTML = data.map(p => `
     <div class="pi">
-      <div class="pdot ${dotC[p.status]||'pd-d'}"></div>
+      <div class="pdot ${dotClass[p.status] || 'dot-d'}"></div>
       <div style="flex:1;min-width:0">
-        <div style="font-weight:500;font-size:14px">${esc(p.event_name)}</div>
+        <div style="font-weight:600;font-size:14px">${esc(p.event_name)}</div>
         <div style="font-size:12px;color:var(--muted);margin-top:2px">
           ${fmtS(p.event_date)}
-          ${p.start_time?' · '+p.start_time.slice(0,5):''}
-          ${p.end_time?' → '+p.end_time.slice(0,5):''}
-          ${p.location?' · '+esc(p.location):''}
-          ${p.members?.name?' · '+esc(p.members.name):''}
+          ${p.start_time ? ' · ' + p.start_time.slice(0, 5) : ''}
+          ${p.end_time   ? ' → ' + p.end_time.slice(0, 5)   : ''}
+          ${p.location   ? ' · ' + esc(p.location)           : ''}
+          ${p.members?.name ? ' · ' + esc(p.members.name)   : ''}
         </div>
-        ${p.role?`<div style="font-size:11px;color:var(--faint);margin-top:2px">${esc(p.role)}</div>`:''}
-        ${p.notes?`<div style="font-size:11px;color:var(--faint);margin-top:2px">${esc(p.notes)}</div>`:''}
+        ${p.role  ? `<div style="font-size:11px;color:var(--faint);margin-top:2px">${esc(p.role)}</div>` : ''}
+        ${p.notes ? `<div style="font-size:11px;color:var(--faint);margin-top:2px">${esc(p.notes)}</div>` : ''}
       </div>
-      <span class="pst ${statC[p.status]||''}">${p.status}</span>
-      ${isAdmin()?`<button class="btn bd" style="padding:6px 8px;flex-shrink:0" onclick="delPlanning('${p.id}')"><svg width="13" height="13"><use href="#i-trash"/></svg></button>`:''}
+      <span class="pst ${statClass[p.status] || ''}">${p.status}</span>
+      ${isAdmin() ? `<button class="btn bd" style="padding:6px 9px;flex-shrink:0" onclick="delPlanning('${p.id}')"><svg width="13" height="13"><use href="#ic-trash"/></svg></button>` : ''}
     </div>
   `).join('');
 }
@@ -1260,35 +1378,43 @@ function filtPlan(f, btn) {
 }
 
 async function initNewPlanning() {
-  eid('np-date').value = new Date().toISOString().split('T')[0];
-  eid('np-name').value = '';
-  eid('np-loc').value  = '';
-  eid('np-role').value = '';
-  eid('np-notes').value= '';
-  eid('np-start').value= '';
-  eid('np-end').value  = '';
-  eid('np-status').value='disponible';
-  const sel = eid('np-mbr');
+  $('np-date').value   = new Date().toISOString().split('T')[0];
+  $('np-name').value   = '';
+  $('np-loc').value    = '';
+  $('np-role').value   = '';
+  $('np-notes').value  = '';
+  $('np-start').value  = '';
+  $('np-end').value    = '';
+  $('np-status').value = 'disponible';
+
+  const sel = $('np-mbr');
   sel.innerHTML = '<option value="">— À définir —</option>';
   const { data = [] } = await sb.from('members').select('id,name').order('name');
-  data.forEach(m => { const o=document.createElement('option'); o.value=m.id; o.textContent=m.name; sel.appendChild(o); });
+  data.forEach(m => {
+    const o = document.createElement('option');
+    o.value = m.id; o.textContent = m.name;
+    sel.appendChild(o);
+  });
 }
 
 async function submitPlanning() {
-  const name = eid('np-name').value.trim();
-  const date = eid('np-date').value;
-  if (!name || !date) { toast('Nom et date requis.','er'); return; }
+  const name = $('np-name').value.trim();
+  const date = $('np-date').value;
+  if (!name || !date) { toast('Nom et date requis.', 'er'); return; }
+
   const { error } = await sb.from('planning').insert({
-    event_name: name, event_date: date,
-    start_time: eid('np-start').value || null,
-    end_time:   eid('np-end').value   || null,
-    location:   eid('np-loc').value.trim()  || null,
-    member_id:  eid('np-mbr').value   || null,
-    role:       eid('np-role').value.trim()  || null,
-    status:     eid('np-status').value,
-    notes:      eid('np-notes').value.trim() || null,
+    event_name: name,
+    event_date: date,
+    start_time: $('np-start').value || null,
+    end_time:   $('np-end').value   || null,
+    location:   $('np-loc').value.trim()   || null,
+    member_id:  $('np-mbr').value          || null,
+    role:       $('np-role').value.trim()  || null,
+    status:     $('np-status').value,
+    notes:      $('np-notes').value.trim() || null,
   });
-  if (error) { toast('Erreur : ' + error.message,'er'); return; }
+
+  if (error) { toast('Erreur : ' + error.message, 'er'); return; }
   toast('Événement ajouté !');
   go('planning');
 }
@@ -1300,85 +1426,98 @@ async function delPlanning(id) {
   renderPlanning();
 }
 
-/* ═══════════════════════════════════════════
-   VEHICLE
-═══════════════════════════════════════════ */
+/* ══ VEHICLE ══ */
 async function renderVehicle() {
-  eid('vstats').innerHTML = '';
-  eid('vlist').innerHTML  = '<div style="padding:40px;text-align:center;font-size:12px;color:var(--faint)">Chargement…</div>';
+  $('vstats').innerHTML = '';
+  $('vlist').innerHTML  = '<div class="empty"><div class="spin" style="margin:0 auto"></div></div>';
 
-  let q = sb.from('vehicle_log').select('*, members(name)').order('date', {ascending:false});
+  let q = sb.from('vehicle_log').select('*, members(name)').order('date', { ascending: false });
   if (!isAdmin()) q = q.eq('driver_id', CU.id);
 
   const { data = [] } = await q;
-  const tkm  = data.reduce((s,r)=>s+(r.km_driven||0), 0);
-  const tfuel = data.reduce((s,r)=>s+(r.fuel_cost||0), 0);
-  const last  = data[0] ? data[0].km_end : null;
+  const tkm   = data.reduce((s, r) => s + (r.km_driven || 0), 0);
+  const tfuel = data.reduce((s, r) => s + (r.fuel_cost  || 0), 0);
+  const last  = data[0]?.km_end ?? null;
 
-  eid('vstats').innerHTML = `
-    <div class="stat"><div class="slbl">Km enregistrés</div><div class="sval">${tkm} km</div><div class="ssub">${data.length} entrée${data.length!==1?'s':''}</div></div>
-    <div class="stat"><div class="slbl">Dernier compteur</div><div class="sval mono">${last||'—'}</div><div class="ssub">km</div></div>
-    ${tfuel>0?`<div class="stat"><div class="slbl">Carburant total</div><div class="sval">${fmt(tfuel)}</div></div>`:''}
+  $('vstats').innerHTML = `
+    <div class="stat"><div class="slbl">Km enregistrés</div><div class="sval">${tkm} km</div><div class="ssub">${data.length} entrée${data.length !== 1 ? 's' : ''}</div></div>
+    <div class="stat"><div class="slbl">Dernier compteur</div><div class="sval mono">${last ?? '—'}</div><div class="ssub">km</div></div>
+    ${tfuel > 0 ? `<div class="stat"><div class="slbl">Carburant total</div><div class="sval">${fmt(tfuel)}</div></div>` : ''}
   `;
 
-  if (!data.length) { eid('vlist').innerHTML='<div class="empty">Aucune entrée.</div>'; return; }
-  eid('vlist').innerHTML = data.map(r => `
+  if (!data.length) { $('vlist').innerHTML = '<div class="empty">Aucune entrée.</div>'; return; }
+
+  $('vlist').innerHTML = data.map(r => `
     <div class="vi">
       <div style="flex:1;min-width:0">
-        <div style="font-weight:500;font-size:14px">${fmtS(r.date)} — <span class="mono">${r.km_driven} km</span></div>
+        <div style="font-weight:600;font-size:14px">${fmtS(r.date)} — <span class="mono">${r.km_driven} km</span></div>
         <div style="font-size:12px;color:var(--muted);margin-top:2px">
           Compteur ${r.km_start} → ${r.km_end}
-          ${r.members?.name?' · '+esc(r.members.name):''}
-          ${r.purpose?' · '+esc(r.purpose):''}
+          ${r.members?.name ? ' · ' + esc(r.members.name) : ''}
+          ${r.purpose       ? ' · ' + esc(r.purpose)       : ''}
         </div>
-        ${r.fuel_cost?`<div style="font-size:11px;color:var(--faint);margin-top:2px">${r.fuel_liters?r.fuel_liters+' L · ':''} ${fmt(r.fuel_cost)}</div>`:''}
-        ${r.notes?`<div style="font-size:11px;color:var(--faint);margin-top:2px">${esc(r.notes)}</div>`:''}
+        ${r.fuel_cost ? `<div style="font-size:11px;color:var(--faint);margin-top:2px">${r.fuel_liters ? r.fuel_liters + ' L · ' : ''}${fmt(r.fuel_cost)}</div>` : ''}
+        ${r.notes ? `<div style="font-size:11px;color:var(--faint);margin-top:2px">${esc(r.notes)}</div>` : ''}
       </div>
-      ${isAdmin()?`<button class="btn bd" style="padding:6px 8px;flex-shrink:0" onclick="delVehicle('${r.id}')"><svg width="13" height="13"><use href="#i-trash"/></svg></button>`:''}
+      ${isAdmin() ? `<button class="btn bd" style="padding:6px 9px;flex-shrink:0" onclick="delVehicle('${r.id}')"><svg width="13" height="13"><use href="#ic-trash"/></svg></button>` : ''}
     </div>
   `).join('');
 }
 
 async function initNewVehicle() {
-  eid('nv-date').value = new Date().toISOString().split('T')[0];
-  eid('fuel-tog').classList.remove('on');
-  eid('fuel-f').style.display = 'none';
-  eid('nv-kc').style.display  = 'none';
-  ['nv-ks','nv-ke','nv-purpose','nv-lit','nv-fc','nv-notes'].forEach(id => { const e=eid(id); if(e) e.value=''; });
-  const sel = eid('nv-drv');
+  $('nv-date').value = new Date().toISOString().split('T')[0];
+  $('fuel-tog').classList.remove('on');
+  $('fuel-f').style.display  = 'none';
+  $('nv-kc').style.display   = 'none';
+  ['nv-ks', 'nv-ke', 'nv-purpose', 'nv-lit', 'nv-fc', 'nv-notes']
+    .forEach(id => { const el = $(id); if (el) el.value = ''; });
+
+  const sel = $('nv-drv');
   sel.innerHTML = '<option value="">— Sélectionner —</option>';
   const { data = [] } = await sb.from('members').select('id,name').order('name');
-  data.forEach(m => { const o=document.createElement('option'); o.value=m.id; o.textContent=m.name; sel.appendChild(o); });
+  data.forEach(m => {
+    const o = document.createElement('option');
+    o.value = m.id; o.textContent = m.name;
+    sel.appendChild(o);
+  });
 }
 
 function calcKm() {
-  const s  = parseInt(eid('nv-ks').value)||0;
-  const e  = parseInt(eid('nv-ke').value)||0;
-  const kc = eid('nv-kc');
-  if (s > 0 && e > s) { kc.textContent=`Soit ${e-s} km parcourus`; kc.style.display='block'; }
-  else kc.style.display='none';
+  const s  = parseInt($('nv-ks').value) || 0;
+  const e  = parseInt($('nv-ke').value) || 0;
+  const kc = $('nv-kc');
+  if (s > 0 && e > s) { kc.textContent = `Soit ${e - s} km parcourus`; kc.style.display = 'block'; }
+  else kc.style.display = 'none';
 }
 
 function togFuel() {
-  eid('fuel-tog').classList.toggle('on');
-  eid('fuel-f').style.display = eid('fuel-tog').classList.contains('on') ? 'block' : 'none';
+  $('fuel-tog').classList.toggle('on');
+  $('fuel-f').style.display = $('fuel-tog').classList.contains('on') ? 'block' : 'none';
 }
 
 async function submitVehicle() {
-  const date = eid('nv-date').value;
-  const ks   = parseInt(eid('nv-ks').value)||0;
-  const ke   = parseInt(eid('nv-ke').value)||0;
-  const drvId = isAdmin() ? (eid('nv-drv').value || CU.id) : CU.id;
-  if (!date || ks <= 0 || ke <= ks) { toast('Date et kilométrages valides requis.','er'); return; }
-  const hasFuel = eid('fuel-tog').classList.contains('on');
+  const date  = $('nv-date').value;
+  const ks    = parseInt($('nv-ks').value) || 0;
+  const ke    = parseInt($('nv-ke').value) || 0;
+  const drvId = isAdmin() ? ($('nv-drv').value || CU.id) : CU.id;
+
+  if (!date || ks <= 0 || ke <= ks) {
+    toast('Date et kilométrages valides requis.', 'er'); return;
+  }
+
+  const hasFuel = $('fuel-tog').classList.contains('on');
   const { error } = await sb.from('vehicle_log').insert({
-    date, driver_id: drvId, km_start: ks, km_end: ke,
-    purpose:     eid('nv-purpose').value.trim() || null,
-    fuel_liters: hasFuel ? (parseFloat(eid('nv-lit').value)||null) : null,
-    fuel_cost:   hasFuel ? (parseFloat(eid('nv-fc').value)||null)  : null,
-    notes:       eid('nv-notes').value.trim() || null,
+    date,
+    driver_id:   drvId,
+    km_start:    ks,
+    km_end:      ke,
+    purpose:     $('nv-purpose').value.trim() || null,
+    fuel_liters: hasFuel ? (parseFloat($('nv-lit').value) || null) : null,
+    fuel_cost:   hasFuel ? (parseFloat($('nv-fc').value)  || null) : null,
+    notes:       $('nv-notes').value.trim() || null,
   });
-  if (error) { toast('Erreur : ' + error.message,'er'); return; }
+
+  if (error) { toast('Erreur : ' + error.message, 'er'); return; }
   toast('Entrée enregistrée !');
   go('vehicle');
 }
@@ -1390,152 +1529,151 @@ async function delVehicle(id) {
   renderVehicle();
 }
 
-/* ═══════════════════════════════════════════
-   STATS
-═══════════════════════════════════════════ */
+/* ══ STATS (admin) ══ */
 async function renderStats() {
   if (!isAdmin()) return;
-  const cont = eid('stats-wrap');
-  cont.innerHTML = '<div style="padding:40px;text-align:center;font-size:12px;color:var(--faint)">Chargement…</div>';
+  const cont = $('stats-wrap');
+  cont.innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto"></div></div>';
 
-  const [{ data:tix=[] }, { data:mbrs=[] }, { data:vlg=[] }] = await Promise.all([
+  const [
+    { data: tix  = [] },
+    { data: mbrs = [] },
+    { data: vlg  = [] },
+  ] = await Promise.all([
     sb.from('tickets').select('member_id,km,total,paid,has_toll,toll'),
     sb.from('members').select('id,name,role'),
     sb.from('vehicle_log').select('km_driven,fuel_cost'),
   ]);
 
-  const rev    = tix.filter(t=>t.paid).reduce((s,t)=>s+(t.total||0),0);
-  const pend   = tix.filter(t=>!t.paid).reduce((s,t)=>s+(t.total||0),0);
-  const tkm    = tix.reduce((s,t)=>s+(t.km||0),0);
-  const tolls  = tix.filter(t=>t.has_toll).reduce((s,t)=>s+(t.toll||0),0);
-  const vkm    = vlg.reduce((s,r)=>s+(r.km_driven||0),0);
-  const vfuel  = vlg.reduce((s,r)=>s+(r.fuel_cost||0),0);
+  const rev   = tix.filter(t => t.paid).reduce((s, t) => s + (t.total || 0), 0);
+  const pend  = tix.filter(t => !t.paid).reduce((s, t) => s + (t.total || 0), 0);
+  const tkm   = tix.reduce((s, t) => s + (t.km || 0), 0);
+  const tolls = tix.filter(t => t.has_toll).reduce((s, t) => s + (t.toll || 0), 0);
+  const vkm   = vlg.reduce((s, r) => s + (r.km_driven || 0), 0);
+  const vfuel = vlg.reduce((s, r) => s + (r.fuel_cost  || 0), 0);
 
-  const ms = mbrs.filter(m=>m.role!=='admin').map(m => {
-    const mt = tix.filter(t=>t.member_id===m.id);
-    return {
-      name: m.name,
-      km:   mt.reduce((s,t)=>s+(t.km||0),0),
-      cnt:  mt.length,
-      due:  mt.filter(t=>!t.paid).reduce((s,t)=>s+(t.total||0),0),
-    };
-  }).sort((a,b)=>b.km-a.km);
+  const ms = mbrs
+    .filter(m => m.role !== 'admin')
+    .map(m => {
+      const mt = tix.filter(t => t.member_id === m.id);
+      return {
+        name: m.name,
+        km:   mt.reduce((s, t) => s + (t.km || 0), 0),
+        cnt:  mt.length,
+        due:  mt.filter(t => !t.paid).reduce((s, t) => s + (t.total || 0), 0),
+      };
+    })
+    .sort((a, b) => b.km - a.km);
+
   const maxKm = ms[0]?.km || 1;
 
   cont.innerHTML = `
-    <h2 style="font-family:var(--serif);font-weight:400;font-size:26px;margin-bottom:18px">Statistiques</h2>
+    <div class="phdr"><h2 class="ptit">Statistiques</h2></div>
     <div class="stats">
-      <div class="stat"><div class="slbl">Encaissé</div><div class="sval" style="color:var(--green)">${fmt(rev)}</div><div class="ssub">${tix.filter(t=>t.paid).length} tickets réglés</div></div>
-      <div class="stat"><div class="slbl">En attente</div><div class="sval" style="color:var(--orange)">${fmt(pend)}</div><div class="ssub">${tix.filter(t=>!t.paid).length} tickets</div></div>
+      <div class="stat"><div class="slbl">Encaissé</div><div class="sval" style="color:var(--accent)">${fmt(rev)}</div><div class="ssub">${tix.filter(t => t.paid).length} tickets réglés</div></div>
+      <div class="stat"><div class="slbl">En attente</div><div class="sval" style="color:var(--warn)">${fmt(pend)}</div><div class="ssub">${tix.filter(t => !t.paid).length} tickets</div></div>
       <div class="stat"><div class="slbl">Km facturés</div><div class="sval">${tkm.toFixed(1)} km</div><div class="ssub">${tix.length} trajets</div></div>
       <div class="stat"><div class="slbl">Péages avancés</div><div class="sval">${fmt(tolls)}</div></div>
       <div class="stat"><div class="slbl">Km véhicule</div><div class="sval">${vkm} km</div><div class="ssub">${vlg.length} entrées</div></div>
-      ${vfuel>0?`<div class="stat"><div class="slbl">Carburant</div><div class="sval">${fmt(vfuel)}</div></div>`:''}
-      <div class="stat"><div class="slbl">Membres</div><div class="sval">${ms.length}</div></div>
+      ${vfuel > 0 ? `<div class="stat"><div class="slbl">Carburant</div><div class="sval">${fmt(vfuel)}</div></div>` : ''}
+      <div class="stat"><div class="slbl">Membres actifs</div><div class="sval">${ms.length}</div></div>
     </div>
     <div class="card">
-      <p style="font-size:11px;font-weight:500;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:14px">Kilomètres par membre</p>
+      <p class="card-title">Kilomètres par membre</p>
       <div class="cbwrap">
-        ${ms.map(m=>`
+        ${ms.map(m => `
           <div class="cbrow">
             <div class="cblbl">${esc(m.name.split(' ')[0])}</div>
-            <div class="cbtrack"><div class="cbfill" style="width:${(m.km/maxKm*100).toFixed(1)}%"></div></div>
+            <div class="cbtrack"><div class="cbfill" style="width:${(m.km / maxKm * 100).toFixed(1)}%"></div></div>
             <div class="cbval">${m.km.toFixed(1)} km</div>
           </div>`).join('')}
       </div>
     </div>
     <div class="card" style="margin-top:12px">
-      <p style="font-size:11px;font-weight:500;letter-spacing:.07em;color:var(--muted);text-transform:uppercase;margin-bottom:12px">Soldes par membre</p>
-      ${ms.map(m=>`
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)">
+      <p class="card-title">Soldes par membre</p>
+      ${ms.map(m => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
           <div>
-            <div style="font-size:14px;font-weight:500">${esc(m.name)}</div>
-            <div style="font-size:11px;color:var(--faint)">${m.cnt} ticket${m.cnt!==1?'s':''}</div>
+            <div style="font-size:14px;font-weight:600">${esc(m.name)}</div>
+            <div style="font-size:11px;color:var(--faint)">${m.cnt} ticket${m.cnt !== 1 ? 's' : ''}</div>
           </div>
-          <span style="font-family:var(--mono);font-size:14px;font-weight:500;color:${m.due>0?'var(--orange)':'var(--green)'}">${m.due>0?fmt(m.due)+' dû':'À jour'}</span>
+          <span style="font-family:var(--mono);font-size:14px;font-weight:500;color:${m.due > 0 ? 'var(--warn)' : 'var(--accent)'}">${m.due > 0 ? fmt(m.due) + ' dû' : 'À jour'}</span>
         </div>`).join('')}
     </div>
   `;
 }
 
-/* ═══════════════════════════════════════════
-   MEMBERS
-═══════════════════════════════════════════ */
+/* ══ MEMBERS (admin) ══ */
 async function renderMembers() {
   if (!isAdmin()) return;
-  eid('mlist').innerHTML = '<div style="padding:40px;text-align:center;font-size:12px;color:var(--faint)">Chargement…</div>';
+  $('mlist').innerHTML = '<div class="empty"><div class="spin" style="margin:0 auto"></div></div>';
 
-  const { data: mbrs = [] } = await sb.from('members')
+  const { data: mbrs = [] } = await sb
+    .from('members')
     .select('id, name, email, phone, role, tickets(total, paid)')
     .order('name');
 
-  eid('mlist').innerHTML = mbrs.map(m => {
-    const due = (m.tickets||[]).filter(t=>!t.paid).reduce((s,t)=>s+(t.total||0),0);
-    const cnt = (m.tickets||[]).length;
+  $('mlist').innerHTML = mbrs.map(m => {
+    const due = (m.tickets || []).filter(t => !t.paid).reduce((s, t) => s + (t.total || 0), 0);
+    const cnt = (m.tickets || []).length;
     return `<div class="mi">
       <div class="mav">${m.name[0].toUpperCase()}</div>
       <div style="flex:1;min-width:0">
-        <div style="font-weight:500;font-size:14px">${esc(m.name)}</div>
+        <div style="font-weight:600;font-size:14px">${esc(m.name)}</div>
         <div style="font-size:11px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-          ${esc(m.email)}${m.phone?' · '+esc(m.phone):''}
+          ${esc(m.email)}${m.phone ? ' · ' + esc(m.phone) : ''}
+          ${m.role === 'admin' ? '<span style="margin-left:6px;font-size:10px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em">Admin</span>' : ''}
         </div>
       </div>
       <div style="flex-shrink:0;text-align:right">
-        <div style="font-family:var(--mono);font-size:13px;font-weight:500;color:${due>0?'var(--orange)':'var(--green)'}">${due>0?fmt(due)+' dû':'À jour'}</div>
-        <div style="font-size:11px;color:var(--faint);margin-top:2px">${cnt} ticket${cnt!==1?'s':''}</div>
+        <div style="font-family:var(--mono);font-size:13px;font-weight:500;color:${due > 0 ? 'var(--warn)' : 'var(--accent)'}">${due > 0 ? fmt(due) + ' dû' : 'À jour'}</div>
+        <div style="font-size:11px;color:var(--faint);margin-top:2px">${cnt} ticket${cnt !== 1 ? 's' : ''}</div>
       </div>
-      ${m.role!=='admin'?`<button class="btn bd" style="padding:7px 9px;flex-shrink:0" onclick="delMember('${m.id}')"><svg width="13" height="13"><use href="#i-trash"/></svg></button>`:''}
+      ${m.role !== 'admin' ? `<button class="btn bd" style="padding:7px 9px;flex-shrink:0" onclick="delMember('${m.id}')"><svg width="13" height="13"><use href="#ic-trash"/></svg></button>` : ''}
     </div>`;
   }).join('');
 }
 
 async function delMember(id) {
-  if (!confirm('Supprimer ce membre et toutes ses données ?')) return;
-  await sb.from('tickets').delete().eq('member_id', id);
-  await sb.from('vehicle_log').delete().eq('driver_id', id);
-  await sb.from('planning').delete().eq('member_id', id);
+  if (!confirm('Supprimer ce membre et toutes ses données associées ?')) return;
+  /* Les cascades ON DELETE CASCADE s'occupent des tickets et vehicle_log */
   const { error } = await sb.from('members').delete().eq('id', id);
-  if (error) { toast('Erreur suppression','er'); return; }
+  if (error) { toast('Erreur suppression : ' + error.message, 'er'); return; }
   toast('Membre supprimé.');
   renderMembers();
 }
 
 async function submitMember() {
-  const name  = eid('nm-name').value.trim();
-  const email = eid('nm-email').value.trim();
-  const phone = eid('nm-phone').value.trim();
-  const pwd   = eid('nm-pwd').value.trim() || 'Membre2024!';
-  const errEl = eid('nmerr');
+  const name  = $('nm-name').value.trim();
+  const email = $('nm-email').value.trim();
+  const phone = $('nm-phone').value.trim();
+  const pwd   = $('nm-pwd').value.trim() || 'Membre2024!';
+  const errEl = $('nmerr');
   errEl.classList.remove('on');
 
-  if (!name || !email) { errEl.textContent='Nom et email requis.'; errEl.classList.add('on'); return; }
-  if (pwd.length < 8)  { errEl.textContent='Mot de passe trop court (8 caractères min).'; errEl.classList.add('on'); return; }
+  if (!name || !email)  { errEl.textContent = 'Nom et e-mail requis.'; errEl.classList.add('on'); return; }
+  if (pwd.length < 8)   { errEl.textContent = 'Mot de passe trop court (8 caractères min.).'; errEl.classList.add('on'); return; }
 
-  // Supabase Auth signUp
   const { data: authData, error: authErr } = await sb.auth.signUp({
-    email, password: pwd,
-    options: { data: { name, role: 'member' } }
+    email,
+    password: pwd,
+    options: { data: { name, role: 'member' } },
   });
 
   if (authErr) { errEl.textContent = authErr.message; errEl.classList.add('on'); return; }
 
-  // Le trigger crée automatiquement le profil dans members.
-  // On met à jour le téléphone si fourni.
-  if (phone && authData.user) {
-    await sb.from('members')
-      .update({ phone })
-      .eq('auth_id', authData.user.id);
+  /* Mettre à jour le téléphone si fourni (après que le trigger ait créé le profil) */
+  if (phone && authData?.user) {
+    await sb.from('members').update({ phone }).eq('auth_id', authData.user.id);
   }
 
-  ['nm-name','nm-email','nm-phone'].forEach(id => eid(id).value='');
-  eid('nm-pwd').value = 'Membre2024!';
-  toast('Membre créé ! Il doit confirmer son e-mail avant de se connecter.');
+  ['nm-name', 'nm-email', 'nm-phone'].forEach(id => $(id).value = '');
+  $('nm-pwd').value = 'Membre2024!';
+  toast('Membre créé ! Il devra confirmer son e-mail avant de se connecter.');
   go('members');
 }
 
-/* ═══════════════════════════════════════════
-   BOOT
-═══════════════════════════════════════════ */
+/* ══ BOOT ══ */
 boot();
 </script>
 </body>
