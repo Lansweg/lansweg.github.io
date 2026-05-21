@@ -41,8 +41,10 @@
   <div class="topbar-center" id="searchBar">
     <div class="search-wrap" id="geocoderWrap">
       <span class="search-icon">⌕</span>
-      <input type="text" class="search-input" placeholder="Chercher un lieu…" id="searchInput" readonly />
+      <input type="text" class="search-input" placeholder="Chercher un lieu…" id="searchInput" autocomplete="off" />
+      <button class="search-clear" id="searchClear" style="display:none">✕</button>
     </div>
+    <div class="search-results glass" id="searchResults" style="display:none"></div>
   </div>
 
   <div class="topbar-right">
@@ -262,6 +264,19 @@
   </div>
 </div>
 
+<!-- ========== PANEL NOTIFICATIONS ========== -->
+<div class="notif-panel glass" id="notifPanel" style="display:none">
+  <div class="notif-header">
+    <h3>Notifications</h3>
+    <button class="notif-clear-all" id="notifClearAll">Tout effacer</button>
+  </div>
+  <div class="notif-list" id="notifList"></div>
+  <div class="notif-empty" id="notifEmpty" style="display:none">
+    <span>🔕</span>
+    <p>Aucune notification</p>
+  </div>
+</div>
+
 <!-- ========== PANEL PROFIL ========== -->
 <div class="profile-panel glass" id="profilePanel" style="display:none">
   <div class="profile-header">
@@ -331,6 +346,27 @@
       <div class="tp-row"><span>Coût essence / 100km</span><span class="tp-val" id="tpEssence">17.25 €</span></div>
     </div>
     <button class="btn-primary" id="btnSaveTarifs">Sauvegarder</button>
+  </div>
+</div>
+
+<!-- ========== MODAL SQL SETUP ========== -->
+<div class="modal-overlay" id="modalSQL" style="display:none">
+  <div class="modal glass" style="max-width:520px">
+    <div class="modal-header">
+      <h3>🗄️ Configuration Supabase</h3>
+      <button class="sheet-close" data-modal="modalSQL">✕</button>
+    </div>
+    <p style="font-size:13px;color:var(--text-2);margin-bottom:14px">
+      La table <code>courses</code> n'existe pas encore dans ta base. Exécute ce SQL dans l'éditeur Supabase → SQL Editor :
+    </p>
+    <div class="sql-block" id="sqlBlock">
+      <button class="sql-copy" id="btnCopySQL">📋 Copier</button>
+      <pre id="sqlContent"></pre>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:10px">
+      <a href="https://supabase.com/dashboard" target="_blank" class="btn-secondary" style="flex:1;text-align:center;text-decoration:none;padding:12px;display:block;border-radius:12px;border:1.5px solid var(--border);font-weight:600;font-size:14px">Ouvrir Supabase →</a>
+      <button class="btn-primary" style="flex:1" data-modal="modalSQL">Fermer</button>
+    </div>
   </div>
 </div>
 
