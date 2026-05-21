@@ -1,370 +1,239 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
   <title>Mobilité Littoral & SAM</title>
-
-  <!-- Mapbox -->
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet" />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet"/>
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-
-  <!-- Mapbox Geocoder -->
-  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.3/mapbox-gl-geocoder.css" />
-  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.3/mapbox-gl-geocoder.min.js"></script>
-
-  <!-- jsPDF for ticket export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
-<!-- ========== MAP CONTAINER ========== -->
 <div id="map"></div>
+<div class="progress-bar" id="progressBar"></div>
 
-<!-- ========== TOP BAR ========== -->
+<!-- TOPBAR -->
 <div class="topbar glass">
-  <div class="topbar-left">
-    <div class="logo">
-      <div class="logo-icon">🌊</div>
-      <div class="logo-text">
-        <span class="logo-main">Mobilité Littoral</span>
-        <span class="logo-sub">& SAM</span>
-      </div>
-    </div>
+  <div class="logo">
+    <div class="logo-icon">🌊</div>
+    <span class="logo-text">Mobilité Littoral</span>
   </div>
-
-  <div class="topbar-center" id="searchBar">
-    <div class="search-wrap" id="geocoderWrap">
-      <span class="search-icon">⌕</span>
-      <input type="text" class="search-input" placeholder="Chercher un lieu…" id="searchInput" autocomplete="off" />
-      <button class="search-clear" id="searchClear" style="display:none">✕</button>
-    </div>
-    <div class="search-results glass" id="searchResults" style="display:none"></div>
+  <div class="search-wrap" id="searchWrap">
+    <span class="search-ico">⌕</span>
+    <input id="searchInput" class="search-inp" placeholder="Chercher un lieu…" autocomplete="off"/>
+    <button class="search-x" id="searchX" style="display:none">✕</button>
+    <div class="search-drop glass" id="searchDrop" style="display:none"></div>
   </div>
-
-  <div class="topbar-right">
-    <button class="icon-btn" id="notifBtn" title="Notifications">
-      <span>🔔</span>
-      <span class="badge" id="notifBadge">2</span>
+  <div class="topbar-actions">
+    <button class="tb-btn" id="btnNotif">
+      🔔<span class="dot-badge" id="notifDot" style="display:none"></span>
     </button>
-    <button class="avatar-btn" id="profileToggle">
-      <img src="https://api.dicebear.com/7.x/thumbs/svg?seed=sam&backgroundColor=2563eb" alt="profil" />
+    <button class="tb-btn" id="btnProfile">
+      <img src="https://api.dicebear.com/7.x/thumbs/svg?seed=sam&backgroundColor=2563eb" class="avatar-img"/>
     </button>
   </div>
 </div>
 
-<!-- ========== FLOATING BUBBLES ========== -->
-<div class="bubbles-container" id="bubblesContainer">
+<!-- BUBBLES NAV -->
+<nav class="bubbles glass" id="bubblesNav">
+  <button class="bub" id="bNew"   data-tip="Nouvelle course">＋</button>
+  <button class="bub" id="bRides" data-tip="Courses">🚗</button>
+  <button class="bub" id="bVol"   data-tip="Bénévoles">👥</button>
+  <button class="bub" id="bHist"  data-tip="Historique">📋</button>
+  <button class="bub" id="bStats" data-tip="Statistiques">📊</button>
+  <button class="bub bub-sam" id="bSam" data-tip="SAM 🍺">🍺</button>
+</nav>
 
-  <button class="bubble bubble-new" id="bubbleNew" title="Nouvelle course">
-    <span class="bubble-icon">＋</span>
-  </button>
+<!-- SHEET OVERLAY -->
+<div class="sheet-bg" id="sheetBg"></div>
 
-  <button class="bubble bubble-courses" id="bubbleCourses" title="Courses en cours">
-    <span class="bubble-icon">🚗</span>
-    <span class="bubble-badge">3</span>
-  </button>
-
-  <button class="bubble bubble-benevoles" id="bubbleBenevoles" title="Bénévoles">
-    <span class="bubble-icon">👥</span>
-  </button>
-
-  <button class="bubble bubble-historique" id="bubbleHistorique" title="Historique">
-    <span class="bubble-icon">📋</span>
-  </button>
-
-  <button class="bubble bubble-stats" id="bubbleStats" title="Statistiques">
-    <span class="bubble-icon">📊</span>
-  </button>
-
-  <button class="bubble bubble-sam" id="bubbleSam" title="Mode SAM">
-    <span class="bubble-icon">🍺</span>
-  </button>
-
-</div>
-
-<!-- ========== BOTTOM SHEET: NOUVELLE COURSE ========== -->
-<div class="sheet" id="sheetNewCourse">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
+<!-- SHEET: NOUVELLE COURSE -->
+<div class="sheet" id="sheetNew">
+  <div class="sheet-pill"></div>
+  <div class="sheet-head">
     <h2>Nouvelle course</h2>
-    <button class="sheet-close" data-close="sheetNewCourse">✕</button>
+    <button class="btn-close" data-sheet="sheetNew">✕</button>
   </div>
-
-  <div class="type-pills">
-    <button class="pill active" data-type="beneficiaire">Bénéficiaire</button>
-    <button class="pill" data-type="medical">Médical</button>
-    <button class="pill" data-type="vacances">Vacances</button>
-    <button class="pill" data-type="sam">SAM 🍺</button>
+  <div class="type-pills" id="typePills">
+    <button class="pill active" data-type="beneficiaire">🚗 Bénéficiaire</button>
+    <button class="pill" data-type="medical">🏥 Médical</button>
+    <button class="pill" data-type="vacances">🌴 Vacances</button>
+    <button class="pill" data-type="sam">🍺 SAM</button>
   </div>
-
-  <div class="field-group">
-    <label>Bénéficiaire</label>
-    <input type="text" id="beneficiaireName" placeholder="Nom Prénom" class="input-field" />
+  <label class="lbl">Bénéficiaire</label>
+  <input class="inp" id="inpNom" placeholder="Nom Prénom"/>
+  <label class="lbl">Téléphone</label>
+  <input class="inp" id="inpTel" placeholder="06 00 00 00 00" type="tel"/>
+  <label class="lbl">Départ</label>
+  <div class="addr-row">
+    <span class="dot-dep"></span>
+    <input class="inp" id="inpDep" placeholder="Adresse de départ"/>
+    <button class="btn-loc" id="btnLoc">◎</button>
   </div>
-
-  <div class="field-group">
-    <label>Départ</label>
-    <div class="addr-row">
-      <span class="addr-dot dep"></span>
-      <input type="text" id="addrDepart" placeholder="Adresse de départ" class="input-field addr-input" />
-      <button class="locate-btn" id="locateBtn" title="Ma position">◎</button>
-    </div>
+  <label class="lbl">Arrivée</label>
+  <div class="addr-row">
+    <span class="dot-arr"></span>
+    <input class="inp" id="inpArr" placeholder="Adresse d'arrivée"/>
   </div>
+  <button class="btn-calc" id="btnCalc">Calculer le trajet →</button>
 
-  <div class="field-group">
-    <label>Arrivée</label>
-    <div class="addr-row">
-      <span class="addr-dot arr"></span>
-      <input type="text" id="addrArrivee" placeholder="Adresse d'arrivée" class="input-field addr-input" />
-    </div>
-  </div>
-
-  <button class="btn-calc" id="btnCalculer">Calculer le trajet →</button>
-
-  <div class="route-result" id="routeResult" style="display:none">
+  <div id="routeResult" style="display:none">
     <div class="route-cards">
-      <div class="route-card">
-        <span class="rc-icon">📍</span>
-        <span class="rc-val" id="rcKm">—</span>
-        <span class="rc-label">kilomètres</span>
-      </div>
-      <div class="route-card">
-        <span class="rc-icon">⏱</span>
-        <span class="rc-val" id="rcTemps">—</span>
-        <span class="rc-label">minutes</span>
-      </div>
-      <div class="route-card highlight">
-        <span class="rc-icon">💶</span>
-        <span class="rc-val" id="rcPrixBenef">—</span>
-        <span class="rc-label">bénéficiaire</span>
-      </div>
-      <div class="route-card">
-        <span class="rc-icon">⛽</span>
-        <span class="rc-val" id="rcEssence">—</span>
-        <span class="rc-label">essence estimé</span>
-      </div>
+      <div class="rc"><span class="rc-ico">📍</span><b id="rcKm">—</b><small>km</small></div>
+      <div class="rc"><span class="rc-ico">⏱</span><b id="rcMin">—</b><small>min</small></div>
+      <div class="rc rc-hl"><span class="rc-ico">💶</span><b id="rcPrix">—</b><small>bénéf.</small></div>
+      <div class="rc"><span class="rc-ico">⛽</span><b id="rcEss">—</b><small>essence</small></div>
     </div>
-
-    <div class="tarif-detail" id="tarifDetail"></div>
-
-    <div class="field-group">
-      <label>Bénévole assigné</label>
-      <select class="input-field" id="benevoleSelect">
-        <option value="">— Choisir un bénévole —</option>
-        <option value="1">Marie Dupont</option>
-        <option value="2">Jean Martin</option>
-        <option value="3">Sophie Bernard</option>
-      </select>
-    </div>
-
-    <div class="field-group">
-      <label>Date & heure</label>
-      <input type="datetime-local" class="input-field" id="dateHeure" />
-    </div>
-
-    <div class="field-group">
-      <label>Notes</label>
-      <textarea class="input-field" id="courseNotes" rows="2" placeholder="Informations complémentaires…"></textarea>
-    </div>
-
+    <div class="tarif-info" id="tarifInfo"></div>
+    <label class="lbl">Bénévole</label>
+    <select class="inp" id="selBenv">
+      <option value="">— Choisir —</option>
+    </select>
+    <label class="lbl">Date & heure</label>
+    <input class="inp" id="inpDate" type="datetime-local"/>
+    <label class="lbl">Notes</label>
+    <textarea class="inp" id="inpNotes" rows="2" placeholder="Informations complémentaires…"></textarea>
     <div class="btn-row">
-      <button class="btn-secondary" id="btnTicket">🎫 Ticket PDF</button>
-      <button class="btn-primary" id="btnSauvegarder">Enregistrer la course</button>
+      <button class="btn-sec" id="btnPDF">🎫 Ticket PDF</button>
+      <button class="btn-pri" id="btnSave">Enregistrer</button>
     </div>
   </div>
 </div>
 
-<!-- ========== BOTTOM SHEET: COURSES EN COURS ========== -->
-<div class="sheet" id="sheetCourses">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <h2>Courses en cours <span class="count-badge">3</span></h2>
-    <button class="sheet-close" data-close="sheetCourses">✕</button>
+<!-- SHEET: COURSES EN COURS -->
+<div class="sheet" id="sheetRides">
+  <div class="sheet-pill"></div>
+  <div class="sheet-head">
+    <h2>Courses en cours</h2>
+    <button class="btn-close" data-sheet="sheetRides">✕</button>
   </div>
-  <div class="course-list" id="courseList">
-    <!-- populated by JS -->
-  </div>
+  <div id="listRides" class="item-list"></div>
 </div>
 
-<!-- ========== BOTTOM SHEET: BÉNÉVOLES ========== -->
-<div class="sheet" id="sheetBenevoles">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
+<!-- SHEET: BÉNÉVOLES -->
+<div class="sheet" id="sheetVol">
+  <div class="sheet-pill"></div>
+  <div class="sheet-head">
     <h2>Bénévoles</h2>
-    <button class="sheet-close" data-close="sheetBenevoles">✕</button>
+    <button class="btn-close" data-sheet="sheetVol">✕</button>
   </div>
-  <div class="benevoles-grid" id="benevolesList">
-    <!-- populated by JS -->
-  </div>
-  <button class="btn-primary mt16" id="btnAddBenevole">+ Ajouter un bénévole</button>
+  <div id="listVol" class="bv-grid"></div>
+  <button class="btn-pri mt12" id="btnAddVol">+ Ajouter un bénévole</button>
 </div>
 
-<!-- ========== BOTTOM SHEET: HISTORIQUE ========== -->
-<div class="sheet" id="sheetHistorique">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <h2>Historique des courses</h2>
-    <button class="sheet-close" data-close="sheetHistorique">✕</button>
+<!-- SHEET: HISTORIQUE -->
+<div class="sheet" id="sheetHist">
+  <div class="sheet-pill"></div>
+  <div class="sheet-head">
+    <h2>Historique</h2>
+    <button class="btn-close" data-sheet="sheetHist">✕</button>
   </div>
-  <div class="histo-filters">
-    <button class="pill active" data-histo="tout">Tout</button>
-    <button class="pill" data-histo="semaine">Cette semaine</button>
-    <button class="pill" data-histo="mois">Ce mois</button>
-    <button class="pill" data-histo="sam">SAM</button>
+  <div class="type-pills" id="histoFilter">
+    <button class="pill active" data-hf="tout">Tout</button>
+    <button class="pill" data-hf="semaine">Semaine</button>
+    <button class="pill" data-hf="mois">Mois</button>
+    <button class="pill" data-hf="sam">SAM</button>
   </div>
-  <div class="histo-list" id="histoList">
-    <!-- populated by JS -->
-  </div>
+  <div id="listHist" class="item-list"></div>
 </div>
 
-<!-- ========== BOTTOM SHEET: STATS ========== -->
+<!-- SHEET: STATS -->
 <div class="sheet" id="sheetStats">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <h2>Statistiques</h2>
-    <button class="sheet-close" data-close="sheetStats">✕</button>
+  <div class="sheet-pill"></div>
+  <div class="sheet-head">
+    <h2>Statistiques du mois</h2>
+    <button class="btn-close" data-sheet="sheetStats">✕</button>
   </div>
-  <div class="stats-grid">
-    <div class="stat-card">
-      <span class="stat-val" id="statTotalCourses">47</span>
-      <span class="stat-label">Courses ce mois</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-val" id="statTotalKm">1 240</span>
-      <span class="stat-label">Kilomètres</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-val" id="statTotalBenef">24</span>
-      <span class="stat-label">Bénéficiaires</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-val" id="statSAM">8</span>
-      <span class="stat-label">Courses SAM</span>
-    </div>
-    <div class="stat-card full">
-      <span class="stat-label">Recettes bénéficiaires (mois)</span>
-      <span class="stat-val green" id="statRecettes">930 €</span>
-    </div>
-    <div class="stat-card full">
-      <span class="stat-label">Coût essence estimé (mois)</span>
-      <span class="stat-val red" id="statEssence">−428 €</span>
-    </div>
-  </div>
+  <div class="stats-grid" id="statsGrid"></div>
 </div>
 
-<!-- ========== PANEL NOTIFICATIONS ========== -->
-<div class="notif-panel glass" id="notifPanel" style="display:none">
-  <div class="notif-header">
-    <h3>Notifications</h3>
-    <button class="notif-clear-all" id="notifClearAll">Tout effacer</button>
+<!-- PANEL NOTIFICATIONS -->
+<div class="float-panel glass" id="panelNotif" style="display:none">
+  <div class="fp-head">
+    <span>Notifications</span>
+    <button class="fp-clear" id="btnClearNotif">Effacer tout</button>
   </div>
-  <div class="notif-list" id="notifList"></div>
-  <div class="notif-empty" id="notifEmpty" style="display:none">
-    <span>🔕</span>
-    <p>Aucune notification</p>
-  </div>
+  <div id="notifList" class="notif-list"></div>
 </div>
 
-<!-- ========== PANEL PROFIL ========== -->
-<div class="profile-panel glass" id="profilePanel" style="display:none">
-  <div class="profile-header">
-    <img src="https://api.dicebear.com/7.x/thumbs/svg?seed=sam&backgroundColor=2563eb" class="profile-avatar" />
+<!-- PANEL PROFIL -->
+<div class="float-panel glass" id="panelProfile" style="display:none">
+  <div class="profile-top">
+    <img src="https://api.dicebear.com/7.x/thumbs/svg?seed=sam&backgroundColor=2563eb" class="profile-av"/>
     <div>
-      <div class="profile-name" id="profileName">Admin Association</div>
+      <div class="profile-name">Admin Association</div>
       <div class="profile-role">Coordinateur</div>
     </div>
   </div>
-  <div class="profile-menu">
-    <button class="pmenu-item">⚙️ Paramètres</button>
-    <button class="pmenu-item" id="btnTarifs">💶 Tarifs & Carburant</button>
-    <button class="pmenu-item">📤 Exporter données</button>
-    <button class="pmenu-item" id="btnConfig">🔑 Configuration API</button>
-    <button class="pmenu-item danger">🚪 Déconnexion</button>
-  </div>
+  <button class="pm-item" id="pmTarifs">💶 Tarifs &amp; Carburant</button>
+  <button class="pm-item" id="pmConfig">⚙️ Configuration</button>
+  <button class="pm-item pm-danger">🚪 Déconnexion</button>
 </div>
 
-<!-- ========== MODAL CONFIG ========== -->
-<div class="modal-overlay" id="modalConfig" style="display:none">
+<!-- MODAL TARIFS -->
+<div class="modal-bg" id="modalTarifs" style="display:none">
   <div class="modal glass">
-    <div class="modal-header">
-      <h3>Configuration</h3>
-      <button class="sheet-close" data-modal="modalConfig">✕</button>
-    </div>
-    <div class="field-group">
-      <label>Token Mapbox</label>
-      <input type="text" class="input-field" id="mapboxToken" placeholder="pk.eyJ1…" />
-    </div>
-    <div class="field-group">
-      <label>Supabase URL</label>
-      <input type="text" class="input-field" id="supabaseUrl" placeholder="https://xxx.supabase.co" />
-    </div>
-    <div class="field-group">
-      <label>Supabase Anon Key</label>
-      <input type="text" class="input-field" id="supabaseKey" placeholder="eyJh…" />
-    </div>
-    <button class="btn-primary" id="btnSaveConfig">Sauvegarder</button>
+    <div class="modal-head"><h3>💶 Tarifs &amp; Carburant</h3><button class="btn-close" data-modal="modalTarifs">✕</button></div>
+    <label class="lbl">Tarif base (€/km)</label>
+    <input class="inp" id="mTarifBase" type="number" step="0.01" value="0.55"/>
+    <label class="lbl">Supplément carburant (€/km)</label>
+    <input class="inp" id="mTarifSuppl" type="number" step="0.01" value="0.20"/>
+    <label class="lbl">Prix carburant actuel (€/L)</label>
+    <input class="inp" id="mCarburant" type="number" step="0.01" value="2.30"/>
+    <label class="lbl">Consommation (L/100km)</label>
+    <input class="inp" id="mConso" type="number" step="0.1" value="7.5"/>
+    <div class="tarif-preview" id="tarifPreview"></div>
+    <button class="btn-pri" id="btnSaveTarifs">Sauvegarder</button>
   </div>
 </div>
 
-<!-- ========== MODAL TARIFS ========== -->
-<div class="modal-overlay" id="modalTarifs" style="display:none">
+<!-- MODAL CONFIG -->
+<div class="modal-bg" id="modalConfig" style="display:none">
   <div class="modal glass">
-    <div class="modal-header">
-      <h3>💶 Tarifs & Carburant</h3>
-      <button class="sheet-close" data-modal="modalTarifs">✕</button>
-    </div>
-    <div class="field-group">
-      <label>Tarif de base (€/km)</label>
-      <input type="number" class="input-field" id="tarifBase" value="0.55" step="0.01" />
-    </div>
-    <div class="field-group">
-      <label>Supplément carburant (€/km)</label>
-      <input type="number" class="input-field" id="tarifSuppl" value="0.20" step="0.01" />
-    </div>
-    <div class="field-group">
-      <label>Prix carburant actuel (€/L)</label>
-      <input type="number" class="input-field" id="prixCarburant" value="2.30" step="0.01" />
-    </div>
-    <div class="field-group">
-      <label>Consommation véhicule (L/100km)</label>
-      <input type="number" class="input-field" id="consommation" value="7.5" step="0.1" />
-    </div>
-    <div class="tarif-preview">
-      <div class="tp-row"><span>Tarif total bénéficiaire</span><span class="tp-val" id="tpTotal">0.75 €/km</span></div>
-      <div class="tp-row"><span>Coût essence / 100km</span><span class="tp-val" id="tpEssence">17.25 €</span></div>
-    </div>
-    <button class="btn-primary" id="btnSaveTarifs">Sauvegarder</button>
+    <div class="modal-head"><h3>⚙️ Configuration</h3><button class="btn-close" data-modal="modalConfig">✕</button></div>
+    <label class="lbl">Token Mapbox</label>
+    <input class="inp" id="cfgMapbox" placeholder="pk.eyJ1…"/>
+    <label class="lbl">Supabase URL</label>
+    <input class="inp" id="cfgSbUrl" placeholder="https://xxx.supabase.co"/>
+    <label class="lbl">Supabase Key</label>
+    <input class="inp" id="cfgSbKey" placeholder="sb_publishable_…"/>
+    <button class="btn-pri" id="btnSaveConfig">Sauvegarder</button>
   </div>
 </div>
 
-<!-- ========== MODAL SQL SETUP ========== -->
-<div class="modal-overlay" id="modalSQL" style="display:none">
-  <div class="modal glass" style="max-width:520px">
-    <div class="modal-header">
-      <h3>🗄️ Configuration Supabase</h3>
-      <button class="sheet-close" data-modal="modalSQL">✕</button>
+<!-- MODAL SQL -->
+<div class="modal-bg" id="modalSQL" style="display:none">
+  <div class="modal glass" style="max-width:500px">
+    <div class="modal-head"><h3>🗄️ Setup base de données</h3><button class="btn-close" data-modal="modalSQL">✕</button></div>
+    <p style="font-size:.8rem;color:var(--t2);margin-bottom:.75rem">Copie ce SQL dans <strong>Supabase → SQL Editor → Run</strong> :</p>
+    <div class="sql-box">
+      <button class="sql-copy-btn" id="btnCopySQL">📋 Copier</button>
+      <pre id="sqlContent" style="font-size:.7rem;color:#a8dadc;white-space:pre;line-height:1.6"></pre>
     </div>
-    <p style="font-size:13px;color:var(--text-2);margin-bottom:14px">
-      La table <code>courses</code> n'existe pas encore dans ta base. Exécute ce SQL dans l'éditeur Supabase → SQL Editor :
-    </p>
-    <div class="sql-block" id="sqlBlock">
-      <button class="sql-copy" id="btnCopySQL">📋 Copier</button>
-      <pre id="sqlContent"></pre>
-    </div>
-    <div style="margin-top:14px;display:flex;gap:10px">
-      <a href="https://supabase.com/dashboard" target="_blank" class="btn-secondary" style="flex:1;text-align:center;text-decoration:none;padding:12px;display:block;border-radius:12px;border:1.5px solid var(--border);font-weight:600;font-size:14px">Ouvrir Supabase →</a>
-      <button class="btn-primary" style="flex:1" data-modal="modalSQL">Fermer</button>
+    <div style="display:flex;gap:.5rem;margin-top:.75rem">
+      <a href="https://supabase.com/dashboard/project/rixsenvshgconhvgevix/sql/new" target="_blank" class="btn-sec" style="flex:1;text-align:center;text-decoration:none;padding:.75rem;border-radius:.75rem;display:block;font-weight:600;font-size:.875rem;border:1.5px solid var(--border)">Ouvrir SQL Editor →</a>
+      <button class="btn-pri" style="flex:1" data-modal="modalSQL">Fermer</button>
     </div>
   </div>
 </div>
 
-<!-- ========== TOAST ========== -->
+<!-- MODAL AJOUTER BÉNÉVOLE -->
+<div class="modal-bg" id="modalAddVol" style="display:none">
+  <div class="modal glass">
+    <div class="modal-head"><h3>👤 Nouveau bénévole</h3><button class="btn-close" data-modal="modalAddVol">✕</button></div>
+    <label class="lbl">Nom Prénom</label>
+    <input class="inp" id="volNom" placeholder="Marie Dupont"/>
+    <label class="lbl">Téléphone</label>
+    <input class="inp" id="volTel" placeholder="06 00 00 00 00" type="tel"/>
+    <label class="lbl">Email</label>
+    <input class="inp" id="volEmail" placeholder="marie@email.fr" type="email"/>
+    <button class="btn-pri" id="btnSaveVol">Ajouter</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="app.js"></script>
