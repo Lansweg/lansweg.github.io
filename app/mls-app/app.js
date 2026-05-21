@@ -445,96 +445,9 @@ function showProgress(show) {
   bar.style.display = show ? 'block' : 'none';
 }
 
-// ============================================================
-// AUTOCOMPLETE ADDRESSES
-// ============================================================
-function setupAutocomplete(inputId) {
-  const input = qs('#' + inputId);
-  if (!input) return;
-
-  let dropdown = null;
-  let debounceTimer;
-
-  input.addEventListener('input', () => {
-    clearTimeout(debounceTimer);
-    const q = input.value.trim();
-    if (q.length < 3) { removeDropdown(); return; }
-
-    debounceTimer = setTimeout(async () => {
-      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?country=fr&types=address,place,poi&access_token=${CONFIG.mapboxToken}&limit=5`;
-      try {
-        const res  = await fetch(url);
-        const data = await res.json();
-        showDropdown(input, data.features || []);
-      } catch (e) {}
-    }, 300);
-  });
-
-  function showDropdown(inp, features) {
-    removeDropdown();
-    if (!features.length) return;
-
-    dropdown = document.createElement('div');
-    dropdown.className = 'addr-dropdown glass';
-    dropdown.style.cssText = `
-      position:absolute; z-index:9999;
-      background:white; border-radius:12px; overflow:hidden;
-      box-shadow:0 8px 32px rgba(0,0,0,0.15); min-width:280px;
-      border:1px solid rgba(0,0,0,0.08);
-    `;
-
-    features.forEach(f => {
-      const item = document.createElement('div');
-      item.style.cssText = 'padding:10px 14px; cursor:pointer; font-size:14px; border-bottom:1px solid rgba(0,0,0,0.05);';
-      item.textContent = f.place_name;
-      item.onmousedown = (e) => {
-        e.preventDefault();
-        inp.value = f.place_name;
-        removeDropdown();
-      };
-      item.onmouseenter = () => item.style.background = 'rgba(0,113,227,0.06)';
-      item.onmouseleave = () => item.style.background = '';
-      dropdown.appendChild(item);
-    });
-
-    // Position
-    const rect = inp.getBoundingClientRect();
-    dropdown.style.position = 'fixed';
-    dropdown.style.top = (rect.bottom + 4) + 'px';
-    dropdown.style.left = rect.left + 'px';
-    dropdown.style.width = rect.width + 'px';
-
-    document.body.appendChild(dropdown);
-  }
-
-  function removeDropdown() {
-    if (dropdown) { dropdown.remove(); dropdown = null; }
-  }
-
-  input.addEventListener('blur', () => setTimeout(removeDropdown, 150));
-}
 
 // ============================================================
-// TARIFS MODAL
-// ============================================================
-function updateTarifPreview() {
-  const base  = parseFloat(qs('#tarifBase').value)  || 0.55;
-  const suppl = parseFloat(qs('#tarifSuppl').value) || 0.20;
-  const prix  = parseFloat(qs('#prixCarburant').value) || 2.30;
-  const conso = parseFloat(qs('#consommation').value)  || 7.5;
-
-  qs('#tpTotal').textContent   = (base + suppl).toFixed(2) + ' €/km';
-  qs('#tpEssence').textContent = ((conso / 100) * prix * 100).toFixed(2) + ' €';
-}
-
-// ============================================================
-// HELPER
-// ============================================================
-const qs = (sel, ctx = document) => ctx.querySelector(sel);
-const qsa = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
-
-// ============================================================
-// EVENTS — BUBBLES
+// TOAST & PROGRESS
 // ============================================================
 qs('#bubbleNew').addEventListener('click', () => {
   openSheet('sheetNewCourse');
@@ -784,6 +697,549 @@ qs('#btnSauvegarder').addEventListener('click', async () => {
 });
 
 // ============================================================
+// SEARCH BAR (topbar — chercher un lieu sur la carte)
+// ============================================================
+const SQL_SETUP = `-- Exécute ce script dans Supabase > SQL Editor
+
+CREATE TABLE IF NOT EXISTS public.courses (
+  id            bigserial PRIMARY KEY,
+  nom           text NOT NULL,
+  type          text DEFAULT 'course',
+  depart        text,
+  arrivee       text,
+  km            numeric(8,2),
+  duree_min     integer,
+  prix_benef    numeric(8,2),
+  cout_essence  numeric(8,2),
+  benevole_id   text,
+  date_heure    timestamptz,
+  notes         text,
+  statut        text DEFAULT 'attente',
+  created_at    timestamptz DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS public.benevoles (
+  id          bigserial PRIMARY KEY,
+  nom         text NOT NULL,
+  telephone   text,
+  statut      text DEFAULT 'dispo',
+  created_at  timestamptz DEFAULT now()
+);
+
+-- Active Row Level Security (recommandé)
+ALTER TABLE public.courses  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.benevoles ENABLE ROW LEVEL SECURITY;
+
+-- Policies permissives (à affiner selon tes besoins)
+CREATE POLICY "Accès total" ON public.courses  FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Accès total" ON public.benevoles FOR ALL USING (true) WITH CHECK (true);`;
+
+function initSearchBar() {
+  const input   = qs('#searchInput');
+  const results = qs('#searchResults');
+  const clearBtn = qs('#searchClear');
+  let debounce;
+  let searchMarker = null;
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim();
+    clearBtn.style.display = q ? 'flex' : 'none';
+
+    clearTimeout(debounce);
+    if (q.length < 2) { results.style.display = 'none'; return; }
+
+    debounce = setTimeout(async () => {
+      try {
+        const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?country=fr&types=address,place,poi,locality&access_token=${CONFIG.mapboxToken}&limit=6`;
+        const res  = await fetch(url);
+        const data = await res.json();
+        const features = data.features || [];
+
+        if (!features.length) { results.style.display = 'none'; return; }
+
+        results.innerHTML = features.map(f => {
+          const parts  = f.place_name.split(', ');
+          const main   = parts[0];
+          const sub    = parts.slice(1).join(', ');
+          const icon   = f.place_type?.[0] === 'poi' ? '📍' : f.place_type?.[0] === 'address' ? '🏠' : '🏙️';
+          return `<div class="search-result-item" data-lon="${f.center[0]}" data-lat="${f.center[1]}" data-name="${f.place_name.replace(/"/g,'')}">
+            <span class="sri-icon">${icon}</span>
+            <div><div class="sri-main">${main}</div><div class="sri-sub">${sub}</div></div>
+          </div>`;
+        }).join('');
+
+        results.style.display = 'block';
+
+        qsa('.search-result-item', results).forEach(item => {
+          item.addEventListener('click', () => {
+            const lon  = parseFloat(item.dataset.lon);
+            const lat  = parseFloat(item.dataset.lat);
+            const name = item.dataset.name;
+
+            // Fly to
+            map.flyTo({ center: [lon, lat], zoom: 15, duration: 1200 });
+
+            // Marqueur de recherche
+            if (searchMarker) searchMarker.remove();
+            searchMarker = new mapboxgl.Marker({ color: '#0071E3' })
+              .setLngLat([lon, lat])
+              .setPopup(new mapboxgl.Popup({ offset: 25 }).setText(name))
+              .addTo(map);
+            searchMarker.togglePopup();
+
+            input.value = name;
+            clearBtn.style.display = 'flex';
+            results.style.display  = 'none';
+          });
+        });
+      } catch(e) { results.style.display = 'none'; }
+    }, 280);
+  });
+
+  clearBtn.addEventListener('click', () => {
+    input.value = '';
+    clearBtn.style.display = 'none';
+    results.style.display  = 'none';
+    if (searchMarker) { searchMarker.remove(); searchMarker = null; }
+    input.focus();
+  });
+
+  // Ferme si clic dehors
+  document.addEventListener('click', (e) => {
+    if (!qs('#searchBar').contains(e.target)) results.style.display = 'none';
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { results.style.display = 'none'; input.blur(); }
+  });
+}
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+const NOTIFICATIONS = [
+  { id:1, icon:'🚗', title:'Course en attente',    body:'M. Bertrand — CHU Rochefort — 14h00',       time:'Il y a 5 min',  unread:true  },
+  { id:2, icon:'🍺', title:'SAM demandé',           body:'Fouras, Bar Le Phare — 23h30',              time:'Il y a 1h',     unread:true  },
+  { id:3, icon:'✅', title:'Course terminée',       body:'Mme Leclerc — Carrefour Lagord',            time:'Hier 11:02',    unread:false },
+  { id:4, icon:'⛽', title:'Alerte carburant',      body:'Prix estimé dépassé ce mois (+8%)',         time:'Hier 08:15',    unread:false },
+];
+
+function renderNotifications() {
+  const list  = qs('#notifList');
+  const empty = qs('#notifEmpty');
+  const badge = qs('#notifBadge');
+
+  const unread = NOTIFICATIONS.filter(n => n.unread);
+  badge.textContent = unread.length;
+  badge.style.display = unread.length ? 'flex' : 'none';
+
+  if (!NOTIFICATIONS.length) {
+    list.innerHTML = '';
+    empty.style.display = 'flex';
+    return;
+  }
+  empty.style.display = 'none';
+
+  list.innerHTML = NOTIFICATIONS.map(n => `
+    <div class="notif-item ${n.unread ? 'unread' : ''}" data-id="${n.id}">
+      <span class="ni-icon">${n.icon}</span>
+      <div class="ni-content">
+        <div class="ni-title">${n.title}</div>
+        <div class="ni-body">${n.body}</div>
+        <div class="ni-time">${n.time}</div>
+      </div>
+    </div>
+  `).join('');
+
+  qsa('.notif-item', list).forEach(item => {
+    item.addEventListener('click', () => {
+      const id = parseInt(item.dataset.id);
+      const n  = NOTIFICATIONS.find(x => x.id === id);
+      if (n) { n.unread = false; item.classList.remove('unread'); }
+      renderNotifications();
+    });
+  });
+}
+
+function toggleNotifPanel() {
+  const panel = qs('#notifPanel');
+  const profilePanel = qs('#profilePanel');
+  profilePanel.style.display = 'none';
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  if (panel.style.display === 'block') renderNotifications();
+}
+
+// ============================================================
+// SUPABASE ERROR → propose SQL setup
+// ============================================================
+function handleSupabaseError(err) {
+  console.error(err);
+  if (err?.code === 'PGRST205' || (err?.message && err.message.includes('schema cache'))) {
+    // Table manquante — propose le SQL
+    qs('#sqlContent').textContent = SQL_SETUP;
+    qs('#modalSQL').style.display = 'flex';
+    showToast('⚠️ Table manquante — SQL prêt à copier !', 4000);
+  } else {
+    showToast('⚠️ Erreur Supabase — sauvegarde locale.');
+  }
+}
+
+// ============================================================
+// AUTOCOMPLETE SETUP
+// ============================================================
+function setupAutocomplete(inputId) {
+  const input = qs('#' + inputId);
+  if (!input) return;
+
+  let dropdown = null;
+  let debounceTimer;
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    const q = input.value.trim();
+    if (q.length < 3) { removeDropdown(); return; }
+
+    debounceTimer = setTimeout(async () => {
+      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?country=fr&types=address,place,poi&access_token=${CONFIG.mapboxToken}&limit=5`;
+      try {
+        const res  = await fetch(url);
+        const data = await res.json();
+        showDropdown(input, data.features || []);
+      } catch (e) {}
+    }, 300);
+  });
+
+  function showDropdown(inp, features) {
+    removeDropdown();
+    if (!features.length) return;
+
+    dropdown = document.createElement('div');
+    dropdown.className = 'addr-dropdown glass';
+    dropdown.style.cssText = `
+      position:fixed; z-index:9999;
+      background:white; border-radius:12px; overflow:hidden;
+      box-shadow:0 8px 32px rgba(0,0,0,0.15); min-width:260px;
+      border:1px solid rgba(0,0,0,0.08);
+    `;
+
+    features.forEach(f => {
+      const parts = f.place_name.split(', ');
+      const item  = document.createElement('div');
+      item.style.cssText = 'padding:10px 14px; cursor:pointer; font-size:13px; border-bottom:1px solid rgba(0,0,0,0.05); line-height:1.4;';
+      item.innerHTML = `<strong>${parts[0]}</strong><br><span style="color:#636366;font-size:11px">${parts.slice(1).join(', ')}</span>`;
+      item.onmousedown = (e) => {
+        e.preventDefault();
+        inp.value = f.place_name;
+        removeDropdown();
+      };
+      item.onmouseenter = () => item.style.background = 'rgba(0,113,227,0.06)';
+      item.onmouseleave = () => item.style.background = '';
+      dropdown.appendChild(item);
+    });
+
+    const rect = inp.getBoundingClientRect();
+    dropdown.style.top   = (rect.bottom + 4) + 'px';
+    dropdown.style.left  = rect.left + 'px';
+    dropdown.style.width = rect.width + 'px';
+    document.body.appendChild(dropdown);
+  }
+
+  function removeDropdown() {
+    if (dropdown) { dropdown.remove(); dropdown = null; }
+  }
+
+  input.addEventListener('blur', () => setTimeout(removeDropdown, 150));
+}
+
+// ============================================================
+// TARIFS MODAL
+// ============================================================
+function updateTarifPreview() {
+  const base  = parseFloat(qs('#tarifBase').value)  || 0.55;
+  const suppl = parseFloat(qs('#tarifSuppl').value) || 0.20;
+  const prix  = parseFloat(qs('#prixCarburant').value) || 2.30;
+  const conso = parseFloat(qs('#consommation').value)  || 7.5;
+
+  qs('#tpTotal').textContent   = (base + suppl).toFixed(2) + ' €/km';
+  qs('#tpEssence').textContent = ((conso / 100) * prix * 100).toFixed(2) + ' €';
+}
+
+// ============================================================
+// HELPER
+// ============================================================
+const qs = (sel, ctx = document) => ctx.querySelector(sel);
+const qsa = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+
+// ============================================================
+// EVENTS — BUBBLES
+// ============================================================
+qs('#bubbleNew').addEventListener('click', () => {
+  openSheet('sheetNewCourse');
+  qs('#sheetNewCourse').scrollTop = 0;
+  qs('#routeResult').style.display = 'none';
+  currentRoute = null;
+});
+
+qs('#bubbleCourses').addEventListener('click', () => {
+  renderCourses();
+  openSheet('sheetCourses');
+});
+
+qs('#bubbleBenevoles').addEventListener('click', () => {
+  renderBenevoles();
+  openSheet('sheetBenevoles');
+});
+
+qs('#bubbleHistorique').addEventListener('click', () => {
+  renderHistorique();
+  openSheet('sheetHistorique');
+});
+
+qs('#bubbleStats').addEventListener('click', () => {
+  openSheet('sheetStats');
+});
+
+qs('#bubbleSam').addEventListener('click', () => {
+  openSheet('sheetNewCourse');
+  qs('#routeResult').style.display = 'none';
+  currentRoute = null;
+  qsa('.pill[data-type]').forEach(p => p.classList.remove('active'));
+  qs('.pill[data-type="sam"]').classList.add('active');
+  showToast('🍺 Mode SAM activé !');
+});
+
+// ============================================================
+// EVENTS — SHEET CLOSE BUTTONS
+// ============================================================
+qsa('[data-close]').forEach(btn => {
+  btn.addEventListener('click', () => closeSheet(btn.dataset.close));
+});
+
+qsa('[data-modal]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    qs('#' + btn.dataset.modal).style.display = 'none';
+  });
+});
+
+// ============================================================
+// EVENTS — TYPE PILLS
+// ============================================================
+qsa('.pill[data-type]').forEach(p => {
+  p.addEventListener('click', () => {
+    qsa('.pill[data-type]').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+  });
+});
+
+// ============================================================
+// EVENTS — CALCULATE ROUTE
+// ============================================================
+qs('#btnCalculer').addEventListener('click', async () => {
+  const dep = qs('#addrDepart').value.trim();
+  const arr = qs('#addrArrivee').value.trim();
+
+  if (!dep || !arr) {
+    showToast('⚠️ Veuillez renseigner les deux adresses.');
+    return;
+  }
+
+  qs('#btnCalculer').textContent = 'Calcul en cours…';
+  qs('#btnCalculer').disabled = true;
+
+  const result = await calculateRoute(dep, arr);
+
+  qs('#btnCalculer').textContent = 'Calculer le trajet →';
+  qs('#btnCalculer').disabled = false;
+
+  if (result) {
+    displayRouteResult(result.km, result.min);
+    showToast(`✅ Trajet calculé : ${result.km} km en ~${result.min} min`);
+  }
+});
+
+// ============================================================
+// EVENTS — LOCALIZE
+// ============================================================
+qs('#locateBtn').addEventListener('click', () => {
+  if (!navigator.geolocation) { showToast('⚠️ Géolocalisation indisponible.'); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    const { latitude, longitude } = pos.coords;
+    fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${CONFIG.mapboxToken}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.features?.length) {
+          qs('#addrDepart').value = data.features[0].place_name;
+          showToast('📍 Position actuelle récupérée');
+        }
+      });
+  }, () => showToast('❌ Impossible de récupérer la position.'));
+});
+
+// ============================================================
+// EVENTS — NOTIFICATIONS
+// ============================================================
+qs('#notifBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  qs('#profilePanel').style.display = 'none';
+  toggleNotifPanel();
+});
+
+qs('#notifClearAll').addEventListener('click', () => {
+  NOTIFICATIONS.length = 0;
+  renderNotifications();
+  showToast('🔕 Notifications effacées');
+});
+
+// ============================================================
+// EVENTS — PROFILE / MENUS
+// ============================================================
+qs('#profileToggle').addEventListener('click', (e) => {
+  e.stopPropagation();
+  qs('#notifPanel').style.display = 'none';
+  toggleProfile();
+});
+
+document.addEventListener('click', (e) => {
+  const profilePanel = qs('#profilePanel');
+  const notifPanel   = qs('#notifPanel');
+  if (!qs('#profileToggle').contains(e.target) && !profilePanel.contains(e.target)) {
+    profilePanel.style.display = 'none';
+  }
+  if (!qs('#notifBtn').contains(e.target) && !notifPanel.contains(e.target)) {
+    notifPanel.style.display = 'none';
+  }
+});
+
+qs('#btnConfig').addEventListener('click', () => {
+  qs('#profilePanel').style.display = 'none';
+  qs('#mapboxToken').value  = CONFIG.mapboxToken !== 'VOTRE_TOKEN_MAPBOX_ICI' ? CONFIG.mapboxToken : '';
+  qs('#supabaseUrl').value  = CONFIG.supabaseUrl;
+  qs('#supabaseKey').value  = CONFIG.supabaseKey;
+  qs('#modalConfig').style.display = 'flex';
+});
+
+qs('#btnTarifs').addEventListener('click', () => {
+  qs('#profilePanel').style.display = 'none';
+  qs('#tarifBase').value     = CONFIG.tarifBase;
+  qs('#tarifSuppl').value    = CONFIG.tarifSuppl;
+  qs('#prixCarburant').value = CONFIG.prixCarburant;
+  qs('#consommation').value  = CONFIG.consommation;
+  updateTarifPreview();
+  qs('#modalTarifs').style.display = 'flex';
+});
+
+// ============================================================
+// SAVE CONFIG
+// ============================================================
+qs('#btnSaveConfig').addEventListener('click', () => {
+  const token = qs('#mapboxToken').value.trim();
+  const url   = qs('#supabaseUrl').value.trim();
+  const key   = qs('#supabaseKey').value.trim();
+
+  if (token) { CONFIG.mapboxToken = token; localStorage.setItem('ml_mapbox', token); }
+  if (url)   { CONFIG.supabaseUrl = url;   localStorage.setItem('ml_sb_url', url); }
+  if (key)   { CONFIG.supabaseKey = key;   localStorage.setItem('ml_sb_key', key); }
+
+  qs('#modalConfig').style.display = 'none';
+  showToast('✅ Configuration sauvegardée. Rechargez la page.');
+  initSupabase();
+  if (token) mapboxgl.accessToken = token;
+});
+
+// SAVE TARIFS
+qs('#btnSaveTarifs').addEventListener('click', () => {
+  CONFIG.tarifBase     = parseFloat(qs('#tarifBase').value);
+  CONFIG.tarifSuppl    = parseFloat(qs('#tarifSuppl').value);
+  CONFIG.prixCarburant = parseFloat(qs('#prixCarburant').value);
+  CONFIG.consommation  = parseFloat(qs('#consommation').value);
+
+  localStorage.setItem('ml_tarif_base',  CONFIG.tarifBase);
+  localStorage.setItem('ml_tarif_suppl', CONFIG.tarifSuppl);
+  localStorage.setItem('ml_carburant',   CONFIG.prixCarburant);
+  localStorage.setItem('ml_conso',       CONFIG.consommation);
+
+  qs('#modalTarifs').style.display = 'none';
+  showToast('✅ Tarifs mis à jour !');
+});
+
+qsa('#tarifBase, #tarifSuppl, #prixCarburant, #consommation').forEach(el => {
+  el.addEventListener('input', updateTarifPreview);
+});
+
+// ============================================================
+// COPY SQL
+// ============================================================
+qs('#btnCopySQL').addEventListener('click', () => {
+  navigator.clipboard.writeText(SQL_SETUP)
+    .then(() => showToast('📋 SQL copié dans le presse-papier !'))
+    .catch(() => showToast('Sélectionne et copie manuellement le SQL'));
+});
+
+// ============================================================
+// TICKET PDF
+// ============================================================
+qs('#btnTicket').addEventListener('click', generateTicket);
+
+// ============================================================
+// SAVE COURSE
+// ============================================================
+qs('#btnSauvegarder').addEventListener('click', async () => {
+  const nom  = qs('#beneficiaireName').value.trim();
+  const dep  = qs('#addrDepart').value.trim();
+  const arr  = qs('#addrArrivee').value.trim();
+
+  if (!nom || !dep || !arr) {
+    showToast('⚠️ Remplissez au moins le bénéficiaire et les adresses.');
+    return;
+  }
+  if (!currentRoute) {
+    showToast('⚠️ Calculez d\'abord le trajet.');
+    return;
+  }
+
+  const typeEl = qs('.pill.active[data-type]');
+  const type   = typeEl?.dataset.type || 'course';
+
+  const courseData = {
+    nom, type,
+    depart: dep, arrivee: arr,
+    km: currentRoute.km, duree_min: currentRoute.min,
+    prix_benef: parseFloat(currentRoute.prixBenef),
+    cout_essence: parseFloat(currentRoute.prixEss),
+    benevole_id: qs('#benevoleSelect').value || null,
+    date_heure: qs('#dateHeure').value || new Date().toISOString(),
+    notes: qs('#courseNotes').value,
+    statut: 'attente',
+    created_at: new Date().toISOString(),
+  };
+
+  if (supabaseClient) {
+    try {
+      const { error } = await supabaseClient.from('courses').insert([courseData]);
+      if (error) throw error;
+      showToast('✅ Course enregistrée en base !');
+    } catch (err) {
+      handleSupabaseError(err);
+      return;
+    }
+  } else {
+    SAMPLE_HISTORIQUE.unshift({ ...courseData, id: Date.now(), prix: currentRoute.prixBenef, date: new Date().toLocaleDateString('fr-FR') });
+    showToast('✅ Course enregistrée !');
+  }
+
+  // Notif
+  NOTIFICATIONS.unshift({ id: Date.now(), icon:'🚗', title:'Course enregistrée', body:`${nom} — ${dep.split(',')[0]} → ${arr.split(',')[0]}`, time:'À l\'instant', unread:true });
+  renderNotifications();
+
+  closeSheet('sheetNewCourse');
+  clearRoute();
+  clearMarkers();
+  currentRoute = null;
+
+  setTimeout(() => { renderHistorique(); openSheet('sheetHistorique'); }, 500);
+});
+
+// ============================================================
 // AUTOCOMPLETE SETUP
 // ============================================================
 setupAutocomplete('addrDepart');
@@ -795,13 +1251,13 @@ setupAutocomplete('addrArrivee');
 function init() {
   initMap();
   initSupabase();
+  initSearchBar();
+  renderNotifications();
 
-  // Date par défaut
   const now = new Date();
   now.setMinutes(Math.ceil(now.getMinutes() / 15) * 15, 0, 0);
   qs('#dateHeure').value = now.toISOString().slice(0, 16);
 
-  // Si pas de token mapbox → ouvre config
   if (CONFIG.mapboxToken === 'VOTRE_TOKEN_MAPBOX_ICI') {
     setTimeout(() => {
       qs('#modalConfig').style.display = 'flex';
