@@ -22,7 +22,51 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;font-size:14px}
-.layout{display:grid;grid-template-columns:260px 1fr;grid-template-rows:56px 1fr;height:100vh}
+.layout{
+  display:grid;
+  grid-template-columns:var(--sidebar-w,260px) 5px 1fr;
+  grid-template-rows:56px 1fr;
+  height:100vh;
+  overflow:hidden;
+}
+.sidebar{
+  grid-column:1;
+  grid-row:2;
+
+  background:var(--bg2);
+  border-right:none;
+  overflow-y:auto;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+
+  min-width:160px;
+  max-width:420px;
+}
+.sidebar-resize-handle{
+  grid-column:2;
+  grid-row:2;
+
+  background:var(--border);
+  cursor:col-resize;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  transition:background .15s;
+}
+.sidebar-resize-handle:hover{
+  background:var(--border2);
+}
+.sidebar-resize-handle::after{
+  content:'';
+  width:2px;
+  height:40px;
+  background:var(--muted2);
+  border-radius:2px;
+}
 .topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px}
 .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--text);letter-spacing:-0.5px;flex-shrink:0}
 .logo span{color:var(--orange)}
@@ -38,10 +82,18 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);hei
 .sync-dot.syncing{background:var(--yellow);animation:pulse 1s infinite}
 .sync-dot.ok{background:var(--green)}
 .sync-dot.err{background:var(--red)}
-.sidebar{background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-.main{overflow:hidden;display:flex;flex-direction:column}
+.main{
+  grid-column:3;
+  grid-row:2;
+
+  min-width:0;
+
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
 .view{display:none;flex:1;overflow:hidden}
-.view.active{display:flex;flex-direction:column}
+.view.active{display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0}
 .btn{padding:8px 18px;border-radius:50px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:7px;font-family:'Manrope',sans-serif;white-space:nowrap}
 .btn.orange{background:var(--orange);color:#fff}.btn.orange:hover{background:#d95f1f}
 .btn.ghost{background:var(--bg4);color:var(--text);border:1px solid var(--border2)}.btn.ghost:hover{background:var(--bg3);border-color:rgba(255,255,255,.2)}
@@ -65,8 +117,8 @@ select.finput option{background:var(--bg3)}
 .start-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);padding:40px;width:100%;max-width:480px}
 .start-box h2{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:6px}
 .start-box p{color:var(--muted);font-size:13px;margin-bottom:24px}
-.live-layout{flex:1;display:grid;grid-template-columns:1fr 380px;overflow:hidden}
-.paniers-zone{padding:16px;overflow-y:auto}
+.live-layout{flex:1;display:grid;grid-template-columns:1fr 5px var(--panel-w,380px);overflow:hidden;height:100%}
+.paniers-zone{padding:16px;overflow-y:auto;min-height:0}
 .paniers-topbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .live-stats-row{display:flex;gap:10px;margin-bottom:14px}
 .lstat{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 16px;flex:1;display:flex;flex-direction:column;gap:2px}
@@ -85,7 +137,7 @@ select.finput option{background:var(--bg3)}
 .p-btn.locked-closed{border-color:rgba(78,158,245,.3);opacity:.65;cursor:not-allowed}
 .p-btn.locked-closed:hover{transform:none;border-color:rgba(78,158,245,.3)}
 .p-num{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;line-height:1}
-.p-name{font-size:9px;color:var(--muted);max-width:68px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
+.p-name{font-size:12px;color:var(--muted);max-width:68px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
 .p-tot{font-size:10px;font-weight:700;color:var(--green)}
 .p-dot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%}
 .p-dot.open{background:var(--green)}
@@ -178,10 +230,13 @@ select.finput option{background:var(--bg3)}
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
-.history-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;margin-bottom:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px}
+.history-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:5px 10px;margin-bottom:4px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:7px}
 .history-item:hover{border-color:var(--border2)}
 .history-item.readonly-live{border-left:3px solid var(--purple)}
 .history-view-banner{background:var(--purple-dim);border:1px solid rgba(167,139,250,.3);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--purple);font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.resize-handle{width:5px;background:var(--border);cursor:col-resize;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.resize-handle:hover{background:var(--border2)}
+.resize-handle::after{content:'';width:2px;height:40px;background:var(--muted2);border-radius:2px}
 /* info-box : panneau panier clôturé verrouillé */
 .info-box{background:var(--blue-dim);border:1px solid rgba(78,158,245,.2);border-radius:var(--r);padding:12px 14px;font-size:12px;color:var(--blue);margin-bottom:12px}
 .settings-view{padding:20px;overflow-y:auto;flex:1}
@@ -196,11 +251,66 @@ select.finput option{background:var(--bg3)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .remise-row{display:grid;grid-template-columns:1fr 110px 110px 34px;gap:5px;margin-bottom:6px;align-items:center;background:var(--yellow-dim);border:1px solid rgba(245,200,66,.2);border-radius:var(--r);padding:8px 10px}
 .doc-actions-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+
+/* ── ÉCRAN DE CONNEXION ── */
+#lock-screen{
+  position:fixed;inset:0;background:var(--bg);z-index:2000;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.lock-box{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:20px;
+  padding:44px 40px;width:100%;max-width:380px;text-align:center;
+  box-shadow:0 32px 80px rgba(0,0,0,.6);
+}
+.lock-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;margin-bottom:4px}
+.lock-logo span{color:var(--orange)}
+.lock-sub{font-size:13px;color:var(--muted);margin-bottom:32px}
+.lock-icon{font-size:44px;margin-bottom:16px}
+.code-inputs{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
+.code-digit{
+  width:52px;height:64px;border-radius:12px;border:2px solid var(--border2);
+  background:var(--bg3);color:var(--text);font-family:'Syne',sans-serif;
+  font-size:28px;font-weight:800;text-align:center;outline:none;
+  transition:all .2s;caret-color:var(--orange);
+}
+.code-digit:focus{border-color:var(--orange);background:var(--bg4);box-shadow:0 0 0 3px rgba(244,114,43,.15)}
+.code-digit.filled{border-color:var(--orange2)}
+.code-digit.error{border-color:var(--red);animation:shake .3s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.lock-hint{font-size:12px;color:var(--muted2);margin-top:12px}
+.lock-attempts{font-size:12px;color:var(--red);margin-top:8px;min-height:18px}
+.lock-btn{
+  width:100%;padding:13px;border-radius:50px;border:none;background:var(--orange);
+  color:#fff;font-family:'Manrope',sans-serif;font-size:15px;font-weight:700;
+  cursor:pointer;transition:all .2s;margin-top:4px;
+}
+.lock-btn:hover{background:#d95f1f}
+.lock-btn:disabled{opacity:.5;cursor:not-allowed}
 </style>
 </head>
 <body>
 
-<div id="loading-screen">
+<!-- ÉCRAN DE CONNEXION PAR CODE -->
+<div id="lock-screen">
+  <div class="lock-box">
+    <div class="lock-logo">FC<span>ÉVÉNEMENT</span></div>
+    <div class="lock-sub">Gestionnaire de lives</div>
+    <div class="lock-icon">🔐</div>
+    <div style="font-size:14px;font-weight:700;margin-bottom:16px">Entrez votre code d'accès</div>
+    <div class="code-inputs">
+      <input class="code-digit" id="d0" type="password" maxlength="1" inputmode="numeric" oninput="onDigit(this,0)" onkeydown="onKey(event,0)">
+      <input class="code-digit" id="d1" type="password" maxlength="1" inputmode="numeric" oninput="onDigit(this,1)" onkeydown="onKey(event,1)">
+      <input class="code-digit" id="d2" type="password" maxlength="1" inputmode="numeric" oninput="onDigit(this,2)" onkeydown="onKey(event,2)">
+      <input class="code-digit" id="d3" type="password" maxlength="1" inputmode="numeric" oninput="onDigit(this,3)" onkeydown="onKey(event,3)">
+      <input class="code-digit" id="d4" type="password" maxlength="1" inputmode="numeric" oninput="onDigit(this,4)" onkeydown="onKey(event,4)">
+      <input class="code-digit" id="d5" type="password" maxlength="1" inputmode="numeric" oninput="onDigit(this,5)" onkeydown="onKey(event,5)">
+    </div>
+    <div class="lock-attempts" id="lock-attempts"></div>
+    <div class="lock-hint">Code à 6 chiffres · Session mémorisée 8h</div>
+  </div>
+</div>
+
+<div id="loading-screen" style="display:none">
   <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:24px">FC<span style="color:var(--orange)">ÉVÉNEMENT</span></div>
   <div class="spinner"></div>
   <div style="font-size:13px;color:var(--muted)" id="loading-msg">Connexion à Supabase…</div>
@@ -227,9 +337,8 @@ select.finput option{background:var(--bg3)}
   <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:2px">Historique lives</div>
   <div id="history-list"><div style="font-size:12px;color:var(--muted2);padding:8px 0">Chargement…</div></div>
 </div>
-
+<div class="sidebar-resize-handle" id="sidebar-resize-handle" title="Glisser pour redimensionner"></div>
 <div class="main">
-
   <!-- LIVE VIEW -->
   <div class="view active" id="view-live">
     <div class="start-screen" id="start-screen">
@@ -270,7 +379,7 @@ select.finput option{background:var(--bg3)}
           </div>
           <div class="paniers-grid" id="paniers-grid"></div>
         </div>
-
+        <div class="resize-handle" id="panel-resize-handle" title="Glisser pour redimensionner"></div>
         <div class="panier-panel">
           <div class="pp-empty" id="pp-empty"><div class="pp-empty-icon">🛒</div><div>Cliquez sur un panier</div></div>
           <div id="pp-content" style="display:none;flex:1;flex-direction:column;overflow:hidden">
@@ -384,6 +493,26 @@ select.finput option{background:var(--bg3)}
           <div class="fgroup"><label class="flabel">Prochain N° Facture</label><input class="finput" id="s-fac-start" type="number" value="1" min="1"></div>
         </div>
         <button class="btn orange" onclick="saveSettings()">💾 Enregistrer dans Supabase</button>
+      </div>
+
+      <!-- Section code d'accès -->
+      <div class="settings-section">
+        <h3>🔐 Code d'accès</h3>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:16px">
+          Le code est stocké hashé dans Supabase — il n'apparaît jamais dans le code source. Laissez vide pour ne pas changer.
+        </div>
+        <div class="frow">
+          <div class="fgroup">
+            <label class="flabel">Nouveau code (6 chiffres)</label>
+            <input class="finput" id="s-new-code" type="password" maxlength="6" inputmode="numeric" placeholder="••••••" autocomplete="new-password">
+          </div>
+          <div class="fgroup">
+            <label class="flabel">Confirmer le code</label>
+            <input class="finput" id="s-confirm-code" type="password" maxlength="6" inputmode="numeric" placeholder="••••••" autocomplete="new-password">
+          </div>
+        </div>
+        <div id="code-change-msg" style="font-size:12px;margin-bottom:10px;min-height:18px"></div>
+        <button class="btn ghost" onclick="changeAccessCode()">🔑 Changer le code d'accès</button>
       </div>
     </div>
   </div>
@@ -810,13 +939,13 @@ function renderGrid(){
     return `<div class="p-btn ${cardClass}" onclick="selectPanier(${p.num})" title="Panier ${p.num}${p.name?' — '+p.name:''}${locked?' 🔒 clôturé':p.closed?' clôturé':''}">
       ${locked?`<div class="p-lock">🔒</div>`:`<div class="p-dot ${dotClass}"></div>`}
       <div class="p-num">${p.num}</div>
-      ${p.name?`<div class="p-name">${p.name.split(' ')[0]}</div>`:''}
+      ${p.name?`<div class="p-name">${p.name || 'Sans nom'}</div>`:''}
       ${tot>0?`<div class="p-tot">${tot}€</div>`:''}
     </div>`;
   }).join('');
   if(!liveIsReadonly)g2.innerHTML+=`<div class="p-add" onclick="addPaniers(1)" title="Ajouter 1 panier">＋</div>`;
 }
-
+// ${p.name.split(' ')[0]}
 // selectPanier gère maintenant actif ET historique (plus de viewPanierReadonly séparé)
 function selectPanier(num){
   selPanier=(selPanier===num&&!liveIsReadonly)?null:num;
@@ -979,10 +1108,10 @@ function renderHistory(){
     const active=l.paniers.filter(p=>p.items.length||p.note).length;
     const d=new Date(l.date).toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
     return `<div class="history-item readonly-live" onclick="viewHistory(${i})">
-      <div style="font-size:20px">📼</div>
-      <div style="flex:1">
-        <div style="font-weight:700;font-size:13px">${l.name}</div>
-        <div style="font-size:11px;color:var(--muted)">${d} · ${active} paniers · ${total}€</div>
+      <div style="font-size:13px;flex-shrink:0">📼</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.name}</div>
+        <div style="font-size:10px;color:var(--muted)">${d} · ${active}p · ${total}€</div>
       </div>
     </div>`;
   }).join('');
@@ -1268,7 +1397,270 @@ function printDoc(){
   win.document.close();win.focus();setTimeout(()=>win.print(),600);
 }
 
-init();
+// ═══════════════════════════════════════════════════════════════
+// SYSTÈME DE CONNEXION PAR CODE
+// ═══════════════════════════════════════════════════════════════
+// SYSTÈME DE CONNEXION — CODE STOCKÉ HASHÉ DANS SUPABASE
+// Le vrai code n'apparaît jamais dans le HTML ni dans le JS.
+// ═══════════════════════════════════════════════════════════════
+
+const SESSION_KEY      = 'fce_auth_v2';
+const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8h
+let lockAttempts       = 0;
+const MAX_ATTEMPTS     = 5;
+let _sessionHash       = null; // hash chargé depuis Supabase, gardé en mémoire seulement
+
+// ── Hash SHA-256 via Web Crypto API (standard navigateur, pas de lib) ──
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// ── Session ──────────────────────────────────────────────────
+function checkSession() {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return false;
+    const s = JSON.parse(raw);
+    if (!s.verified || !s.expires) return false;
+    if (Date.now() > s.expires) { sessionStorage.removeItem(SESSION_KEY); return false; }
+    return true;
+  } catch { return false; }
+}
+
+function saveSession() {
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+    verified: true,
+    expires: Date.now() + SESSION_DURATION
+  }));
+}
+
+// ── Chargement du hash depuis Supabase ───────────────────────
+// Le hash SHA-256 du code est stocké dans settings.data.access_hash
+// Le vrai code n'est JAMAIS stocké ni transmis en clair.
+async function loadAccessHash() {
+  try {
+    const { data } = await sb.from('settings').select('data').limit(1).single();
+    if (data?.data?.access_hash) {
+      _sessionHash = data.data.access_hash;
+      return true;
+    }
+    // Aucun code configuré → on crée un code par défaut 123456 hashé
+    const defaultHash = await sha256('123456');
+    _sessionHash = defaultHash;
+    // Sauvegarder le hash par défaut dans Supabase
+    const { data: existing } = await sb.from('settings').select('id').limit(1);
+    if (existing?.length) {
+      const currentData = (await sb.from('settings').select('data').eq('id', existing[0].id).single()).data?.data || {};
+      currentData.access_hash = defaultHash;
+      await sb.from('settings').update({ data: currentData }).eq('id', existing[0].id);
+    } else {
+      await sb.from('settings').insert({ data: { access_hash: defaultHash }, dev_num: 1, fac_num: 1 });
+    }
+    return true;
+  } catch (e) {
+    console.error('Impossible de charger le hash:', e);
+    return false;
+  }
+}
+
+// ── UI du verrou ─────────────────────────────────────────────
+function unlockApp() {
+  g('lock-screen').style.display = 'none';
+  g('loading-screen').style.display = 'flex';
+  init();
+}
+
+function getCode() {
+  return [0,1,2,3,4,5].map(i => g('d'+i)?.value || '').join('');
+}
+
+function onDigit(el, idx) {
+  const val = el.value.replace(/[^0-9]/g, '');
+  el.value = val ? val.slice(-1) : '';
+  if (el.value) {
+    el.classList.add('filled');
+    if (idx < 5) g('d'+(idx+1)).focus();
+    else checkLockCode();
+  } else {
+    el.classList.remove('filled');
+  }
+}
+
+function onKey(e, idx) {
+  if (e.key === 'Backspace' && !g('d'+idx).value && idx > 0) {
+    g('d'+(idx-1)).value = '';
+    g('d'+(idx-1)).classList.remove('filled');
+    g('d'+(idx-1)).focus();
+  }
+  if (e.key === 'Enter') checkLockCode();
+}
+
+async function checkLockCode() {
+  const code = getCode();
+  if (code.length < 6) return;
+
+  // Vérification : on hash le code saisi et on compare avec le hash Supabase
+  // → Le vrai code ne circule jamais, seuls les hashs sont comparés
+  const inputHash = await sha256(code);
+
+  if (inputHash === _sessionHash) {
+    saveSession();
+    [0,1,2,3,4,5].forEach(i => {
+      const d = g('d'+i);
+      d.style.borderColor = 'var(--green)';
+      d.style.background = 'rgba(46,204,138,0.1)';
+    });
+    g('lock-attempts').style.color = 'var(--green)';
+    g('lock-attempts').textContent = '✓ Accès autorisé';
+    setTimeout(() => unlockApp(), 500);
+  } else {
+    lockAttempts++;
+    [0,1,2,3,4,5].forEach(i => {
+      const d = g('d'+i);
+      d.classList.add('error');
+      d.value = '';
+      d.classList.remove('filled');
+      setTimeout(() => d.classList.remove('error'), 400);
+    });
+    const remaining = MAX_ATTEMPTS - lockAttempts;
+    if (remaining <= 0) {
+      g('lock-attempts').textContent = '🚫 Trop de tentatives — réessayez dans 30s';
+      [0,1,2,3,4,5].forEach(i => g('d'+i).disabled = true);
+      setTimeout(() => {
+        lockAttempts = 0;
+        [0,1,2,3,4,5].forEach(i => { g('d'+i).disabled = false; g('d'+i).value = ''; g('d'+i).classList.remove('filled'); });
+        g('lock-attempts').textContent = '';
+        g('d0').focus();
+      }, 30000);
+    } else {
+      g('lock-attempts').textContent = `✗ Code incorrect — ${remaining} essai${remaining > 1 ? 's' : ''} restant${remaining > 1 ? 's' : ''}`;
+    }
+    setTimeout(() => g('d0').focus(), 420);
+  }
+}
+
+// ── Changer le code depuis les paramètres ────────────────────
+async function changeAccessCode() {
+  const newCode    = (g('s-new-code')?.value || '').trim();
+  const confirmCode = (g('s-confirm-code')?.value || '').trim();
+  const msgEl = g('code-change-msg');
+
+  if (!newCode) { msgEl.style.color = 'var(--red)'; msgEl.textContent = '⚠ Entrez un nouveau code.'; return; }
+  if (!/^\d{6}$/.test(newCode)) { msgEl.style.color = 'var(--red)'; msgEl.textContent = '⚠ Le code doit contenir exactement 6 chiffres.'; return; }
+  if (newCode !== confirmCode) { msgEl.style.color = 'var(--red)'; msgEl.textContent = '⚠ Les deux codes ne correspondent pas.'; return; }
+
+  msgEl.style.color = 'var(--muted)'; msgEl.textContent = '⏳ Sauvegarde…';
+  syncSet('syncing');
+
+  const newHash = await sha256(newCode);
+  const { data: existing } = await sb.from('settings').select('id, data').limit(1);
+  let error;
+  if (existing?.length) {
+    const d = existing[0].data || {};
+    d.access_hash = newHash;
+    ({ error } = await sb.from('settings').update({ data: d }).eq('id', existing[0].id));
+  } else {
+    ({ error } = await sb.from('settings').insert({ data: { access_hash: newHash }, dev_num: 1, fac_num: 1 }));
+  }
+
+  if (error) {
+    msgEl.style.color = 'var(--red)'; msgEl.textContent = '❌ Erreur: ' + error.message;
+    syncSet('err'); return;
+  }
+
+  // Mettre à jour le hash en mémoire (session reste valide)
+  _sessionHash = newHash;
+  g('s-new-code').value = '';
+  g('s-confirm-code').value = '';
+  msgEl.style.color = 'var(--green)'; msgEl.textContent = '✓ Code changé avec succès !';
+  syncSet('ok'); toast('Code d\'accès mis à jour ✓');
+  setTimeout(() => { msgEl.textContent = ''; }, 4000);
+}
+// ── SIDEBAR REDIMENSIONNABLE ─────────────────────────────────
+(function(){
+  const STOR_KEY='fce_sidebar_w';
+  const MIN=160, MAX=420;
+  const savedW=parseInt(localStorage.getItem(STOR_KEY))||260;
+  document.documentElement.style.setProperty('--sidebar-w',savedW+'px');
+
+  let dragging=false,startX=0,startW=0;
+  document.addEventListener('mousedown',e=>{
+    const h=document.getElementById('sidebar-resize-handle');
+    if(!h||e.target!==h)return;
+    dragging=true;startX=e.clientX;
+    startW=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w'))||260;
+    document.body.style.userSelect='none';
+    document.body.style.cursor='col-resize';
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!dragging)return;
+    const newW=Math.min(MAX,Math.max(MIN,startW+(e.clientX-startX)));
+    document.documentElement.style.setProperty('--sidebar-w',newW+'px');
+  });
+  document.addEventListener('mouseup',()=>{
+    if(!dragging)return;
+    dragging=false;
+    document.body.style.userSelect='';
+    document.body.style.cursor='';
+    const w=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w'))||260;
+    localStorage.setItem(STOR_KEY,w);
+  });
+})();
+// ── PANNEAU PANIER REDIMENSIONNABLE ──────────────────────────
+(function(){
+  const STOR_KEY='fce_panel_w';
+  const MIN=280,MAX=560;
+  const savedW=parseInt(localStorage.getItem(STOR_KEY))||380;
+  document.documentElement.style.setProperty('--panel-w',savedW+'px');
+
+  let dragging=false,startX=0,startW=0;
+  document.addEventListener('mousedown',e=>{
+    const h=document.getElementById('panel-resize-handle');
+    if(!h||e.target!==h)return;
+    dragging=true;startX=e.clientX;
+    const layout=document.getElementById('live-layout');
+    startW=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--panel-w'))||380;
+    document.body.style.userSelect='none';
+    document.body.style.cursor='col-resize';
+  });
+  document.addEventListener('mousemove',e=>{
+    if(!dragging)return;
+    const delta=startX-e.clientX; // glisser à gauche = agrandir
+    const newW=Math.min(MAX,Math.max(MIN,startW+delta));
+    document.documentElement.style.setProperty('--panel-w',newW+'px');
+  });
+  document.addEventListener('mouseup',()=>{
+    if(!dragging)return;
+    dragging=false;
+    document.body.style.userSelect='';
+    document.body.style.cursor='';
+    const w=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--panel-w'))||380;
+    localStorage.setItem(STOR_KEY,w);
+  });
+})();
+// ── DÉMARRAGE ────────────────────────────────────────────────
+(async () => {
+  if (checkSession()) {
+    // Session encore valide → charger l'app directement
+    // On charge quand même le hash en arrière-plan (pour changeAccessCode)
+    g('lock-screen').style.display = 'none';
+    g('loading-screen').style.display = 'flex';
+    loadAccessHash(); // async, pas besoin d'attendre
+    init();
+  } else {
+    // Afficher l'écran de connexion, charger le hash depuis Supabase
+    g('lock-screen').style.display = 'flex';
+    // Petit spinner pendant le chargement du hash
+    g('lock-attempts').style.color = 'var(--muted)';
+    g('lock-attempts').textContent = '⏳ Connexion à la base…';
+    [0,1,2,3,4,5].forEach(i => g('d'+i).disabled = true);
+    const ok = await loadAccessHash();
+    [0,1,2,3,4,5].forEach(i => g('d'+i).disabled = false);
+    g('lock-attempts').textContent = ok ? '' : '⚠ Impossible de joindre Supabase';
+    if (ok) setTimeout(() => g('d0')?.focus(), 100);
+  }
+})();
 </script>
 </body>
 </html>
