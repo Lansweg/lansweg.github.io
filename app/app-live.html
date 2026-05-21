@@ -32,7 +32,6 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);hei
 .sidebar{
   grid-column:1;
   grid-row:2;
-
   background:var(--bg2);
   border-right:none;
   overflow-y:auto;
@@ -40,33 +39,21 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);hei
   display:flex;
   flex-direction:column;
   gap:12px;
-
   min-width:160px;
   max-width:420px;
 }
 .sidebar-resize-handle{
   grid-column:2;
   grid-row:2;
-
   background:var(--border);
   cursor:col-resize;
-
   display:flex;
   align-items:center;
   justify-content:center;
-
   transition:background .15s;
 }
-.sidebar-resize-handle:hover{
-  background:var(--border2);
-}
-.sidebar-resize-handle::after{
-  content:'';
-  width:2px;
-  height:40px;
-  background:var(--muted2);
-  border-radius:2px;
-}
+.sidebar-resize-handle:hover{background:var(--border2);}
+.sidebar-resize-handle::after{content:'';width:2px;height:40px;background:var(--muted2);border-radius:2px;}
 .topbar{grid-column:1/-1;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px}
 .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--text);letter-spacing:-0.5px;flex-shrink:0}
 .logo span{color:var(--orange)}
@@ -82,16 +69,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);hei
 .sync-dot.syncing{background:var(--yellow);animation:pulse 1s infinite}
 .sync-dot.ok{background:var(--green)}
 .sync-dot.err{background:var(--red)}
-.main{
-  grid-column:3;
-  grid-row:2;
-
-  min-width:0;
-
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-}
+.main{grid-column:3;grid-row:2;min-width:0;overflow:hidden;display:flex;flex-direction:column;}
 .view{display:none;flex:1;overflow:hidden}
 .view.active{display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0}
 .btn{padding:8px 18px;border-radius:50px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:7px;font-family:'Manrope',sans-serif;white-space:nowrap}
@@ -120,6 +98,8 @@ select.finput option{background:var(--bg3)}
 .live-layout{flex:1;display:grid;grid-template-columns:1fr 5px var(--panel-w,380px);overflow:hidden;height:100%}
 .paniers-zone{padding:16px;overflow-y:auto;min-height:0}
 .paniers-topbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+
+/* ── STATS avec spoiler ── */
 .live-stats-row{display:flex;gap:10px;margin-bottom:14px}
 .lstat{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 16px;flex:1;display:flex;flex-direction:column;gap:2px}
 .lstat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:22px}
@@ -127,25 +107,73 @@ select.finput option{background:var(--bg3)}
 .lstat.orange .lstat-num{color:var(--orange)}
 .lstat.green .lstat-num{color:var(--green)}
 .lstat.blue .lstat-num{color:var(--blue)}
-.paniers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px}
-.p-btn{aspect-ratio:1;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg3);cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;position:relative;padding:4px}
-.p-btn:hover{border-color:rgba(255,255,255,.25);transform:scale(1.04)}
+
+/* Spoiler total */
+.lstat.spoiler{cursor:pointer;user-select:none;position:relative;transition:all .15s}
+.lstat.spoiler:hover{border-color:var(--border2)}
+.spoiler-mask{
+  position:absolute;inset:0;border-radius:var(--r);
+  background:var(--bg3);
+  display:flex;align-items:center;justify-content:center;
+  gap:6px;font-size:12px;font-weight:700;color:var(--muted);
+  transition:opacity .25s;
+}
+.lstat.spoiler.revealed .spoiler-mask{opacity:0;pointer-events:none;}
+.spoiler-eye{font-size:14px}
+
+/* ── GRILLE PANIERS — cartes redessinées ── */
+.paniers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:6px}
+
+.p-btn{
+  border-radius:var(--r);
+  border:1.5px solid var(--border2);
+  background:var(--bg3);
+  cursor:pointer;
+  transition:all .15s;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:0;
+  position:relative;
+  padding:8px 6px 7px;
+  min-height:72px;
+}
+.p-btn:hover{border-color:rgba(255,255,255,.25);transform:scale(1.03)}
 .p-btn.active{border-color:var(--orange);background:var(--orange-dim);box-shadow:0 0 0 1px var(--orange)}
 .p-btn.has-items{border-color:rgba(46,204,138,.4);background:var(--green-dim)}
 .p-btn.closed{border-color:rgba(78,158,245,.4);background:var(--blue-dim);opacity:.8}
 .p-btn.active.has-items{border-color:var(--orange);background:var(--orange-dim);box-shadow:0 0 0 1px var(--orange)}
 .p-btn.locked-closed{border-color:rgba(78,158,245,.3);opacity:.65;cursor:not-allowed}
 .p-btn.locked-closed:hover{transform:none;border-color:rgba(78,158,245,.3)}
-.p-num{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;line-height:1}
-.p-name{font-size:12px;color:var(--muted);max-width:68px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
-.p-tot{font-size:10px;font-weight:700;color:var(--green)}
+.p-num{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;line-height:1;margin-top:2px}
+/* Nom du client dans la carte — lisible */
+.p-name{
+  font-size:11px;
+  font-weight:700;
+  color:var(--text);
+  opacity:.85;
+  width:100%;
+  text-align:center;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  margin-top:4px;
+  line-height:1.2;
+  padding:0 2px;
+}
+.p-tot{font-size:10px;font-weight:800;color:var(--green);margin-top:2px}
 .p-dot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%}
 .p-dot.open{background:var(--green)}
 .p-dot.filled{background:var(--orange)}
 .p-dot.closed{background:var(--blue)}
 .p-lock{position:absolute;top:4px;left:4px;font-size:8px;opacity:.6}
-.p-add{aspect-ratio:1;border-radius:var(--r);border:1.5px dashed var(--border2);background:transparent;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--muted)}
+.p-add{aspect-ratio:1;border-radius:var(--r);border:1.5px dashed var(--border2);background:transparent;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--muted);min-height:72px}
 .p-add:hover{border-color:var(--orange);color:var(--orange);background:var(--orange-dim)}
+
+/* Carte mise en évidence lors d'une recherche par nom */
+.p-btn.search-match{border-color:var(--yellow) !important;box-shadow:0 0 0 1px var(--yellow) !important;background:var(--yellow-dim) !important;}
+
 .panier-panel{background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
 .pp-header{padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
 .pp-title{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
@@ -237,7 +265,6 @@ select.finput option{background:var(--bg3)}
 .resize-handle{width:5px;background:var(--border);cursor:col-resize;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .resize-handle:hover{background:var(--border2)}
 .resize-handle::after{content:'';width:2px;height:40px;background:var(--muted2);border-radius:2px}
-/* info-box : panneau panier clôturé verrouillé */
 .info-box{background:var(--blue-dim);border:1px solid rgba(78,158,245,.2);border-radius:var(--r);padding:12px 14px;font-size:12px;color:var(--blue);margin-bottom:12px}
 .settings-view{padding:20px;overflow-y:auto;flex:1}
 .settings-section{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);padding:20px;margin-bottom:16px}
@@ -253,39 +280,31 @@ select.finput option{background:var(--bg3)}
 .doc-actions-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
 
 /* ── ÉCRAN DE CONNEXION ── */
-#lock-screen{
-  position:fixed;inset:0;background:var(--bg);z-index:2000;
-  display:flex;align-items:center;justify-content:center;padding:20px;
-}
-.lock-box{
-  background:var(--bg2);border:1px solid var(--border2);border-radius:20px;
-  padding:44px 40px;width:100%;max-width:380px;text-align:center;
-  box-shadow:0 32px 80px rgba(0,0,0,.6);
-}
+#lock-screen{position:fixed;inset:0;background:var(--bg);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;}
+.lock-box{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:44px 40px;width:100%;max-width:380px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.6);}
 .lock-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;margin-bottom:4px}
 .lock-logo span{color:var(--orange)}
 .lock-sub{font-size:13px;color:var(--muted);margin-bottom:32px}
 .lock-icon{font-size:44px;margin-bottom:16px}
 .code-inputs{display:flex;gap:10px;justify-content:center;margin-bottom:20px}
-.code-digit{
-  width:52px;height:64px;border-radius:12px;border:2px solid var(--border2);
-  background:var(--bg3);color:var(--text);font-family:'Syne',sans-serif;
-  font-size:28px;font-weight:800;text-align:center;outline:none;
-  transition:all .2s;caret-color:var(--orange);
-}
+.code-digit{width:52px;height:64px;border-radius:12px;border:2px solid var(--border2);background:var(--bg3);color:var(--text);font-family:'Syne',sans-serif;font-size:28px;font-weight:800;text-align:center;outline:none;transition:all .2s;caret-color:var(--orange);}
 .code-digit:focus{border-color:var(--orange);background:var(--bg4);box-shadow:0 0 0 3px rgba(244,114,43,.15)}
 .code-digit.filled{border-color:var(--orange2)}
 .code-digit.error{border-color:var(--red);animation:shake .3s ease}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .lock-hint{font-size:12px;color:var(--muted2);margin-top:12px}
 .lock-attempts{font-size:12px;color:var(--red);margin-top:8px;min-height:18px}
-.lock-btn{
-  width:100%;padding:13px;border-radius:50px;border:none;background:var(--orange);
-  color:#fff;font-family:'Manrope',sans-serif;font-size:15px;font-weight:700;
-  cursor:pointer;transition:all .2s;margin-top:4px;
-}
+.lock-btn{width:100%;padding:13px;border-radius:50px;border:none;background:var(--orange);color:#fff;font-family:'Manrope',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:4px;}
 .lock-btn:hover{background:#d95f1f}
 .lock-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Résultats recherche par nom — badge compteur */
+.search-results-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--yellow-dim);border:1px solid rgba(245,200,66,.3);
+  border-radius:50px;padding:3px 10px;
+  font-size:11px;font-weight:700;color:var(--yellow);
+}
 </style>
 </head>
 <body>
@@ -358,19 +377,40 @@ select.finput option{background:var(--bg3)}
     <div id="live-active" style="display:none;flex:1;overflow:hidden;flex-direction:column">
       <div class="live-layout">
         <div class="paniers-zone">
-          <!-- Bannière live terminé avec bouton nouveau live -->
+          <!-- Bannière live terminé -->
           <div id="history-banner" style="display:none" class="history-view-banner">
             <span>📼 Live terminé · <strong style="color:var(--green)">paniers ouverts = modifiables</strong> · <strong style="color:var(--blue)">paniers clôturés = verrouillés 🔒</strong></span>
             <button class="btn orange sm" style="margin-left:auto" onclick="goNewLive()">🚀 Nouveau live</button>
           </div>
+
+          <!-- Stats avec spoiler sur le total -->
           <div class="live-stats-row">
-            <div class="lstat orange"><div class="lstat-num" id="st-paniers">0</div><div class="lstat-label">Paniers actifs</div></div>
-            <div class="lstat green"><div class="lstat-num" id="st-total">0 €</div><div class="lstat-label">Total live</div></div>
-            <div class="lstat blue"><div class="lstat-num" id="st-clos">0</div><div class="lstat-label">Clôturés</div></div>
+            <div class="lstat orange">
+              <div class="lstat-num" id="st-paniers">0</div>
+              <div class="lstat-label">Paniers actifs</div>
+            </div>
+            <!-- STAT TOTAL — spoiler -->
+            <div class="lstat green spoiler" id="stat-total-box" onclick="toggleSpoiler()" title="Cliquer pour révéler le total">
+              <div class="lstat-num" id="st-total">0 €</div>
+              <div class="lstat-label">Total live</div>
+              <div class="spoiler-mask" id="spoiler-mask">
+                <span class="spoiler-eye">👁</span>
+                <span>Cliquer pour voir</span>
+              </div>
+            </div>
+            <div class="lstat blue">
+              <div class="lstat-num" id="st-clos">0</div>
+              <div class="lstat-label">Clôturés</div>
+            </div>
           </div>
+
           <div class="paniers-topbar">
-            <input class="finput" id="jump-input" type="number" placeholder="N° panier…" style="width:130px" onkeydown="if(event.key==='Enter')jumpTo()">
-            <button class="btn ghost sm" onclick="jumpTo()">Aller →</button>
+            <!-- Recherche N° -->
+            <input class="finput" id="jump-input" type="number" placeholder="N° panier…" style="width:110px" onkeydown="if(event.key==='Enter')jumpTo()">
+            <!-- Recherche NOM — nouveau -->
+            <input class="finput" id="search-name-input" placeholder="🔍 Chercher un nom…" style="width:160px" oninput="searchByName(this.value)" onkeydown="handleNameSearchKey(event)">
+            <div id="search-results-count" style="display:none"></div>
+            <button class="btn ghost sm" onclick="jumpTo()">→ N°</button>
             <button class="btn ghost sm" onclick="showRecap()">📊 Récap</button>
             <div id="live-only-btns" style="display:flex;gap:6px">
               <button class="btn ghost sm" onclick="addPaniers(1)">➕ Panier</button>
@@ -391,7 +431,6 @@ select.finput option{background:var(--bg3)}
               <input class="finput" id="pp-name" placeholder="Nom Facebook / client" oninput="debouncedSavePanier()" style="font-size:13px">
             </div>
             <div class="pp-body">
-              <!-- Affiché seulement si panier clôturé sur live terminé -->
               <div id="readonly-warning" style="display:none" class="info-box">
                 🔒 Panier clôturé — verrouillé. Seuls les paniers non clôturés peuvent être modifiés après la fin du live.
               </div>
@@ -494,22 +533,12 @@ select.finput option{background:var(--bg3)}
         </div>
         <button class="btn orange" onclick="saveSettings()">💾 Enregistrer dans Supabase</button>
       </div>
-
-      <!-- Section code d'accès -->
       <div class="settings-section">
         <h3>🔐 Code d'accès</h3>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:16px">
-          Le code est stocké hashé dans Supabase — il n'apparaît jamais dans le code source. Laissez vide pour ne pas changer.
-        </div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Le code est stocké hashé dans Supabase — il n'apparaît jamais dans le code source. Laissez vide pour ne pas changer.</div>
         <div class="frow">
-          <div class="fgroup">
-            <label class="flabel">Nouveau code (6 chiffres)</label>
-            <input class="finput" id="s-new-code" type="password" maxlength="6" inputmode="numeric" placeholder="••••••" autocomplete="new-password">
-          </div>
-          <div class="fgroup">
-            <label class="flabel">Confirmer le code</label>
-            <input class="finput" id="s-confirm-code" type="password" maxlength="6" inputmode="numeric" placeholder="••••••" autocomplete="new-password">
-          </div>
+          <div class="fgroup"><label class="flabel">Nouveau code (6 chiffres)</label><input class="finput" id="s-new-code" type="password" maxlength="6" inputmode="numeric" placeholder="••••••" autocomplete="new-password"></div>
+          <div class="fgroup"><label class="flabel">Confirmer le code</label><input class="finput" id="s-confirm-code" type="password" maxlength="6" inputmode="numeric" placeholder="••••••" autocomplete="new-password"></div>
         </div>
         <div id="code-change-msg" style="font-size:12px;margin-bottom:10px;min-height:18px"></div>
         <button class="btn ghost" onclick="changeAccessCode()">🔑 Changer le code d'accès</button>
@@ -657,6 +686,109 @@ let docLines=[], docRemises=[], editingDocId=null;
 let devNum=1, facNum=1, currentDocId=null, panierSaveTimer=null;
 let settings={name:'FC Événement',type:'Association loi 1901',siret:'',tva:'',addr:'',cp:'',city:'Dunkerque',tel:'',email:'',web:'',iban:'',mentions:'',logo:null};
 
+// ── Spoiler total ──────────────────────────────────────────
+let spoilerRevealed = false;
+function toggleSpoiler(){
+  spoilerRevealed = !spoilerRevealed;
+  const box = g('stat-total-box');
+  const mask = g('spoiler-mask');
+  if(spoilerRevealed){
+    box.classList.add('revealed');
+    mask.innerHTML = '<span class="spoiler-eye">🙈</span><span>Masquer</span>';
+  } else {
+    box.classList.remove('revealed');
+    mask.innerHTML = '<span class="spoiler-eye">👁</span><span>Cliquer pour voir</span>';
+  }
+}
+
+// ── Recherche par nom ──────────────────────────────────────
+let nameSearchMatches = []; // indices des paniers correspondants
+let nameSearchCursor = -1;  // index actuel dans nameSearchMatches
+
+function searchByName(query){
+  const el = g('search-results-count');
+  clearNameSearchHighlights();
+  nameSearchMatches = [];
+  nameSearchCursor = -1;
+
+  if(!live || !query.trim()){
+    if(el) el.style.display='none';
+    return;
+  }
+
+  const q = query.trim().toLowerCase();
+  nameSearchMatches = live.paniers
+    .filter(p => p.name && p.name.toLowerCase().includes(q))
+    .map(p => p.num);
+
+  // Afficher le badge résultats
+  if(el){
+    if(nameSearchMatches.length === 0){
+      el.style.display = 'inline-flex';
+      el.className = 'search-results-badge';
+      el.style.background = 'var(--red-dim)';
+      el.style.borderColor = 'rgba(232,64,64,.3)';
+      el.style.color = 'var(--red)';
+      el.textContent = '0 résultat';
+    } else {
+      el.style.display = 'inline-flex';
+      el.className = 'search-results-badge';
+      el.style.background = 'var(--yellow-dim)';
+      el.style.borderColor = 'rgba(245,200,66,.3)';
+      el.style.color = 'var(--yellow)';
+      el.textContent = nameSearchMatches.length + ' résultat' + (nameSearchMatches.length>1?'s':'');
+    }
+  }
+
+  // Mettre en évidence les paniers trouvés
+  highlightNameMatches();
+
+  // Aller au 1er résultat automatiquement s'il y en a
+  if(nameSearchMatches.length > 0){
+    nameSearchCursor = 0;
+    scrollToPanier(nameSearchMatches[0]);
+  }
+}
+
+function handleNameSearchKey(e){
+  if(e.key === 'Enter'){
+    if(nameSearchMatches.length === 0) return;
+    // Entrée = aller au résultat suivant (cycle)
+    nameSearchCursor = (nameSearchCursor + 1) % nameSearchMatches.length;
+    scrollToPanier(nameSearchMatches[nameSearchCursor]);
+  }
+  if(e.key === 'Escape'){
+    g('search-name-input').value = '';
+    searchByName('');
+  }
+}
+
+function highlightNameMatches(){
+  if(!live) return;
+  const grid = g('paniers-grid');
+  if(!grid) return;
+  const btns = grid.querySelectorAll('.p-btn');
+  btns.forEach(btn => {
+    const num = parseInt(btn.getAttribute('data-num'));
+    if(nameSearchMatches.includes(num)){
+      btn.classList.add('search-match');
+    }
+  });
+}
+
+function clearNameSearchHighlights(){
+  const grid = g('paniers-grid');
+  if(!grid) return;
+  grid.querySelectorAll('.p-btn.search-match').forEach(btn => btn.classList.remove('search-match'));
+}
+
+function scrollToPanier(num){
+  const grid = g('paniers-grid');
+  if(!grid) return;
+  const btn = grid.querySelector(`[data-num="${num}"]`);
+  if(btn) btn.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
 // ═══ UTILS ═══════════════════════════════════════════════════
 const g=id=>document.getElementById(id);
 const v=id=>(g(id)?.value||'').trim();
@@ -675,11 +807,7 @@ function fmtN(n){return Number(n||0).toLocaleString('fr-FR',{minimumFractionDigi
 function fmtDate(d){return d?new Date(d).toLocaleDateString('fr-FR'):''}
 
 // ═══ LOGIQUE VERROU PANIER ════════════════════════════════════
-// Un panier est "locked" (non-modifiable) uniquement si :
-//   → le live est terminé (liveIsReadonly=true) ET le panier est clôturé
-// Un panier OUVERT sur un live terminé reste entièrement modifiable.
 function isPanierLocked(p){ return liveIsReadonly && !!p?.closed; }
-// Le live est "éditable" (sauvegardes autorisées) s'il est actif OU terminé
 function isLiveEditable(){ return !!live && (live.status==='active'||live.status==='ended'); }
 
 // ═══ INIT ════════════════════════════════════════════════════
@@ -716,9 +844,8 @@ function switchTab(name,btn){
   if(name==='settings')renderSettingsForm();
 }
 
-// Nouveau live depuis la bannière historique
 function goNewLive(){
-  live=null;selPanier=null;liveIsReadonly=false;
+  live=null;selPanier=null;liveIsReadonly=false;spoilerRevealed=false;
   g('live-active').style.display='none';
   g('live-ind').style.display='none';
   g('topbar-right').innerHTML=`<div class="sync-dot ok" id="sync-dot"></div><span id="sync-label" style="font-size:11px;color:var(--muted)">Supabase</span>`;
@@ -729,6 +856,10 @@ function goNewLive(){
   document.querySelectorAll('.topbar-tab')[0].classList.add('active');
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   g('view-live').classList.add('active');
+  // Reset recherche nom
+  if(g('search-name-input')) g('search-name-input').value='';
+  if(g('search-results-count')) g('search-results-count').style.display='none';
+  nameSearchMatches=[];nameSearchCursor=-1;
 }
 
 // ═══ CATALOGUE ═══════════════════════════════════════════════
@@ -840,7 +971,7 @@ async function startLive(){
   const panierRows=Array.from({length:nb},(_,i)=>({live_uid:uid,num:i+1,name:'',note:'',closed:false}));
   for(let i=0;i<panierRows.length;i+=100)await sb.from('paniers').insert(panierRows.slice(i,i+100));
   live={uid,id:uid,name,date,nb,status:'active',paniers:Array.from({length:nb},(_,i)=>({num:i+1,name:'',items:[],note:'',closed:false}))};
-  liveIsReadonly=false;selPanier=null;syncSet('ok');showLiveActive();toast(`Live démarré — ${nb} paniers`);
+  liveIsReadonly=false;selPanier=null;spoilerRevealed=false;syncSet('ok');showLiveActive();toast(`Live démarré — ${nb} paniers`);
 }
 async function endLive(){
   if(!live||!confirm('Terminer ce live ? Les paniers ouverts resteront modifiables depuis l\'historique.'))return;
@@ -850,7 +981,7 @@ async function endLive(){
   live.status='ended';
   liveHistory.unshift(JSON.parse(JSON.stringify(live)));
   renderHistory();
-  live=null;selPanier=null;liveIsReadonly=false;
+  live=null;selPanier=null;liveIsReadonly=false;spoilerRevealed=false;
   g('live-ind').style.display='none';
   g('topbar-right').innerHTML=`<div class="sync-dot ok" id="sync-dot"></div><span id="sync-label" style="font-size:11px;color:var(--muted)">Supabase</span>`;
   g('live-active').style.display='none';
@@ -874,16 +1005,17 @@ async function addPaniers(n){
 }
 
 // ─── SAUVEGARDE PANIER ────────────────────────────────────────
-// debouncedSavePanier : ne rien faire si panier verrouillé
 function debouncedSavePanier(){
   const p=panierOf(selPanier);
   if(!p||isPanierLocked(p))return;
   p.name=g('pp-name').value;p.note=g('pp-note').value;
   renderGrid();
+  // Re-appliquer les highlights de recherche si actif
+  const q = g('search-name-input')?.value||'';
+  if(q.trim()) searchByName(q);
   clearTimeout(panierSaveTimer);
   panierSaveTimer=setTimeout(()=>savePanierMeta(p),800);
 }
-// Permet la sauvegarde sur live actif OU terminé (mais pas si locked)
 async function savePanierMeta(p){
   if(!live||!isLiveEditable())return;
   syncSet('syncing');
@@ -911,13 +1043,22 @@ function showLiveActive(){
   g('live-ind').style.display=ro?'none':'flex';
   g('history-banner').style.display=ro?'flex':'none';
   g('live-only-btns').style.display=ro?'none':'flex';
-  // Les contrôles d'édition sont gérés panier par panier dans showPanierPanel (via isPanierLocked)
   g('readonly-warning').style.display='none';
+  // Réinitialiser spoiler à chaque affichage d'un live
+  spoilerRevealed=false;
+  const box=g('stat-total-box');
+  if(box){box.classList.remove('revealed');}
+  const mask=g('spoiler-mask');
+  if(mask) mask.innerHTML='<span class="spoiler-eye">👁</span><span>Cliquer pour voir</span>';
   if(!ro){
     g('topbar-right').innerHTML=`<div class="sync-dot ok" id="sync-dot"></div><span id="sync-label" style="font-size:11px;color:var(--muted)">Supabase</span>`;
   } else {
     g('topbar-right').innerHTML=`<span style="font-size:12px;color:var(--muted)">📼 ${live.name} · <span style="color:var(--orange2)">paniers ouverts modifiables</span></span>`;
   }
+  // Reset recherche nom
+  if(g('search-name-input')) g('search-name-input').value='';
+  if(g('search-results-count')) g('search-results-count').style.display='none';
+  nameSearchMatches=[];nameSearchCursor=-1;
   renderGrid();updateStats();renderQuickChips();
 }
 
@@ -927,26 +1068,34 @@ function panierTotal(p){return p.items.reduce((s,i)=>s+(i.price*i.qty),0)}
 function renderGrid(){
   const g2=g('paniers-grid');
   if(!live){g2.innerHTML='';return;}
+  const currentQuery = g('search-name-input')?.value?.trim().toLowerCase() || '';
+
   g2.innerHTML=live.paniers.map(p=>{
     const tot=panierTotal(p);
     const locked=isPanierLocked(p);
     const dotClass=p.closed?'closed':(p.items.length||p.note)?'filled':'open';
-    // locked-closed = live terminé + clôturé. has-items = a des articles mais pas clôturé.
+    const isMatch = currentQuery && p.name && p.name.toLowerCase().includes(currentQuery);
     const cardClass=[
       selPanier===p.num?'active':'',
-      locked?'locked-closed':p.closed?'closed':(p.items.length||p.note)?'has-items':''
+      locked?'locked-closed':p.closed?'closed':(p.items.length||p.note)?'has-items':'',
+      isMatch?'search-match':''
     ].filter(Boolean).join(' ');
-    return `<div class="p-btn ${cardClass}" onclick="selectPanier(${p.num})" title="Panier ${p.num}${p.name?' — '+p.name:''}${locked?' 🔒 clôturé':p.closed?' clôturé':''}">
+
+    // Nom tronqué, affiché en 2 lignes max si besoin
+    const nameHtml = p.name
+      ? `<div class="p-name" title="${p.name.replace(/"/g,'&quot;')}">${p.name}</div>`
+      : '';
+
+    return `<div class="p-btn ${cardClass}" data-num="${p.num}" onclick="selectPanier(${p.num})" title="Panier ${p.num}${p.name?' — '+p.name:''}${locked?' 🔒 clôturé':p.closed?' clôturé':''}">
       ${locked?`<div class="p-lock">🔒</div>`:`<div class="p-dot ${dotClass}"></div>`}
       <div class="p-num">${p.num}</div>
-      ${p.name?`<div class="p-name">${p.name || 'Sans nom'}</div>`:''}
+      ${nameHtml}
       ${tot>0?`<div class="p-tot">${tot}€</div>`:''}
     </div>`;
   }).join('');
   if(!liveIsReadonly)g2.innerHTML+=`<div class="p-add" onclick="addPaniers(1)" title="Ajouter 1 panier">＋</div>`;
 }
-// ${p.name.split(' ')[0]}
-// selectPanier gère maintenant actif ET historique (plus de viewPanierReadonly séparé)
+
 function selectPanier(num){
   selPanier=(selPanier===num&&!liveIsReadonly)?null:num;
   renderGrid();
@@ -963,10 +1112,6 @@ function showPanierPanel(){
   else{badge.textContent='En cours';badge.style.background='var(--green-dim)';badge.style.color='var(--green)';}
   g('pp-name').value=p.name||'';
   g('pp-note').value=p.note||'';
-
-  // ── LOGIQUE CLÉ : per-panier, pas per-live ──
-  // locked = live terminé ET panier clôturé → tout verrouillé
-  // ouvert sur live terminé → tout modifiable sauf "réouvrir" (car clôturé=false donc ça ne se pose pas)
   const locked=isPanierLocked(p);
   g('pp-action-btns').style.display=locked?'none':'flex';
   g('manual-add-bar').style.display=locked?'none':'flex';
@@ -977,7 +1122,6 @@ function showPanierPanel(){
   g('pp-name').readOnly=locked;
   g('pp-note').readOnly=locked;
   if(!locked)g('pp-close-btn').textContent=p.closed?'↩ Réouvrir':'✓ Clôturer';
-
   renderArtsList();renderQuickChips();
 }
 
@@ -991,7 +1135,6 @@ function renderArtsList(){
   g('pp-note-indicator').textContent=p.note?'📝 Note présente':'';
   const el=g('arts-list');
   if(!p.items.length){el.innerHTML=`<div style="color:var(--muted2);font-size:12px;padding:10px 0">Aucun article.</div>`;return;}
-  // locked = affichage lecture seule des articles
   const locked=isPanierLocked(p);
   el.innerHTML=p.items.map((it,idx)=>`
     <div class="art-row">
@@ -1042,9 +1185,8 @@ async function delItem(idx){
   p.items.splice(idx,1);renderArtsList();renderGrid();updateStats();await savePanierItems(p);
 }
 async function toggleClose(){
-  // Sur live terminé : on peut clôturer un panier ouvert, mais PAS réouvrir un panier clôturé
   const p=panierOf(selPanier);if(!p)return;
-  if(liveIsReadonly&&p.closed)return; // verrouillé : ne peut pas réouvrir
+  if(liveIsReadonly&&p.closed)return;
   p.closed=!p.closed;
   showPanierPanel();renderGrid();updateStats();
   await savePanierMeta(p);
@@ -1071,7 +1213,9 @@ function updateStats(){
   const active=live.paniers.filter(p=>p.items.length||p.note).length;
   const closed=live.paniers.filter(p=>p.closed).length;
   const total=live.paniers.reduce((s,p)=>s+panierTotal(p),0);
-  g('st-paniers').textContent=active;g('st-total').textContent=total+' €';g('st-clos').textContent=closed;
+  g('st-paniers').textContent=active;
+  g('st-total').textContent=total+' €';
+  g('st-clos').textContent=closed;
 }
 
 // ─── RÉCAP ───────────────────────────────────────────────────
@@ -1119,7 +1263,7 @@ function renderHistory(){
 function viewHistory(idx){
   const l=liveHistory[idx];if(!l)return;
   live=JSON.parse(JSON.stringify(l));
-  live.status='ended'; // assurer le statut
+  live.status='ended';
   selPanier=null;liveIsReadonly=true;
   hidePanierPanel();showLiveActive();
   switchTab('live',document.querySelector('.topbar-tab'));
@@ -1400,23 +1544,17 @@ function printDoc(){
 // ═══════════════════════════════════════════════════════════════
 // SYSTÈME DE CONNEXION PAR CODE
 // ═══════════════════════════════════════════════════════════════
-// SYSTÈME DE CONNEXION — CODE STOCKÉ HASHÉ DANS SUPABASE
-// Le vrai code n'apparaît jamais dans le HTML ni dans le JS.
-// ═══════════════════════════════════════════════════════════════
-
 const SESSION_KEY      = 'fce_auth_v2';
-const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8h
+const SESSION_DURATION = 8 * 60 * 60 * 1000;
 let lockAttempts       = 0;
 const MAX_ATTEMPTS     = 5;
-let _sessionHash       = null; // hash chargé depuis Supabase, gardé en mémoire seulement
+let _sessionHash       = null;
 
-// ── Hash SHA-256 via Web Crypto API (standard navigateur, pas de lib) ──
 async function sha256(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
-// ── Session ──────────────────────────────────────────────────
 function checkSession() {
   try {
     const raw = sessionStorage.getItem(SESSION_KEY);
@@ -1435,9 +1573,6 @@ function saveSession() {
   }));
 }
 
-// ── Chargement du hash depuis Supabase ───────────────────────
-// Le hash SHA-256 du code est stocké dans settings.data.access_hash
-// Le vrai code n'est JAMAIS stocké ni transmis en clair.
 async function loadAccessHash() {
   try {
     const { data } = await sb.from('settings').select('data').limit(1).single();
@@ -1445,10 +1580,8 @@ async function loadAccessHash() {
       _sessionHash = data.data.access_hash;
       return true;
     }
-    // Aucun code configuré → on crée un code par défaut 123456 hashé
     const defaultHash = await sha256('123456');
     _sessionHash = defaultHash;
-    // Sauvegarder le hash par défaut dans Supabase
     const { data: existing } = await sb.from('settings').select('id').limit(1);
     if (existing?.length) {
       const currentData = (await sb.from('settings').select('data').eq('id', existing[0].id).single()).data?.data || {};
@@ -1464,7 +1597,6 @@ async function loadAccessHash() {
   }
 }
 
-// ── UI du verrou ─────────────────────────────────────────────
 function unlockApp() {
   g('lock-screen').style.display = 'none';
   g('loading-screen').style.display = 'flex';
@@ -1499,11 +1631,7 @@ function onKey(e, idx) {
 async function checkLockCode() {
   const code = getCode();
   if (code.length < 6) return;
-
-  // Vérification : on hash le code saisi et on compare avec le hash Supabase
-  // → Le vrai code ne circule jamais, seuls les hashs sont comparés
   const inputHash = await sha256(code);
-
   if (inputHash === _sessionHash) {
     saveSession();
     [0,1,2,3,4,5].forEach(i => {
@@ -1540,19 +1668,15 @@ async function checkLockCode() {
   }
 }
 
-// ── Changer le code depuis les paramètres ────────────────────
 async function changeAccessCode() {
   const newCode    = (g('s-new-code')?.value || '').trim();
   const confirmCode = (g('s-confirm-code')?.value || '').trim();
   const msgEl = g('code-change-msg');
-
   if (!newCode) { msgEl.style.color = 'var(--red)'; msgEl.textContent = '⚠ Entrez un nouveau code.'; return; }
   if (!/^\d{6}$/.test(newCode)) { msgEl.style.color = 'var(--red)'; msgEl.textContent = '⚠ Le code doit contenir exactement 6 chiffres.'; return; }
   if (newCode !== confirmCode) { msgEl.style.color = 'var(--red)'; msgEl.textContent = '⚠ Les deux codes ne correspondent pas.'; return; }
-
   msgEl.style.color = 'var(--muted)'; msgEl.textContent = '⏳ Sauvegarde…';
   syncSet('syncing');
-
   const newHash = await sha256(newCode);
   const { data: existing } = await sb.from('settings').select('id, data').limit(1);
   let error;
@@ -1563,13 +1687,10 @@ async function changeAccessCode() {
   } else {
     ({ error } = await sb.from('settings').insert({ data: { access_hash: newHash }, dev_num: 1, fac_num: 1 }));
   }
-
   if (error) {
     msgEl.style.color = 'var(--red)'; msgEl.textContent = '❌ Erreur: ' + error.message;
     syncSet('err'); return;
   }
-
-  // Mettre à jour le hash en mémoire (session reste valide)
   _sessionHash = newHash;
   g('s-new-code').value = '';
   g('s-confirm-code').value = '';
@@ -1577,13 +1698,13 @@ async function changeAccessCode() {
   syncSet('ok'); toast('Code d\'accès mis à jour ✓');
   setTimeout(() => { msgEl.textContent = ''; }, 4000);
 }
+
 // ── SIDEBAR REDIMENSIONNABLE ─────────────────────────────────
 (function(){
   const STOR_KEY='fce_sidebar_w';
   const MIN=160, MAX=420;
   const savedW=parseInt(localStorage.getItem(STOR_KEY))||260;
   document.documentElement.style.setProperty('--sidebar-w',savedW+'px');
-
   let dragging=false,startX=0,startW=0;
   document.addEventListener('mousedown',e=>{
     const h=document.getElementById('sidebar-resize-handle');
@@ -1607,26 +1728,25 @@ async function changeAccessCode() {
     localStorage.setItem(STOR_KEY,w);
   });
 })();
+
 // ── PANNEAU PANIER REDIMENSIONNABLE ──────────────────────────
 (function(){
   const STOR_KEY='fce_panel_w';
   const MIN=280,MAX=560;
   const savedW=parseInt(localStorage.getItem(STOR_KEY))||380;
   document.documentElement.style.setProperty('--panel-w',savedW+'px');
-
   let dragging=false,startX=0,startW=0;
   document.addEventListener('mousedown',e=>{
     const h=document.getElementById('panel-resize-handle');
     if(!h||e.target!==h)return;
     dragging=true;startX=e.clientX;
-    const layout=document.getElementById('live-layout');
     startW=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--panel-w'))||380;
     document.body.style.userSelect='none';
     document.body.style.cursor='col-resize';
   });
   document.addEventListener('mousemove',e=>{
     if(!dragging)return;
-    const delta=startX-e.clientX; // glisser à gauche = agrandir
+    const delta=startX-e.clientX;
     const newW=Math.min(MAX,Math.max(MIN,startW+delta));
     document.documentElement.style.setProperty('--panel-w',newW+'px');
   });
@@ -1639,19 +1759,16 @@ async function changeAccessCode() {
     localStorage.setItem(STOR_KEY,w);
   });
 })();
+
 // ── DÉMARRAGE ────────────────────────────────────────────────
 (async () => {
   if (checkSession()) {
-    // Session encore valide → charger l'app directement
-    // On charge quand même le hash en arrière-plan (pour changeAccessCode)
     g('lock-screen').style.display = 'none';
     g('loading-screen').style.display = 'flex';
-    loadAccessHash(); // async, pas besoin d'attendre
+    loadAccessHash();
     init();
   } else {
-    // Afficher l'écran de connexion, charger le hash depuis Supabase
     g('lock-screen').style.display = 'flex';
-    // Petit spinner pendant le chargement du hash
     g('lock-attempts').style.color = 'var(--muted)';
     g('lock-attempts').textContent = '⏳ Connexion à la base…';
     [0,1,2,3,4,5].forEach(i => g('d'+i).disabled = true);
