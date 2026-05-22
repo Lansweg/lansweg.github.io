@@ -225,7 +225,7 @@ function generateTicket() {
 async function loadCourses(filtre = 'actives') {
   if (!SB) return [];
   try {
-    let query = SB.from('courses').select('*, benevoles(nom)').order('created_at', { ascending: false });
+    let query = SB.from('courses').select('*').order('created_at', { ascending: false });
     if (filtre === 'actives') query = query.in('statut', ['attente', 'en-cours']);
     if (filtre === 'semaine') {
       const d = new Date(); d.setDate(d.getDate() - 7);
@@ -358,7 +358,7 @@ async function renderCourses() {
           <span class="status-dot ${c.statut}"></span>${c.nom}
         </div>
         <div class="ci-route">${c.depart || '—'} → ${c.arrivee || '—'}</div>
-        <div class="ci-route">${c.benevoles?.nom ? '👤 ' + c.benevoles.nom : ''}</div>
+        <div class="ci-route">${c.benevole_nom ? '👤 ' + c.benevole_nom : ''}</div>
       </div>
       <div class="ci-meta">
         <div class="ci-time">${fmtDate(c.date_heure)}</div>
@@ -986,13 +986,17 @@ qs('#btnSauvegarder').addEventListener('click', async () => {
   if (!currentRoute) { showToast('⚠️ Calculez d\'abord le trajet.'); return; }
 
   const type = qs('.pill.active[data-type]')?.dataset.type || 'beneficiaire';
+  const bvSel = qs('#benevoleSelect');
+  const bvId  = bvSel.value ? parseInt(bvSel.value) : null;
+  const bvNom = bvSel.value ? bvSel.selectedOptions[0]?.text.replace(' (en course)', '') : null;
 
   const courseData = {
     nom, type, depart: dep, arrivee: arr,
     km: currentRoute.km, duree_min: currentRoute.min,
     prix_benef:   parseFloat(currentRoute.prixBenef),
     cout_essence: parseFloat(currentRoute.prixEss),
-    benevole_id:  qs('#benevoleSelect').value ? parseInt(qs('#benevoleSelect').value) : null,
+    benevole_id:  bvId,
+    benevole_nom: bvNom,
     date_heure:   qs('#dateHeure').value || new Date().toISOString(),
     notes:        qs('#courseNotes').value.trim() || null,
     statut:       'attente',
