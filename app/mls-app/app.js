@@ -173,7 +173,7 @@ function generateTicket() {
   doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
 
   const rows = [
-    ['Bénéficiaire', nom],
+    ['Personne transportée', nom],
     ['Type', type.charAt(0).toUpperCase() + type.slice(1)],
     ['Bénévole', benv],
     ['Date / Heure', date],
@@ -325,10 +325,10 @@ async function loadStats() {
 // RENDER
 // ============================================================
 function typeIcon(t) {
-  return { courses:'🛒', medical:'🏥', vacances:'🌴', sam:'🍺', beneficiaire:'🚗' }[t] || '🚗';
+  return { courses:'🛒', medical:'🏥', vacances:'🌴', sam:'🍺', beneficiaire:'🚗', prive:'🚗' }[t] || '🚗';
 }
 function typeLabel(t) {
-  return { courses:'Courses', medical:'Médical', vacances:'Vacances', sam:'SAM', beneficiaire:'Bénéficiaire' }[t] || t;
+  return { courses:'Courses', medical:'Médical', vacances:'Vacances', sam:'SAM', beneficiaire:'Privé' }[t] || t;
 }
 function fmtDate(iso) {
   if (!iso) return '—';
@@ -982,7 +982,7 @@ qs('#btnSauvegarder').addEventListener('click', async () => {
   const dep  = qs('#addrDepart').value.trim();
   const arr  = qs('#addrArrivee').value.trim();
 
-  if (!nom || !dep || !arr) { showToast('⚠️ Bénéficiaire et adresses requis.'); return; }
+  if (!nom || !dep || !arr) { showToast('⚠️ Nom de la personne et adresses requis.'); return; }
   if (!currentRoute) { showToast('⚠️ Calculez d\'abord le trajet.'); return; }
 
   const type = qs('.pill.active[data-type]')?.dataset.type || 'beneficiaire';
