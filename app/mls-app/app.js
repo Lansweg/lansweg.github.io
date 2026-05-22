@@ -50,8 +50,14 @@ async function logout() {
 }
 
 async function loadProfile(userId) {
-  const { data, error } = await SB.from('profiles').select('*').eq('id', userId).single();
+  const { data, error } = await SB
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle();
+
   if (error) throw error;
+
   return data;
 }
 
@@ -187,56 +193,48 @@ qs('#btnCreerCompte').addEventListener('click', async () => {
   const pwd   = qs('#newUserPwd').value;
   const role  = qs('#newUserRole').value;
 
-  if (!nom || !email || !pwd) { showToast('⚠️ Tous les champs sont requis.'); return; }
-  if (pwd.length < 6)         { showToast('⚠️ Mot de passe : 6 caractères minimum.'); return; }
+  if (!nom || !email || !pwd) {
+    showToast('⚠️ Tous les champs sont requis.');
+    return;
+  }
+
+  if (pwd.length < 6) {
+    showToast('⚠️ Mot de passe : 6 caractères minimum.');
+    return;
+  }
 
   qs('#btnCreerCompte').textContent = 'Création…';
-  qs('#btnCreerCompte').disabled    = true;
+  qs('#btnCreerCompte').disabled = true;
 
   try {
-    // Crée le compte Auth Supabase via Admin (service role nécessaire)
-    // On utilise signUp en mode anon puis on force le profil
-    const { data: signData, error: signErr } = await SB.auth.admin.createUser({
+
+    const { data, error } = await SB.auth.signUp({
       email,
       password: pwd,
-      email_confirm: true,
-      user_metadata: { nom, role },
+      options: {
+        data: {
+          nom,
+          role
+        }
+      }
     });
-    if (signErr) throw signErr;
 
-    // Insère dans profiles
-    const { error: profErr } = await SB.from('profiles').insert([{
-      id:    signData.user.id,
-      email, nom, role,
-    }]);
-    if (profErr) throw profErr;
+    if (error) throw error;
 
-    showToast('✅ Compte créé pour ' + nom + ' !');
+    showToast('✅ Compte créé avec succès !');
+
     qs('#newUserNom').value   = '';
     qs('#newUserEmail').value = '';
     qs('#newUserPwd').value   = '';
-    openGererComptes(); // refresh liste
+
+    openGererComptes();
 
   } catch (err) {
     console.error(err);
-    // Fallback si pas de service role : on utilise signUp classique
-    if (err.message?.includes('not allowed') || err.message?.includes('admin')) {
-      try {
-        const { data: s2, error: e2 } = await SB.auth.signUp({ email, password: pwd });
-        if (e2) throw e2;
-        await SB.from('profiles').insert([{ id: s2.user.id, email, nom, role }]);
-        showToast('✅ Compte créé — ' + nom + ' doit confirmer son email.');
-        qs('#newUserNom').value = ''; qs('#newUserEmail').value = ''; qs('#newUserPwd').value = '';
-        openGererComptes();
-      } catch (e3) {
-        showToast('❌ Erreur : ' + e3.message);
-      }
-    } else {
-      showToast('❌ Erreur : ' + err.message);
-    }
+    showToast('❌ ' + err.message);
   } finally {
     qs('#btnCreerCompte').textContent = 'Créer le compte';
-    qs('#btnCreerCompte').disabled    = false;
+    qs('#btnCreerCompte').disabled = false;
   }
 });
 
