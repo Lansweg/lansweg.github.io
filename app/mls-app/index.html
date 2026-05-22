@@ -2,18 +2,16 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>Mobilité Littoral & SAM</title>
 
   <!-- Mapbox -->
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
 
-  <!-- Mapbox Geocoder -->
-  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.3/mapbox-gl-geocoder.css" />
-  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.3/mapbox-gl-geocoder.min.js"></script>
-
-  <!-- jsPDF for ticket export -->
+  <!-- jsPDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <!-- Supabase -->
@@ -23,10 +21,10 @@
 </head>
 <body>
 
-<!-- ========== MAP CONTAINER ========== -->
+<!-- MAP -->
 <div id="map"></div>
 
-<!-- ========== TOP BAR ========== -->
+<!-- TOPBAR -->
 <div class="topbar glass">
   <div class="topbar-left">
     <div class="logo">
@@ -39,7 +37,7 @@
   </div>
 
   <div class="topbar-center" id="searchBar">
-    <div class="search-wrap" id="geocoderWrap">
+    <div class="search-wrap">
       <span class="search-icon">⌕</span>
       <input type="text" class="search-input" placeholder="Chercher un lieu…" id="searchInput" autocomplete="off" />
       <button class="search-clear" id="searchClear" style="display:none">✕</button>
@@ -50,7 +48,7 @@
   <div class="topbar-right">
     <button class="icon-btn" id="notifBtn" title="Notifications">
       <span>🔔</span>
-      <span class="badge" id="notifBadge">2</span>
+      <span class="badge" id="notifBadge" style="display:none">0</span>
     </button>
     <button class="avatar-btn" id="profileToggle">
       <img src="https://api.dicebear.com/7.x/thumbs/svg?seed=sam&backgroundColor=2563eb" alt="profil" />
@@ -58,43 +56,36 @@
   </div>
 </div>
 
-<!-- ========== FLOATING BUBBLES ========== -->
+<!-- BUBBLES -->
 <div class="bubbles-container" id="bubblesContainer">
-
   <button class="bubble bubble-new" id="bubbleNew" title="Nouvelle course">
     <span class="bubble-icon">＋</span>
     <span class="bubble-label">Nouvelle</span>
   </button>
-
   <button class="bubble bubble-courses" id="bubbleCourses" title="Courses en cours">
     <span class="bubble-icon">🚗</span>
     <span class="bubble-label">Courses</span>
-    <span class="bubble-badge">3</span>
+    <span class="bubble-badge" style="display:none">0</span>
   </button>
-
   <button class="bubble bubble-benevoles" id="bubbleBenevoles" title="Bénévoles">
     <span class="bubble-icon">👥</span>
     <span class="bubble-label">Bénévoles</span>
   </button>
-
   <button class="bubble bubble-historique" id="bubbleHistorique" title="Historique">
     <span class="bubble-icon">📋</span>
     <span class="bubble-label">Historique</span>
   </button>
-
   <button class="bubble bubble-stats" id="bubbleStats" title="Statistiques">
     <span class="bubble-icon">📊</span>
     <span class="bubble-label">Stats</span>
   </button>
-
   <button class="bubble bubble-sam" id="bubbleSam" title="Mode SAM">
     <span class="bubble-icon">🍺</span>
     <span class="bubble-label">SAM</span>
   </button>
-
 </div>
 
-<!-- ========== BOTTOM SHEET: NOUVELLE COURSE ========== -->
+<!-- SHEET: NOUVELLE COURSE -->
 <div class="sheet" id="sheetNewCourse">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
@@ -113,7 +104,6 @@
     <label>Bénéficiaire</label>
     <input type="text" id="beneficiaireName" placeholder="Nom Prénom" class="input-field" />
   </div>
-
   <div class="field-group">
     <label>Départ</label>
     <div class="addr-row">
@@ -122,7 +112,6 @@
       <button class="locate-btn" id="locateBtn" title="Ma position">◎</button>
     </div>
   </div>
-
   <div class="field-group">
     <label>Arrivée</label>
     <div class="addr-row">
@@ -163,17 +152,12 @@
       <label>Bénévole assigné</label>
       <select class="input-field" id="benevoleSelect">
         <option value="">— Choisir un bénévole —</option>
-        <option value="1">Marie Dupont</option>
-        <option value="2">Jean Martin</option>
-        <option value="3">Sophie Bernard</option>
       </select>
     </div>
-
     <div class="field-group">
       <label>Date & heure</label>
       <input type="datetime-local" class="input-field" id="dateHeure" />
     </div>
-
     <div class="field-group">
       <label>Notes</label>
       <textarea class="input-field" id="courseNotes" rows="2" placeholder="Informations complémentaires…"></textarea>
@@ -181,41 +165,37 @@
 
     <div class="btn-row">
       <button class="btn-secondary" id="btnTicket">🎫 Ticket PDF</button>
-      <button class="btn-primary" id="btnSauvegarder">Enregistrer la course</button>
+      <button class="btn-primary" id="btnSauvegarder">Enregistrer</button>
     </div>
   </div>
 </div>
 
-<!-- ========== BOTTOM SHEET: COURSES EN COURS ========== -->
+<!-- SHEET: COURSES EN COURS -->
 <div class="sheet" id="sheetCourses">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
-    <h2>Courses en cours <span class="count-badge">3</span></h2>
+    <h2>Courses en cours <span class="count-badge">0</span></h2>
     <button class="sheet-close" data-close="sheetCourses">✕</button>
   </div>
-  <div class="course-list" id="courseList">
-    <!-- populated by JS -->
-  </div>
+  <div class="course-list" id="courseList"></div>
 </div>
 
-<!-- ========== BOTTOM SHEET: BÉNÉVOLES ========== -->
+<!-- SHEET: BÉNÉVOLES -->
 <div class="sheet" id="sheetBenevoles">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
     <h2>Bénévoles</h2>
     <button class="sheet-close" data-close="sheetBenevoles">✕</button>
   </div>
-  <div class="benevoles-grid" id="benevolesList">
-    <!-- populated by JS -->
-  </div>
+  <div class="benevoles-grid" id="benevolesList"></div>
   <button class="btn-primary mt16" id="btnAddBenevole">+ Ajouter un bénévole</button>
 </div>
 
-<!-- ========== BOTTOM SHEET: HISTORIQUE ========== -->
+<!-- SHEET: HISTORIQUE -->
 <div class="sheet" id="sheetHistorique">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
-    <h2>Historique des courses</h2>
+    <h2>Historique</h2>
     <button class="sheet-close" data-close="sheetHistorique">✕</button>
   </div>
   <div class="histo-filters">
@@ -224,12 +204,10 @@
     <button class="pill" data-histo="mois">Ce mois</button>
     <button class="pill" data-histo="sam">SAM</button>
   </div>
-  <div class="histo-list" id="histoList">
-    <!-- populated by JS -->
-  </div>
+  <div class="histo-list" id="histoList"></div>
 </div>
 
-<!-- ========== BOTTOM SHEET: STATS ========== -->
+<!-- SHEET: STATS -->
 <div class="sheet" id="sheetStats">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
@@ -238,33 +216,33 @@
   </div>
   <div class="stats-grid">
     <div class="stat-card">
-      <span class="stat-val" id="statTotalCourses">47</span>
+      <span class="stat-val" id="statTotalCourses">—</span>
       <span class="stat-label">Courses ce mois</span>
     </div>
     <div class="stat-card">
-      <span class="stat-val" id="statTotalKm">1 240</span>
+      <span class="stat-val" id="statTotalKm">—</span>
       <span class="stat-label">Kilomètres</span>
     </div>
     <div class="stat-card">
-      <span class="stat-val" id="statTotalBenef">24</span>
+      <span class="stat-val" id="statTotalBenef">—</span>
       <span class="stat-label">Bénéficiaires</span>
     </div>
     <div class="stat-card">
-      <span class="stat-val" id="statSAM">8</span>
+      <span class="stat-val" id="statSAM">—</span>
       <span class="stat-label">Courses SAM</span>
     </div>
     <div class="stat-card full">
       <span class="stat-label">Recettes bénéficiaires (mois)</span>
-      <span class="stat-val green" id="statRecettes">930 €</span>
+      <span class="stat-val green" id="statRecettes">—</span>
     </div>
     <div class="stat-card full">
       <span class="stat-label">Coût essence estimé (mois)</span>
-      <span class="stat-val red" id="statEssence">−428 €</span>
+      <span class="stat-val red" id="statEssence">—</span>
     </div>
   </div>
 </div>
 
-<!-- ========== PANEL NOTIFICATIONS ========== -->
+<!-- PANEL NOTIFICATIONS -->
 <div class="notif-panel glass" id="notifPanel" style="display:none">
   <div class="notif-header">
     <h3>Notifications</h3>
@@ -277,29 +255,27 @@
   </div>
 </div>
 
-<!-- ========== PANEL PROFIL ========== -->
+<!-- PANEL PROFIL -->
 <div class="profile-panel glass" id="profilePanel" style="display:none">
   <div class="profile-header">
     <img src="https://api.dicebear.com/7.x/thumbs/svg?seed=sam&backgroundColor=2563eb" class="profile-avatar" />
     <div>
-      <div class="profile-name" id="profileName">Admin Association</div>
+      <div class="profile-name">Admin Association</div>
       <div class="profile-role">Coordinateur</div>
     </div>
   </div>
   <div class="profile-menu">
-    <button class="pmenu-item">⚙️ Paramètres</button>
     <button class="pmenu-item" id="btnTarifs">💶 Tarifs & Carburant</button>
-    <button class="pmenu-item">📤 Exporter données</button>
-    <button class="pmenu-item" id="btnConfig">🔑 Configuration API</button>
+    <button class="pmenu-item" id="btnConfig">⚙️ Configuration API</button>
     <button class="pmenu-item danger">🚪 Déconnexion</button>
   </div>
 </div>
 
-<!-- ========== MODAL CONFIG ========== -->
+<!-- MODAL CONFIG -->
 <div class="modal-overlay" id="modalConfig" style="display:none">
   <div class="modal glass">
     <div class="modal-header">
-      <h3>Configuration</h3>
+      <h3>⚙️ Configuration</h3>
       <button class="sheet-close" data-modal="modalConfig">✕</button>
     </div>
     <div class="field-group">
@@ -318,7 +294,7 @@
   </div>
 </div>
 
-<!-- ========== MODAL TARIFS ========== -->
+<!-- MODAL TARIFS -->
 <div class="modal-overlay" id="modalTarifs" style="display:none">
   <div class="modal glass">
     <div class="modal-header">
@@ -349,28 +325,28 @@
   </div>
 </div>
 
-<!-- ========== MODAL SQL SETUP ========== -->
+<!-- MODAL SQL -->
 <div class="modal-overlay" id="modalSQL" style="display:none">
-  <div class="modal glass" style="max-width:520px">
+  <div class="modal glass">
     <div class="modal-header">
       <h3>🗄️ Configuration Supabase</h3>
       <button class="sheet-close" data-modal="modalSQL">✕</button>
     </div>
-    <p style="font-size:13px;color:var(--text-2);margin-bottom:14px">
-      La table <code>courses</code> n'existe pas encore dans ta base. Exécute ce SQL dans l'éditeur Supabase → SQL Editor :
+    <p style="font-size:13px;color:var(--text-2);margin-bottom:12px">
+      La table <code>courses</code> n'existe pas encore. Exécute ce SQL dans Supabase → SQL Editor :
     </p>
-    <div class="sql-block" id="sqlBlock">
+    <div class="sql-block">
       <button class="sql-copy" id="btnCopySQL">📋 Copier</button>
       <pre id="sqlContent"></pre>
     </div>
-    <div style="margin-top:14px;display:flex;gap:10px">
-      <a href="https://supabase.com/dashboard" target="_blank" class="btn-secondary" style="flex:1;text-align:center;text-decoration:none;padding:12px;display:block;border-radius:12px;border:1.5px solid var(--border);font-weight:600;font-size:14px">Ouvrir Supabase →</a>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <a href="https://supabase.com/dashboard" target="_blank" class="btn-secondary" style="flex:1;text-align:center;text-decoration:none;padding:12px;display:block;border-radius:var(--radius-md);border:1.5px solid var(--border);font-weight:600;font-size:14px;font-family:var(--font)">Ouvrir Supabase →</a>
       <button class="btn-primary" style="flex:1" data-modal="modalSQL">Fermer</button>
     </div>
   </div>
 </div>
 
-<!-- ========== TOAST ========== -->
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script src="app.js"></script>
