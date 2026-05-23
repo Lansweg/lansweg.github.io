@@ -884,10 +884,13 @@ select.input-field { cursor: pointer; }
 }
 
 .login-card {
-  width: 100%; max-width: 380px;
-  border-radius: var(--radius-xl);
-  padding: 32px 28px 28px;
-  box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 380px;
+    border-radius: var(--radius-xl);
+    padding: 32px 28px 28px;
+    box-shadow: var(--shadow-lg);
 }
 
 .login-logo {
