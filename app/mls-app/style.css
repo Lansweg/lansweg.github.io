@@ -992,3 +992,22 @@ select.input-field { cursor: pointer; }
   background: rgba(52,199,89,0.1); border-radius: 8px;
   padding: 3px 8px; white-space: nowrap;
 }
+
+/* ============================================================
+   FORGOT PASSWORD BUTTON
+   ============================================================ */
+.btn-forgot {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+  cursor: pointer;
+  margin-top: 4px;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s;
+}
+.btn-forgot:hover { background: var(--blue-soft); }
