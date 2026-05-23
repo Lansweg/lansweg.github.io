@@ -207,46 +207,51 @@ qs('#btnCreerCompte').addEventListener('click', async () => {
   qs('#btnCreerCompte').textContent = 'Création…';
   qs('#btnCreerCompte').disabled    = true;
 
+  // Sauvegarde la session admin courante
+  const { data: { session: adminSession } } = await SB.auth.getSession();
+
   try {
-    // Crée le compte Auth Supabase via Admin (service role nécessaire)
-    // On utilise signUp en mode anon puis on force le profil
-    const { data: signData, error: signErr } = await SB.auth.admin.createUser({
+    // Crée le compte avec signUp (ne déconnecte pas l'admin grâce à la restauration après)
+    const { data: signData, error: signErr } = await SB.auth.signUp({
       email,
       password: pwd,
-      email_confirm: true,
-      user_metadata: { nom, role },
+      options: { data: { nom, role } },
     });
     if (signErr) throw signErr;
+    if (!signData.user) throw new Error('Compte non créé — email déjà utilisé ?');
 
-    // Insère dans profiles
-    const { error: profErr } = await SB.from('profiles').insert([{
-      id:    signData.user.id,
+    // Insère le profil directement (le trigger le fera aussi mais on force le rôle/nom)
+    const { error: profErr } = await SB.from('profiles').upsert([{
+      id: signData.user.id,
       email, nom, role,
-    }]);
+    }], { onConflict: 'id' });
     if (profErr) throw profErr;
 
     showToast('✅ Compte créé pour ' + nom + ' !');
     qs('#newUserNom').value   = '';
     qs('#newUserEmail').value = '';
     qs('#newUserPwd').value   = '';
-    openGererComptes(); // refresh liste
+
+    // Restaure la session admin (signUp peut écraser la session en cours)
+    if (adminSession) {
+      await SB.auth.setSession({
+        access_token:  adminSession.access_token,
+        refresh_token: adminSession.refresh_token,
+      });
+    }
+
+    openGererComptes();
 
   } catch (err) {
     console.error(err);
-    // Fallback si pas de service role : on utilise signUp classique
-    if (err.message?.includes('not allowed') || err.message?.includes('admin')) {
-      try {
-        const { data: s2, error: e2 } = await SB.auth.signUp({ email, password: pwd });
-        if (e2) throw e2;
-        await SB.from('profiles').insert([{ id: s2.user.id, email, nom, role }]);
-        showToast('✅ Compte créé — ' + nom + ' doit confirmer son email.');
-        qs('#newUserNom').value = ''; qs('#newUserEmail').value = ''; qs('#newUserPwd').value = '';
-        openGererComptes();
-      } catch (e3) {
-        showToast('❌ Erreur : ' + e3.message);
-      }
-    } else {
-      showToast('❌ Erreur : ' + err.message);
+    showToast('❌ Erreur : ' + (err.message || 'inconnue'));
+
+    // Restaure la session admin même en cas d'erreur
+    if (adminSession) {
+      await SB.auth.setSession({
+        access_token:  adminSession.access_token,
+        refresh_token: adminSession.refresh_token,
+      });
     }
   } finally {
     qs('#btnCreerCompte').textContent = 'Créer le compte';
