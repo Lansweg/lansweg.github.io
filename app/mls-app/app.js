@@ -50,14 +50,8 @@ async function logout() {
 }
 
 async function loadProfile(userId) {
-  const { data, error } = await SB
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .maybeSingle();
-
+  const { data, error } = await SB.from('profiles').select('*').eq('id', userId).single();
   if (error) throw error;
-
   return data;
 }
 
@@ -193,48 +187,56 @@ qs('#btnCreerCompte').addEventListener('click', async () => {
   const pwd   = qs('#newUserPwd').value;
   const role  = qs('#newUserRole').value;
 
-  if (!nom || !email || !pwd) {
-    showToast('⚠️ Tous les champs sont requis.');
-    return;
-  }
-
-  if (pwd.length < 6) {
-    showToast('⚠️ Mot de passe : 6 caractères minimum.');
-    return;
-  }
+  if (!nom || !email || !pwd) { showToast('⚠️ Tous les champs sont requis.'); return; }
+  if (pwd.length < 6)         { showToast('⚠️ Mot de passe : 6 caractères minimum.'); return; }
 
   qs('#btnCreerCompte').textContent = 'Création…';
-  qs('#btnCreerCompte').disabled = true;
+  qs('#btnCreerCompte').disabled    = true;
 
   try {
-
-    const { data, error } = await SB.auth.signUp({
+    // Crée le compte Auth Supabase via Admin (service role nécessaire)
+    // On utilise signUp en mode anon puis on force le profil
+    const { data: signData, error: signErr } = await SB.auth.admin.createUser({
       email,
       password: pwd,
-      options: {
-        data: {
-          nom,
-          role
-        }
-      }
+      email_confirm: true,
+      user_metadata: { nom, role },
     });
+    if (signErr) throw signErr;
 
-    if (error) throw error;
+    // Insère dans profiles
+    const { error: profErr } = await SB.from('profiles').insert([{
+      id:    signData.user.id,
+      email, nom, role,
+    }]);
+    if (profErr) throw profErr;
 
-    showToast('✅ Compte créé avec succès !');
-
+    showToast('✅ Compte créé pour ' + nom + ' !');
     qs('#newUserNom').value   = '';
     qs('#newUserEmail').value = '';
     qs('#newUserPwd').value   = '';
-
-    openGererComptes();
+    openGererComptes(); // refresh liste
 
   } catch (err) {
     console.error(err);
-    showToast('❌ ' + err.message);
+    // Fallback si pas de service role : on utilise signUp classique
+    if (err.message?.includes('not allowed') || err.message?.includes('admin')) {
+      try {
+        const { data: s2, error: e2 } = await SB.auth.signUp({ email, password: pwd });
+        if (e2) throw e2;
+        await SB.from('profiles').insert([{ id: s2.user.id, email, nom, role }]);
+        showToast('✅ Compte créé — ' + nom + ' doit confirmer son email.');
+        qs('#newUserNom').value = ''; qs('#newUserEmail').value = ''; qs('#newUserPwd').value = '';
+        openGererComptes();
+      } catch (e3) {
+        showToast('❌ Erreur : ' + e3.message);
+      }
+    } else {
+      showToast('❌ Erreur : ' + err.message);
+    }
   } finally {
     qs('#btnCreerCompte').textContent = 'Créer le compte';
-    qs('#btnCreerCompte').disabled = false;
+    qs('#btnCreerCompte').disabled    = false;
   }
 });
 
@@ -1185,16 +1187,167 @@ async function bootApp() {
   console.log(`🌊 Connecté en tant que ${currentRole} : ${currentProfile?.nom}`);
 }
 
+
+// ============================================================
+// RESET MOT DE PASSE
+// ============================================================
+
+// Écran reset — toggles visibilité mdp
+function setupResetScreen() {
+  qs('#resetPwdToggle1').addEventListener('click', () => {
+    const i = qs('#resetPwd1');
+    i.type = i.type === 'password' ? 'text' : 'password';
+  });
+  qs('#resetPwdToggle2').addEventListener('click', () => {
+    const i = qs('#resetPwd2');
+    i.type = i.type === 'password' ? 'text' : 'password';
+  });
+
+  qs('#btnResetPwd').addEventListener('click', async () => {
+    const pwd1  = qs('#resetPwd1').value;
+    const pwd2  = qs('#resetPwd2').value;
+    const errEl = qs('#resetError');
+
+    errEl.style.display = 'none';
+
+    if (!pwd1 || !pwd2) {
+      errEl.textContent = '⚠️ Remplis les deux champs.';
+      errEl.style.display = 'block'; return;
+    }
+    if (pwd1.length < 6) {
+      errEl.textContent = '⚠️ Minimum 6 caractères.';
+      errEl.style.display = 'block'; return;
+    }
+    if (pwd1 !== pwd2) {
+      errEl.textContent = '❌ Les mots de passe ne correspondent pas.';
+      errEl.style.display = 'block'; return;
+    }
+
+    qs('#btnResetPwd').textContent = 'Enregistrement…';
+    qs('#btnResetPwd').disabled    = true;
+
+    try {
+      const { error } = await SB.auth.updateUser({ password: pwd1 });
+      if (error) throw error;
+
+      // Succès — redirige vers login
+      qs('#resetScreen').style.display  = 'none';
+      qs('#loginScreen').style.display  = 'flex';
+      qs('#loginError').textContent     = '✅ Mot de passe mis à jour ! Connecte-toi.';
+      qs('#loginError').style.display   = 'block';
+      qs('#loginError').style.background = 'rgba(52,199,89,0.1)';
+      qs('#loginError').style.borderColor = 'rgba(52,199,89,0.3)';
+      qs('#loginError').style.color      = 'var(--green)';
+
+    } catch(err) {
+      errEl.textContent   = '❌ ' + (err.message || 'Erreur inconnue');
+      errEl.style.display = 'block';
+    } finally {
+      qs('#btnResetPwd').textContent = 'Enregistrer le mot de passe';
+      qs('#btnResetPwd').disabled    = false;
+    }
+  });
+}
+
+// Mot de passe oublié — envoie l'email de reset
+qs('#btnForgot').addEventListener('click', async () => {
+  const email = qs('#loginEmail').value.trim();
+  const errEl = qs('#loginError');
+
+  if (!email) {
+    errEl.textContent   = '⚠️ Entre d'abord ton email ci-dessus.';
+    errEl.style.display = 'block';
+    errEl.style.background  = '';
+    errEl.style.borderColor = '';
+    errEl.style.color       = '';
+    return;
+  }
+
+  qs('#btnForgot').textContent = 'Envoi…';
+  qs('#btnForgot').disabled    = true;
+
+  try {
+    const { error } = await SB.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://lansweg.github.io/app/mls-app/',
+    });
+    if (error) throw error;
+
+    errEl.textContent       = '📧 Email envoyé à ' + email + ' !';
+    errEl.style.display     = 'block';
+    errEl.style.background  = 'rgba(52,199,89,0.1)';
+    errEl.style.borderColor = 'rgba(52,199,89,0.3)';
+    errEl.style.color       = 'var(--green)';
+
+  } catch(err) {
+    errEl.textContent       = '❌ ' + (err.message || 'Erreur envoi email');
+    errEl.style.display     = 'block';
+    errEl.style.background  = '';
+    errEl.style.borderColor = '';
+    errEl.style.color       = '';
+  } finally {
+    qs('#btnForgot').textContent = 'Mot de passe oublié ?';
+    qs('#btnForgot').disabled    = false;
+  }
+});
+
+// Changer mdp depuis le menu profil (utilisateur connecté)
+qs('#btnChangerMdp').addEventListener('click', async () => {
+  qs('#profilePanel').style.display = 'none';
+
+  const email = currentUser?.email;
+  if (!email) { showToast('❌ Utilisateur non identifié.'); return; }
+
+  try {
+    const { error } = await SB.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://lansweg.github.io/app/mls-app/',
+    });
+    if (error) throw error;
+    showToast('📧 Email de reset envoyé à ' + email + ' !', 4000);
+  } catch(err) {
+    showToast('❌ ' + (err.message || 'Erreur envoi email'));
+  }
+});
+
 // ============================================================
 // INIT — vérifie session existante
 // ============================================================
 async function init() {
   initSupabase();
+  setupResetScreen();
+
+  // Détecte si Supabase a redirigé avec un token de reset dans le hash
+  const hash   = window.location.hash;
+  const params = new URLSearchParams(hash.replace('#', ''));
+  const type   = params.get('type');
+
+  if (type === 'recovery') {
+    // L'utilisateur arrive depuis un email de reset
+    // Supabase a déjà établi une session temporaire via le hash
+    const { data: { session } } = await SB.auth.getSession();
+    if (session) {
+      // Nettoie l'URL sans recharger
+      history.replaceState(null, '', window.location.pathname);
+      // Affiche l'écran de nouveau mot de passe
+      qs('#loginScreen').style.display = 'none';
+      qs('#resetScreen').style.display = 'flex';
+      return;
+    }
+  }
+
+  // Supabase v2 : écoute aussi l'event PASSWORD_RECOVERY
+  SB.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      history.replaceState(null, '', window.location.pathname);
+      qs('#loginScreen').style.display = 'none';
+      qs('#appMain').style.display     = 'none';
+      qs('#resetScreen').style.display = 'flex';
+    }
+  });
 
   // Vérifie si une session est déjà active (rechargement de page)
   const { data: { session } } = await SB.auth.getSession();
 
-  if (session?.user) {
+  if (session?.user && type !== 'recovery') {
     try {
       currentUser    = session.user;
       currentProfile = await loadProfile(currentUser.id);
@@ -1206,7 +1359,7 @@ async function init() {
       console.error('Session invalide', err);
       showLoginScreen();
     }
-  } else {
+  } else if (!type) {
     showLoginScreen();
   }
 }
