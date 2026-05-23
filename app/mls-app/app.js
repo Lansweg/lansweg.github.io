@@ -1255,7 +1255,7 @@ qs('#btnForgot').addEventListener('click', async () => {
   const errEl = qs('#loginError');
 
   if (!email) {
-    errEl.textContent   = '⚠️ Entre d''abord ton email ci-dessus.';
+    errEl.textContent   = '⚠️ Tape ton email ci-dessus.';
     errEl.style.display = 'block';
     errEl.style.background  = '';
     errEl.style.borderColor = '';
