@@ -36,7 +36,35 @@
     </div>
     <div class="login-error" id="loginError" style="display:none"></div>
     <button class="btn-primary" id="btnLogin">Se connecter</button>
+    <button class="btn-forgot" id="btnForgot" type="button">Mot de passe oublié ?</button>
     <p class="login-hint">Accès réservé aux membres de l'association</p>
+  </div>
+</div>
+
+<!-- ========== ÉCRAN RESET MOT DE PASSE ========== -->
+<div id="resetScreen" class="login-screen" style="display:none">
+  <div class="login-card glass">
+    <div class="login-logo">
+      <div class="login-logo-icon">🔑</div>
+      <h1 class="login-title">Nouveau mot de passe</h1>
+      <p class="login-sub">Mobilité Littoral & SAM</p>
+    </div>
+    <div class="field-group">
+      <label>Nouveau mot de passe</label>
+      <div class="pwd-wrap">
+        <input type="password" class="input-field" id="resetPwd1" placeholder="Min. 6 caractères" />
+        <button class="pwd-toggle" id="resetPwdToggle1" type="button">👁</button>
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Confirmer le mot de passe</label>
+      <div class="pwd-wrap">
+        <input type="password" class="input-field" id="resetPwd2" placeholder="Répétez le mot de passe" />
+        <button class="pwd-toggle" id="resetPwdToggle2" type="button">👁</button>
+      </div>
+    </div>
+    <div class="login-error" id="resetError" style="display:none"></div>
+    <button class="btn-primary" id="btnResetPwd">Enregistrer le mot de passe</button>
   </div>
 </div>
 
@@ -284,6 +312,7 @@
       <button class="pmenu-item admin-only" id="btnTarifs">💶 Tarifs & Carburant</button>
       <button class="pmenu-item admin-only" id="btnConfig">⚙️ Configuration API</button>
       <button class="pmenu-item admin-only" id="btnGererComptes">👥 Gérer les comptes</button>
+      <button class="pmenu-item" id="btnChangerMdp">🔑 Changer mon mot de passe</button>
       <button class="pmenu-item danger" id="btnDeconnexion">🚪 Déconnexion</button>
     </div>
   </div>
