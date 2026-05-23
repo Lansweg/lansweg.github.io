@@ -51,6 +51,20 @@ async function logout() {
 
 async function loadProfile(userId) {
   const { data, error } = await SB.from('profiles').select('*').eq('id', userId).single();
+
+  // Profil inexistant → on le crée à la volée
+  if (error && (error.code === 'PGRST116' || error.details?.includes('0 rows'))) {
+    const user = (await SB.auth.getUser()).data.user;
+    const nom  = user?.email ? user.email.split('@')[0] : 'Utilisateur';
+    const { data: newProfile, error: insertError } = await SB
+      .from('profiles')
+      .insert([{ id: userId, email: user?.email, nom, role: 'benevole' }])
+      .select()
+      .single();
+    if (insertError) throw insertError;
+    return newProfile;
+  }
+
   if (error) throw error;
   return data;
 }
