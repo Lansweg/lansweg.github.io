@@ -8,9 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ═══════════════════════════════════════════════════
-   THÈMES — dark (défaut) + claire (clair)
-═══════════════════════════════════════════════════ */
 :root {
   --bg:#0D0F14;--bg2:#13161E;--bg3:#1A1E29;--bg4:#222739;
   --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
@@ -43,21 +40,9 @@
 html,body{height:100%;overflow:hidden}
 body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);font-size:14px;transition:background .3s,color .3s}
 
-/* ══ LAYOUT DESKTOP ══════════════════════════════ */
-.layout{
-  display:grid;
-  grid-template-columns:var(--sidebar-w) 5px 1fr;
-  grid-template-rows:var(--topbar-h) 1fr;
-  height:100vh;overflow:hidden;
-}
+.layout{display:grid;grid-template-columns:var(--sidebar-w) 5px 1fr;grid-template-rows:var(--topbar-h) 1fr;height:100vh;overflow:hidden;}
 
-/* ══ TOPBAR ══════════════════════════════════════ */
-.topbar{
-  grid-column:1/-1;grid-row:1;
-  background:var(--bg2);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 16px;gap:12px;
-  position:relative;z-index:100;
-}
+.topbar{grid-column:1/-1;grid-row:1;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;position:relative;z-index:100;}
 .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--text);letter-spacing:-0.5px;flex-shrink:0}
 .logo span{color:var(--orange)}
 .live-indicator{display:none;align-items:center;gap:7px;background:rgba(232,64,64,.15);border:1px solid rgba(232,64,64,.3);border-radius:50px;padding:4px 12px;font-size:12px;font-weight:700;color:var(--red);flex-shrink:0}
@@ -78,45 +63,28 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);fon
 .theme-toggle-opt{padding:3px 9px;border-radius:50px;transition:all .15s;white-space:nowrap}
 .theme-toggle-opt.active{background:var(--orange);color:#fff}
 
-/* ══ SIDEBAR ════════════════════════════════════ */
 .sidebar{grid-column:1;grid-row:2;background:var(--bg2);overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:160px;max-width:420px;}
 .sidebar-resize-handle{grid-column:2;grid-row:2;background:var(--border);cursor:col-resize;display:flex;align-items:center;justify-content:center;transition:background .15s}
 .sidebar-resize-handle:hover{background:var(--border2)}
 .sidebar-resize-handle::after{content:'';width:2px;height:40px;background:var(--muted2);border-radius:2px}
 .main{grid-column:3;grid-row:2;min-width:0;overflow:hidden;display:flex;flex-direction:column;}
 
-/* ══ MOBILE NAV BAR ════════════════════════════ */
-.mobile-nav{
-  display:none;
-  position:fixed;bottom:0;left:0;right:0;z-index:200;
-  background:var(--bg2);border-top:1px solid var(--border);
-  padding:0 0 env(safe-area-inset-bottom,0);
-  height:calc(var(--mobile-nav-h) + env(safe-area-inset-bottom,0));
-}
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--bg2);border-top:1px solid var(--border);padding:0 0 env(safe-area-inset-bottom,0);height:calc(var(--mobile-nav-h) + env(safe-area-inset-bottom,0));}
 .mobile-nav-inner{display:flex;height:var(--mobile-nav-h)}
 .mobile-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;transition:color .15s;padding:0}
 .mobile-nav-btn.active{color:var(--orange)}
 .mobile-nav-icon{font-size:20px;line-height:1}
 .mobile-nav-btn.active .mobile-nav-icon{transform:scale(1.1)}
 
-/* ══ MOBILE SIDEBAR DRAWER ═══════════════════ */
 .sidebar-drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;backdrop-filter:blur(2px)}
 .sidebar-drawer-overlay.open{display:block}
-.sidebar-drawer{
-  position:fixed;left:0;top:0;bottom:0;width:280px;z-index:151;
-  background:var(--bg2);border-right:1px solid var(--border);
-  overflow-y:auto;padding:20px 16px;
-  transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);
-  display:flex;flex-direction:column;gap:12px;
-}
+.sidebar-drawer{position:fixed;left:0;top:0;bottom:0;width:280px;z-index:151;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:20px 16px;transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;gap:12px;}
 .sidebar-drawer.open{transform:translateX(0)}
 .drawer-close{align-self:flex-end;background:var(--bg4);border:none;color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
 
-/* ══ VIEWS ═══════════════════════════════════ */
 .view{display:none;flex:1;overflow:hidden}
 .view.active{display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0}
 
-/* ══ BUTTONS ═════════════════════════════════ */
 .btn{padding:8px 18px;border-radius:50px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:7px;font-family:'Manrope',sans-serif;white-space:nowrap;touch-action:manipulation}
 .btn.orange{background:var(--orange);color:#fff}.btn.orange:active{opacity:.88}
 .btn.ghost{background:var(--bg4);color:var(--text);border:1px solid var(--border2)}.btn.ghost:active{background:var(--bg3)}
@@ -129,7 +97,6 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);fon
 .btn.sm{padding:5px 12px;font-size:12px}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* ══ FORMS ═══════════════════════════════════ */
 .finput{width:100%;padding:9px 13px;border:1.5px solid var(--border2);border-radius:var(--r);font-family:'Manrope',sans-serif;font-size:13px;background:var(--bg3);color:var(--text);outline:none;transition:border .2s;-webkit-appearance:none}
 .finput:focus{border-color:var(--orange)}
 .finput::placeholder{color:var(--muted2)}
@@ -140,18 +107,15 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);fon
 .frow4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
 select.finput option{background:var(--bg3)}
 
-/* ══ START SCREEN ════════════════════════════ */
 .start-screen{flex:1;display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
 .start-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);padding:28px 24px;width:100%;max-width:480px}
 .start-box h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px}
 .start-box p{color:var(--muted);font-size:13px;margin-bottom:20px}
 
-/* ══ LIVE LAYOUT ══════════════════════════════ */
 .live-layout{flex:1;display:grid;grid-template-columns:1fr 5px var(--panel-w);overflow:hidden;height:100%}
 .paniers-zone{padding:14px;overflow-y:auto;min-height:0}
 .paniers-topbar{display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap}
 
-/* ══ STATS ═══════════════════════════════════ */
 .live-stats-row{display:flex;gap:8px;margin-bottom:12px}
 .lstat{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;flex:1;display:flex;flex-direction:column;gap:2px}
 .lstat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:20px}
@@ -163,7 +127,6 @@ select.finput option{background:var(--bg3)}
 .spoiler-mask{position:absolute;inset:0;border-radius:var(--r);background:var(--bg3);display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;font-weight:700;color:var(--muted);transition:opacity .25s}
 .lstat.spoiler.revealed .spoiler-mask{opacity:0;pointer-events:none}
 
-/* ══ PANIERS GRID ════════════════════════════ */
 .paniers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:5px}
 .p-btn{border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg3);cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:0;position:relative;padding:7px 5px 6px;min-height:68px;touch-action:manipulation}
 .p-btn:active{transform:scale(.96)}
@@ -187,7 +150,6 @@ select.finput option{background:var(--bg3)}
 .p-add{aspect-ratio:1;border-radius:var(--r);border:1.5px dashed var(--border2);background:transparent;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--muted);min-height:68px;touch-action:manipulation}
 .p-add:active{border-color:var(--orange);color:var(--orange);background:var(--orange-dim)}
 
-/* ══ PANIER PANEL ════════════════════════════ */
 .panier-panel{background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
 .pp-header{padding:12px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
 .pp-title{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
@@ -196,7 +158,6 @@ select.finput option{background:var(--bg3)}
 .pp-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);gap:10px;font-size:13px}
 .pp-empty-icon{font-size:48px}
 
-/* ══ ARTICLES ════════════════════════════════ */
 .art-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
 .art-row:last-child{border-bottom:none}
 .art-emoji{font-size:18px;flex-shrink:0;width:26px;text-align:center}
@@ -208,7 +169,6 @@ select.finput option{background:var(--bg3)}
 .del-btn{background:none;border:none;color:var(--red);cursor:pointer;font-size:18px;opacity:.5;transition:opacity .15s;padding:4px;touch-action:manipulation}
 .del-btn:active{opacity:1}
 
-/* ══ TOTAL / NOTE ════════════════════════════ */
 .pp-total{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
 .pp-total-label{font-size:13px;color:var(--muted)}
 .pp-total-amount{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--green)}
@@ -218,7 +178,6 @@ select.finput option{background:var(--bg3)}
 .note-area:focus{border-color:var(--orange)}
 .note-area::placeholder{color:var(--muted2)}
 
-/* ══ QUICK CHIPS ══════════════════════════════ */
 .add-art-bar{display:flex;gap:6px;margin-bottom:10px}
 .add-art-bar .finput{flex:1}
 .quick-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
@@ -232,23 +191,60 @@ select.finput option{background:var(--bg3)}
 .sep{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin:10px 0 7px;display:flex;align-items:center;gap:8px}
 .sep::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* ══ CATALOGUE ═══════════════════════════════ */
+/* ══ CATALOGUE COMPACT ══════════════════════════════════════ */
 .cat-view{padding:16px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
-.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
-.cat-card{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r2);padding:14px;display:flex;flex-direction:column;gap:5px;transition:border-color .15s}
-.cat-emoji{font-size:26px}
-.cat-name{font-weight:700;font-size:14px}
-.cat-price{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--orange)}
-.cat-tag{font-size:11px;color:var(--muted)}
-.cat-del{background:none;border:none;color:var(--red);cursor:pointer;font-size:12px;opacity:.5;align-self:flex-end;margin-top:auto;transition:opacity .15s;padding:4px;touch-action:manipulation}
-.cat-stock-row{display:flex;align-items:center;gap:6px;margin-top:2px;flex-wrap:wrap}
-.cat-stock-badge{font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;background:var(--green-dim);color:var(--green)}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:7px}
+.cat-card{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:10px 11px;display:flex;flex-direction:column;gap:3px;transition:border-color .15s}
+.cat-card:hover{border-color:var(--border2)}
+.cat-card-top{display:flex;align-items:center;gap:7px;margin-bottom:2px}
+.cat-emoji{font-size:20px;flex-shrink:0}
+.cat-name{font-weight:700;font-size:13px;line-height:1.2;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat-price{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--orange)}
+.cat-tag{font-size:10px;color:var(--muted)}
+.cat-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:4px;gap:4px}
+.cat-del{background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;opacity:.45;transition:opacity .15s;padding:2px 4px;touch-action:manipulation}
+.cat-del:hover{opacity:1}
+.cat-stock-row{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.cat-stock-badge{font-size:10px;font-weight:800;padding:2px 6px;border-radius:20px;background:var(--green-dim);color:var(--green)}
 .cat-stock-badge.low{background:var(--yellow-dim);color:var(--yellow)}
 .cat-stock-badge.out{background:var(--red-dim);color:var(--red)}
-.stock-ctrl{display:flex;align-items:center;gap:4px}
-.stock-btn{width:24px;height:24px;border-radius:50%;border:1px solid var(--border2);background:var(--bg4);color:var(--text);cursor:pointer;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;touch-action:manipulation}
-.stock-num{font-size:12px;font-weight:700;min-width:22px;text-align:center}
+.stock-ctrl{display:flex;align-items:center;gap:3px}
+.stock-btn{width:20px;height:20px;border-radius:50%;border:1px solid var(--border2);background:var(--bg4);color:var(--text);cursor:pointer;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;touch-action:manipulation}
+.stock-num{font-size:11px;font-weight:700;min-width:18px;text-align:center}
 .cat-card.no-stock{opacity:.6;border-style:dashed}
+
+/* ══ RÉSERVATIONS ═══════════════════════════════════════════ */
+.resa-view{padding:16px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
+.resa-link-box{background:var(--orange-dim);border:1px solid rgba(244,114,43,.3);border-radius:var(--r2);padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.resa-link-url{font-size:12px;font-weight:700;color:var(--orange2);word-break:break-all;flex:1;min-width:0;font-family:'Manrope',sans-serif}
+.resa-item{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r2);padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:all .15s}
+.resa-item:hover{border-color:var(--border2)}
+.resa-item.new{border-left:3px solid var(--orange)}
+.resa-item.seen{border-left:3px solid var(--muted2)}
+.resa-item.done{border-left:3px solid var(--green);opacity:.7}
+.resa-badge{width:36px;height:36px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.resa-badge.new{background:var(--orange-dim)}
+.resa-badge.seen{background:var(--bg4)}
+.resa-badge.done{background:var(--green-dim)}
+.resa-info{flex:1;min-width:0}
+.resa-name{font-weight:800;font-size:13px}
+.resa-articles{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.resa-meta{font-size:10px;color:var(--muted2);margin-top:3px}
+.resa-total{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;white-space:nowrap;color:var(--orange)}
+.resa-status-pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
+.resa-status-pill.new{background:var(--orange-dim);color:var(--orange)}
+.resa-status-pill.seen{background:var(--bg4);color:var(--muted)}
+.resa-status-pill.done{background:var(--green-dim);color:var(--green)}
+.resa-empty{text-align:center;padding:50px 20px;color:var(--muted)}
+.resa-filter-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.filter-pill{padding:5px 13px;border-radius:50px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border2);background:transparent;color:var(--muted);transition:all .15s;font-family:'Manrope',sans-serif}
+.filter-pill.active{background:var(--orange);border-color:var(--orange);color:#fff}
+.resa-stats-row{display:flex;gap:8px;margin-bottom:14px}
+
+/* Modal détail réservation */
+.resa-detail-items{margin:12px 0}
+.resa-detail-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)}
+.resa-detail-item:last-child{border-bottom:none}
 
 /* ══ DOCS ════════════════════════════════════ */
 .docs-view{padding:16px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
@@ -266,25 +262,15 @@ select.finput option{background:var(--bg3)}
 .badge.devis{background:var(--blue-dim);color:var(--blue)}
 .badge.facture{background:var(--green-dim);color:var(--green)}
 
-/* ══ MODALS ══════════════════════════════════ */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;align-items:flex-end;justify-content:center;padding:0;backdrop-filter:blur(3px)}
 .overlay.open{display:flex}
-.modal{
-  background:var(--bg2);border:1px solid var(--border2);
-  border-radius:var(--r2) var(--r2) 0 0;
-  width:100%;max-width:100%;
-  max-height:92vh;overflow-y:auto;
-  padding:20px;
-  animation:mIn .25s cubic-bezier(.34,1.56,.64,1);
-  -webkit-overflow-scrolling:touch;
-}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2) var(--r2) 0 0;width:100%;max-width:100%;max-height:92vh;overflow-y:auto;padding:20px;animation:mIn .25s cubic-bezier(.34,1.56,.64,1);-webkit-overflow-scrolling:touch;}
 .modal.wide,.modal.xl{max-width:100%;border-radius:var(--r2) var(--r2) 0 0}
 @keyframes mIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .modal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:17px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
 .modal-close{background:var(--bg4);border:none;color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;touch-action:manipulation;flex-shrink:0}
 .modal-drag-handle{width:40px;height:4px;border-radius:2px;background:var(--border2);margin:0 auto 16px}
 
-/* ══ RECAP TABLE ══════════════════════════════ */
 .doc-table{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0}
 .doc-table th{text-align:left;padding:6px 8px;background:var(--bg3);font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border:1px solid var(--border2)}
 .doc-table td{padding:7px 8px;border:1px solid var(--border)}
@@ -292,7 +278,6 @@ select.finput option{background:var(--bg3)}
 .recap-table th{text-align:left;padding:7px 8px;background:var(--bg3);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);border-bottom:1px solid var(--border)}
 .recap-table td{padding:8px 8px;border-bottom:1px solid var(--border)}
 
-/* ══ TOASTS ══════════════════════════════════ */
 .toasts{position:fixed;bottom:calc(var(--mobile-nav-h) + env(safe-area-inset-bottom,0) + 10px);right:12px;z-index:500;display:flex;flex-direction:column;gap:6px}
 .toast{background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:10px 14px;border-radius:var(--r);font-size:13px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,.4);display:flex;align-items:center;gap:8px;animation:tIn .25s cubic-bezier(.34,1.56,.64,1);max-width:300px}
 .toast.ok{border-left:3px solid var(--green)}
@@ -300,12 +285,10 @@ select.finput option{background:var(--bg3)}
 .toast.info{border-left:3px solid var(--blue)}
 @keyframes tIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-/* ══ SCROLLBAR ═══════════════════════════════ */
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
 
-/* ══ HISTORY ══════════════════════════════════ */
 .history-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:7px;touch-action:manipulation}
 .history-item.readonly-live{border-left:3px solid var(--purple)}
 .history-view-banner{background:var(--purple-dim);border:1px solid rgba(167,139,250,.3);border-radius:var(--r);padding:10px 12px;font-size:12px;color:var(--purple);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -315,7 +298,6 @@ select.finput option{background:var(--bg3)}
 .info-box{background:var(--blue-dim);border:1px solid rgba(78,158,245,.2);border-radius:var(--r);padding:10px 12px;font-size:12px;color:var(--blue);margin-bottom:10px}
 .post-live-info-box{background:var(--teal-dim);border:1px solid rgba(6,182,212,.25);border-radius:var(--r);padding:10px 12px;font-size:12px;color:var(--teal);margin-bottom:10px;display:flex;align-items:center;gap:8px}
 
-/* ══ SETTINGS ═════════════════════════════════ */
 .settings-view{padding:16px;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch}
 .settings-section{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);padding:16px;margin-bottom:14px}
 .settings-section h3{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;margin-bottom:12px}
@@ -323,7 +305,6 @@ select.finput option{background:var(--bg3)}
 .logo-preview{max-height:70px;max-width:180px;border-radius:var(--r);margin-bottom:8px}
 .section-divider{height:1px;background:var(--border);margin:14px 0}
 
-/* ══ LOADING / LOCK ══════════════════════════ */
 #loading-screen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 .spinner{width:40px;height:40px;border:3px solid var(--border2);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -342,97 +323,47 @@ select.finput option{background:var(--bg3)}
 .lock-hint{font-size:12px;color:var(--muted2);margin-top:12px}
 .lock-attempts{font-size:12px;color:var(--red);margin-top:8px;min-height:18px}
 
-/* ══ DOC EDITOR ══════════════════════════════ */
 .remise-row{display:grid;grid-template-columns:1fr 90px 80px 32px;gap:4px;margin-bottom:6px;align-items:center;background:var(--yellow-dim);border:1px solid rgba(245,200,66,.2);border-radius:var(--r);padding:7px 8px}
 .doc-actions-bar{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
 .search-results-badge{display:inline-flex;align-items:center;gap:5px;background:var(--yellow-dim);border:1px solid rgba(245,200,66,.3);border-radius:50px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--yellow)}
-.post-live-add-banner{background:var(--teal-dim);border:1px solid rgba(6,182,212,.3);border-radius:var(--r);padding:10px 12px;margin-bottom:10px;font-size:12px;color:var(--teal);font-weight:600;display:flex;align-items:center;gap:8px}
 
-/* ══ MOBILE PANEL SHEET ═══════════════════════
-   Sur mobile, le panier s'affiche en bottom sheet */
-.mobile-panel-sheet{
-  display:none;
-  position:fixed;inset:0;z-index:250;
-  background:rgba(0,0,0,.5);
-  backdrop-filter:blur(2px);
-  align-items:flex-end;
-}
+.mobile-panel-sheet{display:none;position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.5);backdrop-filter:blur(2px);align-items:flex-end;}
 .mobile-panel-sheet.open{display:flex}
-.mobile-panel-inner{
-  background:var(--bg2);
-  border-radius:16px 16px 0 0;
-  border-top:1px solid var(--border2);
-  width:100%;
-  max-height:88vh;
-  display:flex;flex-direction:column;
-  overflow:hidden;
-  animation:sheetIn .25s cubic-bezier(.4,0,.2,1);
-  padding-bottom:env(safe-area-inset-bottom,0);
-}
+.mobile-panel-inner{background:var(--bg2);border-radius:16px 16px 0 0;border-top:1px solid var(--border2);width:100%;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;animation:sheetIn .25s cubic-bezier(.4,0,.2,1);padding-bottom:env(safe-area-inset-bottom,0);}
 @keyframes sheetIn{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .sheet-drag{width:40px;height:4px;border-radius:2px;background:var(--border2);margin:12px auto 8px;flex-shrink:0;cursor:pointer}
 
-/* ══ RESPONSIVE — MOBILE ══════════════════════ */
+/* ══ RESPONSIVE ══════════════════════════════ */
 @media (max-width: 768px) {
-  .layout{
-    grid-template-columns:1fr;
-    grid-template-rows:var(--topbar-h) 1fr;
-  }
+  .layout{grid-template-columns:1fr;grid-template-rows:var(--topbar-h) 1fr;}
   .sidebar,.sidebar-resize-handle{display:none}
   .main{grid-column:1;grid-row:2}
   .mobile-nav{display:flex}
   .toasts{bottom:calc(var(--mobile-nav-h) + env(safe-area-inset-bottom,0) + 12px)}
-
-  /* Topbar mobile */
   .topbar-nav{display:none}
   .logo{font-size:16px}
   .topbar{padding:0 12px;gap:8px}
-
-  /* Sync label hidden on mobile */
   #sync-label{display:none}
   .theme-toggle{padding:3px}
   .theme-toggle-opt{padding:3px 7px;font-size:10px}
-
-  /* Live layout: grille plein écran, panel = sheet */
-  .live-layout{
-    display:block;
-    height:100%;overflow:hidden;
-  }
-  .paniers-zone{
-    height:100%;padding:10px;
-    padding-bottom:calc(var(--mobile-nav-h) + env(safe-area-inset-bottom,0) + 10px);
-  }
+  .live-layout{display:block;height:100%;overflow:hidden;}
+  .paniers-zone{height:100%;padding:10px;padding-bottom:calc(var(--mobile-nav-h) + env(safe-area-inset-bottom,0) + 10px);}
   .resize-handle{display:none}
-  .panier-panel{display:none} /* remplacé par sheet */
-
-  /* Stats sur mobile: plus compact */
+  .panier-panel{display:none}
   .lstat-num{font-size:18px}
   .lstat{padding:8px 10px}
-
-  /* Grid paniers: 4 colonnes sur mobile */
   .paniers-grid{grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:4px}
   .p-btn{min-height:62px;padding:6px 4px 5px}
   .p-num{font-size:15px}
-
-  /* Topbar paniers */
   .paniers-topbar{gap:5px}
   .paniers-topbar .finput{font-size:12px;padding:7px 10px}
   #jump-input{width:80px!important}
   #search-name-input{width:130px!important}
-
-  /* Catalogue */
-  .cat-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
-
-  /* Forms */
+  .cat-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
   .frow4{grid-template-columns:1fr 1fr}
   .frow3{grid-template-columns:1fr 1fr}
-
-  /* Start screen */
   .start-box{padding:20px 16px}
-
-  /* History banner */
   .history-view-banner{font-size:11px;padding:8px 10px}
-  .history-view-banner span{font-size:11px}
 }
 
 @media (max-width: 420px) {
@@ -443,6 +374,7 @@ select.finput option{background:var(--bg3)}
   .frow4{grid-template-columns:1fr 1fr}
   .live-stats-row{gap:5px}
   .lstat-label{font-size:9px}
+  .cat-grid{grid-template-columns:repeat(2,1fr)}
 }
 
 @media (min-width: 769px) {
@@ -481,16 +413,14 @@ select.finput option{background:var(--bg3)}
 
 <div class="layout" id="app" style="display:none">
 
-  <!-- TOPBAR -->
   <div class="topbar">
-    <!-- Mobile: hamburger pour historique -->
     <button id="drawer-toggle" onclick="openDrawer()" style="display:none;background:var(--bg4);border:1px solid var(--border2);color:var(--text);width:34px;height:34px;border-radius:var(--r);cursor:pointer;font-size:18px;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation">☰</button>
     <div class="logo">FC<span>ÉVÉNEMENT</span></div>
     <div class="live-indicator" id="live-ind"><div class="live-dot"></div><span class="hide-xs">EN DIRECT</span></div>
-    <!-- Desktop nav -->
     <div class="topbar-nav">
       <button class="topbar-tab active" onclick="switchTab('live',this)">🎥 Live</button>
       <button class="topbar-tab" onclick="switchTab('catalogue',this)">📦 Catalogue</button>
+      <button class="topbar-tab" onclick="switchTab('reservations',this)">🛒 Réservations</button>
       <button class="topbar-tab" onclick="switchTab('docs',this)">📄 Devis / Factures</button>
       <button class="topbar-tab" onclick="switchTab('settings',this)">⚙️ Mon entreprise</button>
     </div>
@@ -504,7 +434,6 @@ select.finput option{background:var(--bg3)}
     </div>
   </div>
 
-  <!-- SIDEBAR DRAWER OVERLAY (mobile) -->
   <div class="sidebar-drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
   <div class="sidebar-drawer" id="sidebar-drawer">
     <button class="drawer-close" onclick="closeDrawer()">✕</button>
@@ -512,7 +441,6 @@ select.finput option{background:var(--bg3)}
     <div id="history-list-drawer"><div style="font-size:12px;color:var(--muted2);padding:8px 0">Chargement…</div></div>
   </div>
 
-  <!-- SIDEBAR (desktop) -->
   <div class="sidebar">
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:2px">Historique lives</div>
     <div id="history-list"><div style="font-size:12px;color:var(--muted2);padding:8px 0">Chargement…</div></div>
@@ -520,6 +448,7 @@ select.finput option{background:var(--bg3)}
   <div class="sidebar-resize-handle" id="sidebar-resize-handle"></div>
 
   <div class="main">
+
     <!-- LIVE VIEW -->
     <div class="view active" id="view-live">
       <div class="start-screen" id="start-screen">
@@ -568,7 +497,6 @@ select.finput option{background:var(--bg3)}
             </div>
             <div class="paniers-grid" id="paniers-grid"></div>
           </div>
-          <!-- Desktop panel -->
           <div class="resize-handle" id="panel-resize-handle"></div>
           <div class="panier-panel">
             <div class="pp-empty" id="pp-empty"><div class="pp-empty-icon">🛒</div><div>Cliquez sur un panier</div></div>
@@ -600,6 +528,36 @@ select.finput option{background:var(--bg3)}
           <button class="btn orange sm" onclick="openModal('modal-cat')">+ Ajouter</button>
         </div>
         <div class="cat-grid" id="cat-grid"></div>
+      </div>
+    </div>
+
+    <!-- RESERVATIONS VIEW -->
+    <div class="view" id="view-reservations">
+      <div class="resa-view">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:17px">🛒 Réservations</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:1px">Commandes reçues via le formulaire public</div>
+          </div>
+          <button class="btn orange sm" onclick="showResaLinkModal()">🔗 Lien public</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="resa-stats-row">
+          <div class="lstat orange"><div class="lstat-num" id="rsa-new">0</div><div class="lstat-label">Nouvelles</div></div>
+          <div class="lstat blue"><div class="lstat-num" id="rsa-seen">0</div><div class="lstat-label">En cours</div></div>
+          <div class="lstat green"><div class="lstat-num" id="rsa-done">0</div><div class="lstat-label">Traitées</div></div>
+        </div>
+
+        <!-- Filtres -->
+        <div class="resa-filter-bar">
+          <button class="filter-pill active" onclick="filterResa('all',this)">Toutes</button>
+          <button class="filter-pill" onclick="filterResa('new',this)">🆕 Nouvelles</button>
+          <button class="filter-pill" onclick="filterResa('seen',this)">👁 En cours</button>
+          <button class="filter-pill" onclick="filterResa('done',this)">✓ Traitées</button>
+        </div>
+
+        <div id="resa-list"></div>
       </div>
     </div>
 
@@ -654,6 +612,17 @@ select.finput option{background:var(--bg3)}
           </div>
           <button class="btn orange" onclick="saveSettings()">💾 Enregistrer</button>
         </div>
+
+        <!-- Réservations settings -->
+        <div class="settings-section">
+          <h3>🛒 Formulaire de réservation</h3>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Personnalisez le message affiché sur la page publique de réservation.</div>
+          <div class="fgroup"><label class="flabel">Titre du formulaire</label><input class="finput" id="s-resa-title" placeholder="Réservez vos articles live FC Événement"></div>
+          <div class="fgroup"><label class="flabel">Message d'accueil</label><textarea class="note-area" id="s-resa-msg" placeholder="Bienvenue ! Sélectionnez vos articles et envoyez votre réservation." style="min-height:72px"></textarea></div>
+          <div class="fgroup"><label class="flabel">Message de confirmation</label><textarea class="note-area" id="s-resa-confirm" placeholder="Merci pour votre réservation ! Nous vous contacterons rapidement." style="min-height:56px"></textarea></div>
+          <button class="btn orange" onclick="saveSettings()">💾 Enregistrer</button>
+        </div>
+
         <div class="settings-section">
           <h3>🔐 Code d'accès</h3>
           <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Le code est stocké hashé dans Supabase.</div>
@@ -679,6 +648,9 @@ select.finput option{background:var(--bg3)}
       </button>
       <button class="mobile-nav-btn" id="mnav-catalogue" onclick="mobileTab('catalogue',this)">
         <span class="mobile-nav-icon">📦</span>Catalogue
+      </button>
+      <button class="mobile-nav-btn" id="mnav-reservations" onclick="mobileTab('reservations',this)">
+        <span class="mobile-nav-icon">🛒</span>Resas
       </button>
       <button class="mobile-nav-btn" id="mnav-docs" onclick="mobileTab('docs',this)">
         <span class="mobile-nav-icon">📄</span>Docs
@@ -730,7 +702,40 @@ select.finput option{background:var(--bg3)}
       <select class="finput" id="nc-cat"><option>Vêtements</option><option>Accessoires</option><option>Chaussures</option><option>Sacs</option><option>Mascotte</option><option>Autre</option></select>
     </div>
     <div class="fgroup"><label class="flabel">Stock initial (vide = illimité)</label><input class="finput" id="nc-stock" type="number" placeholder="Ex: 10" min="0" inputmode="numeric"></div>
+    <div class="fgroup"><label class="flabel">
+      <input type="checkbox" id="nc-resa" style="margin-right:6px;accent-color:var(--orange)">
+      Visible dans le formulaire de réservation
+    </label></div>
     <button class="btn orange" style="width:100%;justify-content:center;margin-top:4px;padding:12px" onclick="addCatItem()">✓ Ajouter</button>
+  </div>
+</div>
+
+<!-- MODAL LIEN RÉSERVATION -->
+<div class="overlay" id="modal-resa-link">
+  <div class="modal">
+    <div class="modal-drag-handle"></div>
+    <div class="modal-title">🔗 Lien de réservation <button class="modal-close" onclick="closeModal('modal-resa-link')">✕</button></div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Partagez ce lien sur Facebook ou toute autre plateforme. Les clients pourront réserver des articles directement.</div>
+    <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
+      <div id="modal-resa-url" style="flex:1;font-size:12px;font-weight:700;word-break:break-all;color:var(--orange2)"></div>
+      <button class="btn orange sm" onclick="copyResaLink()">📋 Copier</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Le formulaire affiche uniquement les articles marqués « visible en réservation » dans votre catalogue.</div>
+    <button class="btn ghost" style="width:100%;justify-content:center" onclick="openResaForm()">👁 Prévisualiser le formulaire</button>
+  </div>
+</div>
+
+<!-- MODAL DETAIL RÉSERVATION -->
+<div class="overlay" id="modal-resa-detail">
+  <div class="modal wide">
+    <div class="modal-drag-handle"></div>
+    <div class="modal-title" id="resa-detail-title">Réservation <button class="modal-close" onclick="closeModal('modal-resa-detail')">✕</button></div>
+    <div id="resa-detail-body"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+      <button class="btn blue sm" id="resa-btn-seen" onclick="setResaStatus(currentResaId,'seen')">👁 Marquer en cours</button>
+      <button class="btn green sm" id="resa-btn-done" onclick="setResaStatus(currentResaId,'done')">✓ Traiter</button>
+      <button class="btn red sm" onclick="deleteResa(currentResaId)">🗑 Supprimer</button>
+    </div>
   </div>
 </div>
 
@@ -837,23 +842,30 @@ const SUPABASE_URL = 'https://sxayjsbwspwzcytyoljy.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_rEfoyYQ624Y6TvFFv4v4Qw_pKyahZRL';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// ═══ RESERVATION PUBLIC FORM URL ══════════════════════════════
+// La page publique est un fichier séparé (fc-resa-public.html)
+// hébergé sur le même domaine, ou accessible via le paramètre ?resa dans l'URL
+function getResaPublicUrl(){
+  const base=window.location.href.replace(/\?.*$/,'').replace(/[^/]*$/,'');
+  return base+'fc-resa-public.html?org='+encodeURIComponent(SUPABASE_URL)+'&key='+encodeURIComponent(SUPABASE_KEY);
+}
+
 function syncSet(state){
   const d=g('sync-dot');if(!d)return;
   d.className='sync-dot '+state;
   const l=g('sync-label');if(l)l.textContent=state==='syncing'?'Sync…':state==='ok'?'Sauvegardé':'Erreur sync';
 }
 
-// ═══ STATE ═══════════════════════════════════════════════════
+// ═══ STATE ════════════════════════════════════════════════════
 let live=null,liveIsReadonly=false,selPanier=null;
-let liveHistory=[],catalogue=[],documents=[];
+let liveHistory=[],catalogue=[],documents=[],reservations=[];
 let docLines=[],docRemises=[],editingDocId=null;
 let devNum=1,facNum=1,currentDocId=null,panierSaveTimer=null;
-let settings={name:'FC Événement',type:'Association loi 1901',siret:'',tva:'',addr:'',cp:'',city:'Dunkerque',tel:'',email:'',web:'',iban:'',mentions:'',logo:null};
+let currentResaId=null,resaFilter='all';
+let settings={name:'FC Événement',type:'Association loi 1901',siret:'',tva:'',addr:'',cp:'',city:'Dunkerque',tel:'',email:'',web:'',iban:'',mentions:'',logo:null,resaTitle:'',resaMsg:'',resaConfirm:''};
 
-// ── MOBILE DETECTION ──────────────────────────────────────────
 function isMobile(){return window.innerWidth<=768}
 
-// ── MOBILE NAV ────────────────────────────────────────────────
 function mobileTab(name,btn){
   switchTab(name,null);
   document.querySelectorAll('.mobile-nav-btn').forEach(b=>b.classList.remove('active'));
@@ -864,18 +876,9 @@ function syncMobileNavActive(name){
   const m=g('mnav-'+name);if(m)m.classList.add('active');
 }
 
-// ── DRAWER (historique mobile) ────────────────────────────────
-function openDrawer(){
-  g('sidebar-drawer').classList.add('open');
-  g('drawer-overlay').classList.add('open');
-  renderHistoryInto('history-list-drawer');
-}
-function closeDrawer(){
-  g('sidebar-drawer').classList.remove('open');
-  g('drawer-overlay').classList.remove('open');
-}
+function openDrawer(){g('sidebar-drawer').classList.add('open');g('drawer-overlay').classList.add('open');renderHistoryInto('history-list-drawer');}
+function closeDrawer(){g('sidebar-drawer').classList.remove('open');g('drawer-overlay').classList.remove('open');}
 
-// ── THÈME ─────────────────────────────────────────────────────
 let currentTheme=localStorage.getItem('fce_theme')||'dark';
 function applyTheme(theme){
   currentTheme=theme;
@@ -886,7 +889,6 @@ function applyTheme(theme){
 }
 function cycleTheme(){applyTheme(currentTheme==='dark'?'claire':'dark');}
 
-// ── SPOILER ────────────────────────────────────────────────────
 let spoilerRevealed=false;
 function toggleSpoiler(){
   spoilerRevealed=!spoilerRevealed;
@@ -895,7 +897,6 @@ function toggleSpoiler(){
   else{box.classList.remove('revealed');mask.innerHTML='<span>👁</span><span style="font-size:10px">Voir</span>';}
 }
 
-// ── RECHERCHE NOM ─────────────────────────────────────────────
 let nameSearchMatches=[],nameSearchCursor=-1;
 function searchByName(query){
   const el=g('search-results-count');clearNameSearchHighlights();nameSearchMatches=[];nameSearchCursor=-1;
@@ -920,7 +921,6 @@ function highlightNameMatches(){
 function clearNameSearchHighlights(){const grid=g('paniers-grid');if(!grid)return;grid.querySelectorAll('.p-btn.search-match').forEach(btn=>btn.classList.remove('search-match'));}
 function scrollToPanier(num){const grid=g('paniers-grid');if(!grid)return;const btn=grid.querySelector(`[data-num="${num}"]`);if(btn)btn.scrollIntoView({behavior:'smooth',block:'center'});}
 
-// ═══ UTILS ═══════════════════════════════════════════════════
 const g=id=>document.getElementById(id);
 const v=id=>(g(id)?.value||'').trim();
 function toast(msg,type='ok'){
@@ -939,17 +939,11 @@ function fmtDate(d){return d?new Date(d).toLocaleDateString('fr-FR'):''}
 
 // ═══ MOBILE BOTTOM SHEET ════════════════════════════════════
 function openMobileSheet(){
-  const sheet=g('mobile-sheet');if(!sheet)return;
-  sheet.classList.add('open');
-  renderMobilePanierPanel();
+  const sheet=g('mobile-sheet');if(!sheet)return;sheet.classList.add('open');renderMobilePanierPanel();
 }
 function closeMobileSheet(e){if(e&&e.target!==g('mobile-sheet'))return;closeMobileSheetDirect();}
-function closeMobileSheetDirect(){
-  const sheet=g('mobile-sheet');if(!sheet)return;
-  sheet.classList.remove('open');
-}
+function closeMobileSheetDirect(){const sheet=g('mobile-sheet');if(!sheet)return;sheet.classList.remove('open');}
 
-// ── Swipe down to close sheet ──
 (function(){
   let startY=0,isDragging=false;
   document.addEventListener('touchstart',e=>{
@@ -958,34 +952,25 @@ function closeMobileSheetDirect(){
     if(e.target===g('sheet-drag')||e.target===inner){startY=e.touches[0].clientY;isDragging=true;}
   },{passive:true});
   document.addEventListener('touchmove',e=>{
-    if(!isDragging)return;
-    const dy=e.touches[0].clientY-startY;
+    if(!isDragging)return;const dy=e.touches[0].clientY-startY;
     if(dy>60){isDragging=false;closeMobileSheetDirect();}
   },{passive:true});
   document.addEventListener('touchend',()=>{isDragging=false;},{passive:true});
 })();
 
 function renderMobilePanierPanel(){
-  const p=panierOf(selPanier);if(!p)return;
-  const locked=isPanierLocked(p);
-
-  // Header
+  const p=panierOf(selPanier);if(!p)return;const locked=isPanierLocked(p);
   g('mpp-num').textContent=`Panier ${p.num}`;
   const badge=g('mpp-status-badge');
   if(p.closed){badge.textContent='✓ Clôturé';badge.style.background='var(--blue-dim)';badge.style.color='var(--blue)';}
   else{badge.textContent='En cours';badge.style.background='var(--green-dim)';badge.style.color='var(--green)';}
   const postBadge=g('mpp-post-badge');if(postBadge)postBadge.style.display=p.postLive?'inline-flex':'none';
-  g('mpp-name').value=p.name||'';
-  g('mpp-name').readOnly=locked;
-
-  // Body
+  g('mpp-name').value=p.name||'';g('mpp-name').readOnly=locked;
   const body=g('mpp-body');
   const tot=panierTotal(p),artCount=p.items.reduce((s,i)=>s+i.qty,0);
   let html='';
-
   if(locked)html+=`<div class="info-box" style="margin-bottom:10px">🔒 Panier clôturé — verrouillé.</div>`;
   if(p.postLive&&!locked)html+=`<div class="post-live-info-box" style="margin-bottom:10px">🆕 Panier ajouté après le live.</div>`;
-
   if(!locked){
     html+=`<div class="sep">Catalogue rapide</div><div class="quick-chips" id="mquick-chips"></div>`;
     html+=`<div class="sep">Ajouter manuellement</div>
@@ -995,14 +980,10 @@ function renderMobilePanierPanel(){
       <button class="btn orange sm" onclick="addManualMobile()">+</button>
     </div>`;
   }
-
   html+=`<div class="sep">Articles du panier</div><div id="marts-list"></div>`;
   html+=`<div class="note-zone"><div class="note-label">Note libre</div>
     <textarea class="note-area" id="mpp-note" placeholder="Note…" oninput="debouncedSavePanierMobile()"${locked?' readonly':''}>${p.note||''}</textarea></div>`;
-
   body.innerHTML=html;
-
-  // Render articles
   const artsEl=g('marts-list');
   if(!p.items.length){artsEl.innerHTML='<div style="color:var(--muted2);font-size:12px;padding:8px 0">Aucun article.</div>';}
   else{artsEl.innerHTML=p.items.map((it,idx)=>`
@@ -1018,8 +999,6 @@ function renderMobilePanierPanel(){
       <div class="art-price">${it.price*it.qty}€</div>
       ${locked?'':`<button class="del-btn" onclick="mDelItem(${idx})">✕</button>`}
     </div>`).join('');}
-
-  // Chips
   if(!locked){
     const chips=g('mquick-chips');
     if(chips)chips.innerHTML=catalogue.map(a=>{
@@ -1028,8 +1007,6 @@ function renderMobilePanierPanel(){
       return `<div class="qchip${isOut?' out-of-stock':''}" onclick="${isOut?'toast(\'Rupture de stock\',\'err\')':'mAddFromCat('+a.id+')'}">${a.emoji} ${a.name} <span class="qchip-price">${a.price}€</span>${stockHtml}</div>`;
     }).join('');
   }
-
-  // Footer
   const footer=g('mpp-footer');
   footer.innerHTML=`
     <div class="pp-total">
@@ -1046,7 +1023,6 @@ function renderMobilePanierPanel(){
     </div>`;
 }
 
-// Mobile panier actions
 async function mAddFromCat(id){
   if(isPanierLocked(panierOf(selPanier)))return;
   const art=catalogue.find(a=>a.id===id),p=panierOf(selPanier);if(!art||!p)return;
@@ -1060,8 +1036,7 @@ async function addManualMobile(){
   if(isPanierLocked(panierOf(selPanier)))return;
   const name=v('mma-name'),price=parseFloat(v('mma-price'))||0,p=panierOf(selPanier);
   if(!name||!p){if(!name)toast('Nom requis','err');return;}
-  p.items.push({name,price,emoji:'📦',qty:1});
-  g('mma-name').value='';g('mma-price').value='';
+  p.items.push({name,price,emoji:'📦',qty:1});g('mma-name').value='';g('mma-price').value='';
   renderMobilePanierPanel();renderGrid();updateStats();await savePanierItems(p);toast(name+' ajouté');
 }
 async function mChgQty(idx,delta){
@@ -1097,30 +1072,26 @@ function debouncedSavePanierMobile(){
 // ═══ LOCK / UTILS ════════════════════════════════════════════
 function isPanierLocked(p){return liveIsReadonly&&!!p?.closed;}
 function isLiveEditable(){return!!live&&(live.status==='active'||live.status==='ended');}
-function getStockUsed(catId){
-  if(!live)return 0;
-  return live.paniers.reduce((sum,p)=>{const item=p.items.find(i=>i.catId===catId);return sum+(item?item.qty:0);},0);
-}
-function getStockRemaining(art){
-  if(art.stock==null||art.stock===undefined||art.stock===-1)return null;
-  return Math.max(0,art.stock-getStockUsed(art.id));
-}
+function getStockUsed(catId){if(!live)return 0;return live.paniers.reduce((sum,p)=>{const item=p.items.find(i=>i.catId===catId);return sum+(item?item.qty:0);},0);}
+function getStockRemaining(art){if(art.stock==null||art.stock===undefined||art.stock===-1)return null;return Math.max(0,art.stock-getStockUsed(art.id));}
 
 // ═══ INIT ════════════════════════════════════════════════════
 async function init(){
   applyTheme(currentTheme);
-  // Show drawer toggle on mobile
   if(isMobile()&&g('drawer-toggle'))g('drawer-toggle').style.display='flex';
   try{
     setLoadingMsg('Chargement du catalogue…');await loadCatalogue();
     setLoadingMsg('Chargement des paramètres…');await loadSettings();
     setLoadingMsg('Chargement des lives…');await loadLiveHistory();
     setLoadingMsg('Chargement des documents…');await loadDocuments();
+    setLoadingMsg('Chargement des réservations…');await loadReservations();
     setLoadingMsg('Prêt ✓');await sleep(300);
     g('loading-screen').style.display='none';g('app').style.display='grid';
     g('live-date').value=new Date().toISOString().split('T')[0];
     g('dd').value=new Date().toISOString().split('T')[0];
     updateDocType();syncSet('ok');await checkActiveLive();
+    // Realtime pour réservations
+    subscribeReservations();
   }catch(err){
     setLoadingMsg('❌ Erreur: '+err.message);syncSet('err');
     setTimeout(()=>{g('loading-screen').style.display='none';g('app').style.display='grid';
@@ -1130,7 +1101,6 @@ async function init(){
 function setLoadingMsg(msg){g('loading-msg').textContent=msg}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 
-// Handle resize
 window.addEventListener('resize',()=>{
   if(isMobile()&&g('drawer-toggle'))g('drawer-toggle').style.display='flex';
   else if(g('drawer-toggle'))g('drawer-toggle').style.display='none';
@@ -1145,6 +1115,7 @@ function switchTab(name,btn){
   if(name==='catalogue')renderCatalogue();
   if(name==='docs')renderDocs();
   if(name==='settings')renderSettingsForm();
+  if(name==='reservations')renderReservations();
   if(isMobile())syncMobileNavActive(name);
 }
 
@@ -1159,10 +1130,8 @@ function goNewLive(){
   g('view-live').classList.add('active');
   if(g('search-name-input'))g('search-name-input').value='';
   if(g('search-results-count'))g('search-results-count').style.display='none';
-  nameSearchMatches=[];nameSearchCursor=-1;
-  closeMobileSheetDirect();
+  nameSearchMatches=[];nameSearchCursor=-1;closeMobileSheetDirect();
 }
-
 function resetTopbarRight(){
   g('topbar-right').innerHTML=`
     <div class="theme-toggle" id="theme-toggle" onclick="cycleTheme()">
@@ -1173,33 +1142,42 @@ function resetTopbarRight(){
     <span id="sync-label" style="font-size:11px;color:var(--muted)">Supabase</span>`;
 }
 
-// ═══ CATALOGUE ═══════════════════════════════════════════════
+// ═══ CATALOGUE ════════════════════════════════════════════════
 async function loadCatalogue(){
   const {data,error}=await sb.from('catalogue').select('*').order('id');
   if(error)throw error;
   catalogue=data||[];
   if(!catalogue.length){
     const defaults=[
-      {name:'T-shirt',price:20,emoji:'👕',cat:'Vêtements',stock:null},
-      {name:'Casquette',price:15,emoji:'🧢',cat:'Accessoires',stock:null},
-      {name:'Sweat',price:40,emoji:'🧥',cat:'Vêtements',stock:null},
-      {name:'Écharpe',price:12,emoji:'🧣',cat:'Accessoires',stock:null},
-      {name:'Peluche mascotte',price:25,emoji:'🧸',cat:'Mascotte',stock:null}
+      {name:'T-shirt',price:20,emoji:'👕',cat:'Vêtements',stock:null,resa_visible:true},
+      {name:'Casquette',price:15,emoji:'🧢',cat:'Accessoires',stock:null,resa_visible:true},
+      {name:'Sweat',price:40,emoji:'🧥',cat:'Vêtements',stock:null,resa_visible:true},
+      {name:'Écharpe',price:12,emoji:'🧣',cat:'Accessoires',stock:null,resa_visible:true},
+      {name:'Peluche mascotte',price:25,emoji:'🧸',cat:'Mascotte',stock:null,resa_visible:true}
     ];
     const {data:d2}=await sb.from('catalogue').insert(defaults).select();catalogue=d2||[];
   }
-  catalogue=catalogue.map(a=>({...a,stock:(a.stock===undefined||a.stock===null)?null:Number(a.stock)}));
+  catalogue=catalogue.map(a=>({...a,stock:(a.stock===undefined||a.stock===null)?null:Number(a.stock),resa_visible:a.resa_visible!==false}));
 }
 async function addCatItem(){
   const name=v('nc-name'),price=parseFloat(v('nc-price'))||0,emoji=v('nc-emoji')||'📦',cat=v('nc-cat');
   const stockRaw=v('nc-stock');const stock=stockRaw===''?null:Math.max(0,parseInt(stockRaw)||0);
+  const resaVisible=g('nc-resa')?.checked||false;
   if(!name){toast('Nom requis','err');return;}
   syncSet('syncing');
-  const {data,error}=await sb.from('catalogue').insert({name,price,emoji,cat,stock}).select().single();
+  const {data,error}=await sb.from('catalogue').insert({name,price,emoji,cat,stock,resa_visible:resaVisible}).select().single();
   if(error){toast('Erreur: '+error.message,'err');syncSet('err');return;}
-  data.stock=data.stock??null;catalogue.push(data);closeModal('modal-cat');
+  data.stock=data.stock??null;data.resa_visible=data.resa_visible!==false;catalogue.push(data);closeModal('modal-cat');
   ['nc-name','nc-price','nc-emoji','nc-stock'].forEach(id=>g(id)&&(g(id).value=''));
+  if(g('nc-resa'))g('nc-resa').checked=false;
   renderCatalogue();renderQuickChips();syncSet('ok');toast(name+' ajouté au catalogue');
+}
+async function toggleResaVisible(id){
+  const art=catalogue.find(a=>a.id===id);if(!art)return;
+  const newVal=!art.resa_visible;syncSet('syncing');
+  const {error}=await sb.from('catalogue').update({resa_visible:newVal}).eq('id',id);
+  if(error){toast('Erreur','err');syncSet('err');return;}
+  art.resa_visible=newVal;renderCatalogue();syncSet('ok');toast(newVal?'Visible en réservation':'Masqué en réservation','info');
 }
 async function updateStock(id,delta){
   const art=catalogue.find(a=>a.id===id);if(!art||art.stock===null)return;
@@ -1225,21 +1203,35 @@ function renderCatalogue(){
   if(!catalogue.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:20px">Aucun article.</div>';return;}
   el.innerHTML=catalogue.map(a=>{
     const sNull=a.stock===null||a.stock===undefined;const out=!sNull&&a.stock<=0;const low=!sNull&&a.stock>0&&a.stock<=3;
-    const bc=out?'out':low?'low':'';const bt=sNull?'Illimité ∞':(out?'Rupture':'Stock : '+a.stock);
+    const bc=out?'out':low?'low':'';const bt=sNull?'∞':(out?'Rupture':'×'+a.stock);
+    const resaBadge=a.resa_visible?`<span style="font-size:9px;font-weight:800;color:var(--teal);background:var(--teal-dim);border-radius:4px;padding:1px 4px;line-height:1.4">🛒</span>`:'';
     return `<div class="cat-card${out?' no-stock':''}">
-      <div class="cat-emoji">${a.emoji}</div>
-      <div class="cat-name">${a.name}</div>
-      <div class="cat-price">${a.price}€</div>
-      <div class="cat-stock-row">
-        <span class="cat-stock-badge${bc?' '+bc:''}">${bt}</span>
-        ${!sNull?`<div class="stock-ctrl">
-          <button class="stock-btn" onclick="updateStock(${a.id},-1)">−</button>
-          <span class="stock-num">${a.stock}</span>
-          <button class="stock-btn" onclick="updateStock(${a.id},+1)">+</button>
-          <button class="stock-btn" onclick="setStockUnlimited(${a.id})" style="font-size:9px;width:22px">∞</button>
-        </div>`:`<button class="stock-btn" onclick="promptSetStock(${a.id})" style="font-size:10px;padding:0 5px;width:auto;border-radius:8px">Définir</button>`}
+      <div class="cat-card-top">
+        <div class="cat-emoji">${a.emoji}</div>
+        <div>
+          <div class="cat-name" title="${a.name}">${a.name}</div>
+          <div class="cat-tag">${a.cat}</div>
+        </div>
       </div>
-      <button class="cat-del" onclick="delCatItem(${a.id})">✕ Supprimer</button>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="cat-price">${a.price}€</div>
+        ${resaBadge}
+      </div>
+      <div class="cat-card-footer">
+        <div class="cat-stock-row">
+          <span class="cat-stock-badge${bc?' '+bc:''}">${bt}</span>
+          ${!sNull?`<div class="stock-ctrl">
+            <button class="stock-btn" onclick="updateStock(${a.id},-1)">−</button>
+            <span class="stock-num">${a.stock}</span>
+            <button class="stock-btn" onclick="updateStock(${a.id},+1)">+</button>
+            <button class="stock-btn" onclick="setStockUnlimited(${a.id})" style="font-size:9px;width:18px">∞</button>
+          </div>`:`<button class="stock-btn" onclick="promptSetStock(${a.id})" style="font-size:9px;padding:0 4px;width:auto;border-radius:6px">Définir</button>`}
+        </div>
+        <div style="display:flex;gap:4px;align-items:center">
+          <button title="${a.resa_visible?'Visible résa':'Masqué résa'}" onclick="toggleResaVisible(${a.id})" style="background:${a.resa_visible?'var(--teal-dim)':'var(--bg4)'};border:1px solid ${a.resa_visible?'rgba(6,182,212,.3)':'var(--border2)'};color:${a.resa_visible?'var(--teal)':'var(--muted2)'};border-radius:6px;cursor:pointer;font-size:11px;padding:2px 5px;font-weight:700;transition:all .15s" title="Visible réservation">🛒</button>
+          <button class="cat-del" onclick="delCatItem(${a.id})">✕</button>
+        </div>
+      </div>
     </div>`;
   }).join('');
 }
@@ -1248,6 +1240,158 @@ function promptSetStock(id){
   const val=prompt(`Stock pour "${art.name}" :`,'10');if(val===null)return;
   const n=parseInt(val);if(isNaN(n)||n<0){toast('Valeur invalide','err');return;}
   art.stock=n;sb.from('catalogue').update({stock:n}).eq('id',id).then(({error})=>{if(error){toast('Erreur','err');return;}renderCatalogue();renderQuickChips();toast('Stock mis à jour');});
+}
+
+// ═══ RÉSERVATIONS ══════════════════════════════════════════════
+async function loadReservations(){
+  const {data,error}=await sb.from('reservations').select('*').order('created_at',{ascending:false});
+  if(error){console.warn('Table réservations manquante, création ignorée');reservations=[];return;}
+  reservations=(data||[]).map(r=>({...r,items:r.items||[]}));
+}
+
+function subscribeReservations(){
+  try{
+    sb.channel('reservations-changes')
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'reservations'},payload=>{
+        const r={...payload.new,items:payload.new.items||[]};
+        reservations.unshift(r);renderReservations();
+        const newCount=reservations.filter(x=>x.status==='new').length;
+        const navBtn=g('mnav-reservations');
+        toast(`🛒 Nouvelle réservation de ${r.client_name||'?'}${r.items?.length?' — '+r.items.length+' article(s)':''}`,'info');
+      })
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'reservations'},payload=>{
+        const idx=reservations.findIndex(r=>r.id===payload.new.id);
+        if(idx>=0)reservations[idx]={...reservations[idx],...payload.new,items:payload.new.items||[]};
+        renderReservations();
+      })
+      .on('postgres_changes',{event:'DELETE',schema:'public',table:'reservations'},payload=>{
+        reservations=reservations.filter(r=>r.id!==payload.old.id);renderReservations();
+      })
+      .subscribe();
+  }catch(e){console.warn('Realtime non disponible',e);}
+}
+
+function filterResa(status,btn){
+  resaFilter=status;
+  document.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  renderReservations();
+}
+
+function renderReservations(){
+  // Stats
+  const newC=reservations.filter(r=>r.status==='new').length;
+  const seenC=reservations.filter(r=>r.status==='seen').length;
+  const doneC=reservations.filter(r=>r.status==='done').length;
+  const el=g('rsa-new');if(el)el.textContent=newC;
+  const el2=g('rsa-seen');if(el2)el2.textContent=seenC;
+  const el3=g('rsa-done');if(el3)el3.textContent=doneC;
+
+  const list=g('resa-list');if(!list)return;
+  const filtered=resaFilter==='all'?reservations:reservations.filter(r=>r.status===resaFilter);
+  if(!filtered.length){
+    list.innerHTML=`<div class="resa-empty"><div style="font-size:40px;margin-bottom:8px">🛒</div><div style="font-size:14px;font-weight:700">${resaFilter==='all'?'Aucune réservation reçue':'Aucune réservation dans cette catégorie'}</div><div style="font-size:12px;margin-top:6px;color:var(--muted2)">Partagez le lien public pour recevoir des réservations</div></div>`;
+    return;
+  }
+  list.innerHTML=filtered.map(r=>{
+    const items=r.items||[];
+    const total=items.reduce((s,i)=>s+(Number(i.price||0)*Number(i.qty||1)),0);
+    const artLabel=items.map(i=>`${i.qty||1}× ${i.name}`).join(', ')||'Demande sans article';
+    const d=r.created_at?new Date(r.created_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+    const st=r.status||'new';
+    return `<div class="resa-item ${st}" onclick="viewResa('${r.id}')">
+      <div class="resa-badge ${st}">${st==='new'?'🆕':st==='done'?'✓':'👁'}</div>
+      <div class="resa-info">
+        <div class="resa-name">${r.client_name||'Anonyme'}</div>
+        <div class="resa-articles">${artLabel}</div>
+        <div class="resa-meta">${r.client_contact?r.client_contact+' · ':''} ${d}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        ${total>0?`<div class="resa-total">${total}€</div>`:''}
+        <span class="resa-status-pill ${st}">${st==='new'?'Nouvelle':st==='done'?'Traitée':'En cours'}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function viewResa(id){
+  const r=reservations.find(x=>x.id===id);if(!r)return;
+  currentResaId=id;
+  const items=r.items||[];
+  const total=items.reduce((s,i)=>s+(Number(i.price||0)*Number(i.qty||1)),0);
+  const st=r.status||'new';
+  const d=r.created_at?new Date(r.created_at).toLocaleString('fr-FR'):'';
+  g('resa-detail-title').innerHTML=`Réservation de ${r.client_name||'?'} <button class="modal-close" onclick="closeModal('modal-resa-detail')">✕</button>`;
+  g('resa-detail-body').innerHTML=`
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <span class="resa-status-pill ${st}" style="font-size:12px;padding:4px 12px">${st==='new'?'🆕 Nouvelle':st==='done'?'✓ Traitée':'👁 En cours'}</span>
+      <span style="font-size:12px;color:var(--muted);padding:4px 0">${d}</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div style="background:var(--bg3);border-radius:var(--r);padding:10px 12px">
+        <div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Client</div>
+        <div style="font-weight:700;font-size:14px">${r.client_name||'—'}</div>
+        ${r.client_contact?`<div style="font-size:12px;color:var(--muted);margin-top:3px">${r.client_contact}</div>`:''}
+      </div>
+      ${r.live_name?`<div style="background:var(--bg3);border-radius:var(--r);padding:10px 12px">
+        <div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Live concerné</div>
+        <div style="font-weight:700;font-size:13px">${r.live_name}</div>
+      </div>`:''}
+    </div>
+    ${items.length?`
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px">Articles demandés</div>
+    <div class="resa-detail-items">${items.map(it=>`
+      <div class="resa-detail-item">
+        <div style="font-size:18px;width:28px;text-align:center">${it.emoji||'📦'}</div>
+        <div style="flex:1;font-weight:600;font-size:13px">${it.name}</div>
+        <div style="font-size:12px;color:var(--muted)">×${it.qty||1}</div>
+        <div style="font-weight:800;font-size:13px;min-width:48px;text-align:right">${(Number(it.price||0)*(it.qty||1))}€</div>
+      </div>`).join('')}
+    </div>
+    <div style="display:flex;justify-content:flex-end;padding:8px 0;border-top:1px solid var(--border)">
+      <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--green)">${total} €</span>
+    </div>`:'<div style="color:var(--muted2);font-size:13px;padding:12px 0">Aucun article sélectionné.</div>'}
+    ${r.message?`<div style="margin-top:12px;padding:10px 12px;background:var(--bg3);border-radius:var(--r);font-size:13px;white-space:pre-wrap;border-left:3px solid var(--orange)"><div style="font-size:10px;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Message</div>${r.message}</div>`:''}
+  `;
+  // Boutons selon statut
+  g('resa-btn-seen').style.display=st==='done'?'none':'inline-flex';
+  g('resa-btn-done').style.display=st==='done'?'none':'inline-flex';
+  openModal('modal-resa-detail');
+  // Marquer comme vue automatiquement si nouvelle
+  if(st==='new')setResaStatus(id,'seen',true);
+}
+
+async function setResaStatus(id,status,silent=false){
+  syncSet('syncing');
+  const {error}=await sb.from('reservations').update({status,updated_at:new Date().toISOString()}).eq('id',id);
+  if(error){toast('Erreur','err');syncSet('err');return;}
+  const r=reservations.find(x=>x.id===id);if(r)r.status=status;
+  syncSet('ok');renderReservations();
+  if(!silent)toast(status==='done'?'Réservation traitée ✓':'Statut mis à jour','ok');
+  // Mettre à jour les boutons si modal ouverte
+  const st=status;
+  if(g('resa-btn-seen'))g('resa-btn-seen').style.display=st==='done'?'none':'inline-flex';
+  if(g('resa-btn-done'))g('resa-btn-done').style.display=st==='done'?'none':'inline-flex';
+}
+
+async function deleteResa(id){
+  if(!confirm('Supprimer cette réservation ?'))return;syncSet('syncing');
+  const {error}=await sb.from('reservations').delete().eq('id',id);
+  if(error){toast('Erreur','err');syncSet('err');return;}
+  reservations=reservations.filter(r=>r.id!==id);currentResaId=null;
+  closeModal('modal-resa-detail');renderReservations();syncSet('ok');toast('Réservation supprimée');
+}
+
+function showResaLinkModal(){
+  const url=getResaPublicUrl();
+  const el=g('modal-resa-url');if(el)el.textContent=url;
+  openModal('modal-resa-link');
+}
+function copyResaLink(){
+  navigator.clipboard.writeText(getResaPublicUrl()).then(()=>toast('Lien copié ✓')).catch(()=>toast('Copie manuelle depuis le champ','info'));
+}
+function openResaForm(){
+  window.open(getResaPublicUrl(),'_blank');
 }
 
 // ═══ SETTINGS ════════════════════════════════════════════════
@@ -1260,6 +1404,7 @@ async function saveSettings(){
   settings.name=v('s-name');settings.type=v('s-type');settings.siret=v('s-siret');settings.tva=v('s-tva');
   settings.addr=v('s-addr');settings.cp=v('s-cp');settings.city=v('s-city');settings.tel=v('s-tel');
   settings.email=v('s-email');settings.web=v('s-web');settings.iban=v('s-iban');settings.mentions=v('s-mentions');
+  settings.resaTitle=v('s-resa-title');settings.resaMsg=v('s-resa-msg');settings.resaConfirm=v('s-resa-confirm');
   devNum=parseInt(v('s-dev-start'))||1;facNum=parseInt(v('s-fac-start'))||1;syncSet('syncing');
   const {data:existing}=await sb.from('settings').select('*').limit(1);let error;
   if(existing&&existing.length>0){({error}=await sb.from('settings').update({data:settings,dev_num:devNum,fac_num:facNum,updated_at:new Date().toISOString()}).eq('id',existing[0].id));}
@@ -1272,7 +1417,11 @@ function renderSettingsForm(){
   g('s-tva').value=settings.tva||'';g('s-addr').value=settings.addr||'';g('s-cp').value=settings.cp||'';
   g('s-city').value=settings.city||'';g('s-tel').value=settings.tel||'';g('s-email').value=settings.email||'';
   g('s-web').value=settings.web||'';g('s-iban').value=settings.iban||'';g('s-mentions').value=settings.mentions||'';
-  g('s-dev-start').value=devNum;g('s-fac-start').value=facNum;updateLogoPreview();
+  g('s-dev-start').value=devNum;g('s-fac-start').value=facNum;
+  if(g('s-resa-title'))g('s-resa-title').value=settings.resaTitle||'';
+  if(g('s-resa-msg'))g('s-resa-msg').value=settings.resaMsg||'';
+  if(g('s-resa-confirm'))g('s-resa-confirm').value=settings.resaConfirm||'';
+  updateLogoPreview();
 }
 function handleLogo(input){const file=input.files[0];if(!file)return;const r=new FileReader();r.onload=e=>{settings.logo=e.target.result;updateLogoPreview();toast('Logo chargé — sauvegardez','info')};r.readAsDataURL(file);}
 function deleteLogo(){settings.logo=null;updateLogoPreview();}
@@ -1282,7 +1431,7 @@ function updateLogoPreview(){
   else{wrap.innerHTML=`<div style="font-size:28px">🖼️</div><div style="font-size:12px;color:var(--muted);margin-top:6px">Cliquer pour choisir</div>`;btn.style.display='none';}
 }
 
-// ═══ LIVES ═══════════════════════════════════════════════════
+// ═══ LIVES ════════════════════════════════════════════════════
 async function loadLiveHistory(){
   const {data,error}=await sb.from('lives').select('*').eq('status','ended').order('created_at',{ascending:false});
   if(error)throw error;liveHistory=[];
@@ -1360,7 +1509,6 @@ async function addPostLivePanier(){
   setTimeout(()=>{const btn=g('paniers-grid').querySelector(`[data-num="${start}"]`);if(btn)btn.scrollIntoView({behavior:'smooth',block:'center'})},100);
 }
 
-// ── SAVE PANIER ──────────────────────────────────────────────
 function debouncedSavePanier(){
   const p=panierOf(selPanier);if(!p||isPanierLocked(p))return;
   p.name=g('pp-name').value;p.note=g('pp-note')?.value||'';
@@ -1383,7 +1531,6 @@ async function savePanierItems(p){
   syncSet('ok');if(liveIsReadonly){const hi=liveHistory.findIndex(l=>l.uid===live.uid);if(hi>=0)liveHistory[hi]=JSON.parse(JSON.stringify(live));}
 }
 
-// ── LIVE UI ──────────────────────────────────────────────────
 function showLiveActive(){
   g('start-screen').style.display='none';
   const la=g('live-active');la.style.display='flex';la.style.flexDirection='column';la.style.flex='1';la.style.overflow='hidden';
@@ -1392,7 +1539,6 @@ function showLiveActive(){
   g('history-banner').style.display=ro?'flex':'none';
   g('live-only-btns').style.display=ro?'none':'flex';
   g('post-live-btns').style.display=ro?'flex':'none';
-  g('readonly-warning')&&(g('readonly-warning').style.display='none');
   spoilerRevealed=false;const box=g('stat-total-box');if(box)box.classList.remove('revealed');
   const mask=g('spoiler-mask');if(mask)mask.innerHTML='<span>👁</span><span style="font-size:10px">Voir</span>';
   if(!ro){
@@ -1414,8 +1560,7 @@ function showLiveActive(){
   if(g('search-name-input'))g('search-name-input').value='';
   if(g('search-results-count'))g('search-results-count').style.display='none';
   nameSearchMatches=[];nameSearchCursor=-1;
-  renderGrid();updateStats();renderQuickChips();
-  closeMobileSheetDirect();
+  renderGrid();updateStats();renderQuickChips();closeMobileSheetDirect();
 }
 
 function panierOf(num){return live?.paniers.find(p=>p.num===num)}
@@ -1439,15 +1584,10 @@ function renderGrid(){
 }
 
 function selectPanier(num){
-  if(isMobile()){
-    selPanier=num;renderGrid();openMobileSheet();
-  } else {
-    selPanier=(selPanier===num&&!liveIsReadonly)?null:num;
-    renderGrid();if(selPanier)showPanierPanel();else hidePanierPanel();
-  }
+  if(isMobile()){selPanier=num;renderGrid();openMobileSheet();}
+  else{selPanier=(selPanier===num&&!liveIsReadonly)?null:num;renderGrid();if(selPanier)showPanierPanel();else hidePanierPanel();}
 }
 
-// ── DESKTOP PANEL ────────────────────────────────────────────
 function showPanierPanel(){
   const p=panierOf(selPanier);if(!p)return;
   g('pp-empty').style.display='none';
@@ -1458,7 +1598,6 @@ function showPanierPanel(){
   else{badge.textContent='En cours';badge.style.background='var(--green-dim)';badge.style.color='var(--green)';}
   const postBadge=g('pp-post-badge');if(postBadge)postBadge.style.display=p.postLive?'inline-flex':'none';
   g('pp-name').value=p.name||'';const locked=isPanierLocked(p);g('pp-name').readOnly=locked;
-  // Build body + footer
   const body=g('pp-body-desktop'),footer=g('pp-footer-desktop');
   if(!body||!footer)return;
   const tot=panierTotal(p),artCount=p.items.reduce((s,i)=>s+i.qty,0);
@@ -1498,9 +1637,7 @@ function hidePanierPanel(){g('pp-empty').style.display='flex';g('pp-content').st
 
 function renderArtsList(){
   const p=panierOf(selPanier);if(!p)return;
-  const tot=panierTotal(p),artCount=p.items.reduce((s,i)=>s+i.qty,0);
-  const el=g('arts-list');if(!el)return;
-  const locked=isPanierLocked(p);
+  const el=g('arts-list');if(!el)return;const locked=isPanierLocked(p);
   if(!p.items.length){el.innerHTML=`<div style="color:var(--muted2);font-size:12px;padding:10px 0">Aucun article.</div>`;return;}
   el.innerHTML=p.items.map((it,idx)=>`
     <div class="art-row">
@@ -1526,7 +1663,6 @@ function renderQuickChips(){
   }).join('');
 }
 
-// ── DESKTOP PANIER ACTIONS ────────────────────────────────────
 async function addFromCat(id){
   if(isPanierLocked(panierOf(selPanier)))return;
   const art=catalogue.find(a=>a.id===id),p=panierOf(selPanier);if(!art||!p)return;
@@ -1580,7 +1716,6 @@ function updateStats(){
   g('st-paniers').textContent=active;g('st-total').textContent=total+' €';g('st-clos').textContent=closed;
 }
 
-// ── RECAP ─────────────────────────────────────────────────────
 function showRecap(){
   if(!live)return;
   const active=live.paniers.filter(p=>p.items.length||p.note);
@@ -1605,7 +1740,6 @@ function showRecap(){
   openModal('modal-recap');
 }
 
-// ── HISTORIQUE ────────────────────────────────────────────────
 function renderHistoryInto(containerId){
   const el=g(containerId);if(!el)return;
   if(!liveHistory.length){el.innerHTML='<div style="font-size:12px;color:var(--muted2);padding:8px 0">Aucun live terminé.</div>';return;}
@@ -1631,7 +1765,6 @@ function viewHistory(idx){
   if(isMobile())syncMobileNavActive('live');
 }
 
-// ── IMPRESSION PANIER ─────────────────────────────────────────
 function printPanier(){
   const p=panierOf(selPanier);if(!p){toast('Aucun panier sélectionné','err');return;}
   const total=panierTotal(p),artCount=p.items.reduce((s,i)=>s+i.qty,0);
@@ -1748,7 +1881,7 @@ async function createDoc(){
   if(s)await sb.from('settings').update({dev_num:devNum,fac_num:facNum}).eq('id',s.id);
   documents.unshift({...data,lines:data.lines||[],remises:data.remises||[]});
   currentDocId=data.id;docLines=[];docRemises=[];editingDocId=null;
-  closeModal('modal-new-doc');renderDocs();switchTab('docs',document.querySelectorAll('.topbar-tab')[2]);
+  closeModal('modal-new-doc');renderDocs();switchTab('docs',document.querySelectorAll('.topbar-tab')[3]);
   if(isMobile())syncMobileNavActive('docs');syncSet('ok');toast(`${num} créé`);
 }
 async function updateDoc(){
@@ -1883,7 +2016,7 @@ async function loadAccessHash(){
     return true;
   }catch(e){console.error(e);return false;}
 }
-function unlockApp(){g('lock-screen').style.display='none';g('loading-screen').style.display='flex';init();}
+function unlockApp(){g('lock-screen').style.display='none';g('loading-screen').style.display='flex';loadAccessHash();init();}
 function getCode(){return[0,1,2,3,4,5].map(i=>g('d'+i)?.value||'').join('');}
 function onDigit(el,idx){
   const val=el.value.replace(/[^0-9]/g,'');el.value=val?val.slice(-1):'';
@@ -1924,7 +2057,7 @@ async function changeAccessCode(){
   setTimeout(()=>{msgEl.textContent='';},4000);
 }
 
-// ═══ SIDEBAR RESIZE (desktop) ════════════════════════════════
+// ═══ RESIZE HANDLES ══════════════════════════════════════════
 (function(){
   const STOR_KEY='fce_sidebar_w',MIN=160,MAX=420;
   const savedW=parseInt(localStorage.getItem(STOR_KEY))||260;
@@ -1934,8 +2067,6 @@ async function changeAccessCode(){
   document.addEventListener('mousemove',e=>{if(!dragging)return;const newW=Math.min(MAX,Math.max(MIN,startW+(e.clientX-startX)));document.documentElement.style.setProperty('--sidebar-w',newW+'px');});
   document.addEventListener('mouseup',()=>{if(!dragging)return;dragging=false;document.body.style.userSelect='';document.body.style.cursor='';const w=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w'))||260;localStorage.setItem(STOR_KEY,w);});
 })();
-
-// ═══ PANEL RESIZE (desktop) ══════════════════════════════════
 (function(){
   const STOR_KEY='fce_panel_w',MIN=280,MAX=560;
   const savedW=parseInt(localStorage.getItem(STOR_KEY))||380;
