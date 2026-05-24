@@ -1227,7 +1227,7 @@ function renderCatalogue(){
     const sNull=a.stock===null||a.stock===undefined;const out=!sNull&&a.stock<=0;const low=!sNull&&a.stock>0&&a.stock<=3;
     const bc=out?'out':low?'low':'';const bt=sNull?'Illimité ∞':(out?'Rupture':'Stock : '+a.stock);
     return `<div class="cat-card${out?' no-stock':''}">
-      <div class="cat-emoji">${a.emoji} ${a.name}</div>
+      <div class="cat-emoji">${a.emoji}</div>
       <div class="cat-name">${a.name}</div>
       <div class="cat-price">${a.price}€</div>
       <div class="cat-stock-row">
