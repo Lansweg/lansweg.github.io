@@ -911,7 +911,9 @@ function renderMobilePanierPanel(){
   if(locked)html+=`<div class="info-box" style="margin-bottom:10px">🔒 Panier clôturé — verrouillé.</div>`;
   if(p.postLive&&!locked)html+=`<div class="post-live-info-box" style="margin-bottom:10px">🆕 Panier ajouté après le live.</div>`;
   if(!locked){
-    html+=`<div class="sep">Catalogue rapide</div><div class="quick-chips" id="mquick-chips"></div>`;
+    html+=`<div class="sep">Catalogue rapide</div>`;
+    html+=`<input class="finput" id="mchip-search" placeholder="🔍 Filtrer articles…" oninput="filterMobileChips(this.value)" style="font-size:12px;padding:6px 10px;margin-bottom:6px">`;
+    html+=`<div class="quick-chips" id="mquick-chips"></div>`;
     html+=`<div class="sep">Ajouter manuellement</div><div class="add-art-bar"><input class="finput" id="mma-name" placeholder="Article (ex: robe T38)"><input class="finput" id="mma-price" type="number" placeholder="Prix €" style="width:80px" inputmode="decimal"><button class="btn orange sm" onclick="addManualMobile()">+</button></div>`;
   }
   html+=`<div class="sep">Articles du panier</div><div id="marts-list"></div>`;
@@ -1496,6 +1498,9 @@ function showPanierPanel(){
     ${locked?`<div class="info-box">🔒 Panier clôturé — verrouillé.</div>`:''}
     ${p.postLive&&!locked?`<div class="post-live-info-box">🆕 Panier ajouté après le live.</div>`:''}
     <div class="sep"${locked?' style="display:none"':''}>Catalogue rapide</div>
+    <div id="chip-search-wrap"${locked?' style="display:none"':''}>
+      <input class="finput" id="chip-search" placeholder="🔍 Filtrer articles…" oninput="filterChips(this.value)" style="font-size:12px;padding:6px 10px;margin-bottom:6px">
+    </div>
     <div class="quick-chips" id="quick-chips"${locked?' style="display:none"':''}></div>
     <div class="sep"${locked?' style="display:none"':''}>Ajouter manuellement</div>
     <div class="add-art-bar"${locked?' style="display:none"':''}>
@@ -1513,6 +1518,7 @@ function showPanierPanel(){
       <button class="btn purple sm" onclick="printPanier()">🖨️</button>
     </div>`;
   renderArtsList();renderQuickChips();
+  const cs=g('chip-search');if(cs)cs.value='';
 }
 function hidePanierPanel(){g('pp-empty').style.display='flex';g('pp-content').style.display='none';}
 
@@ -1532,6 +1538,53 @@ function renderQuickChips(){
   }).join('');
 }
 
+function filterChips(query){
+  const el=g('quick-chips');if(!el)return;
+  const q=(query||'').toLowerCase().trim();
+  const filtered=q
+    ?catalogue.filter(a=>
+        a.name.toLowerCase().includes(q)||
+        (a.emoji||'').includes(q)||
+        (a.cat||'').toLowerCase().includes(q)
+      )
+    :catalogue;
+  if(!filtered.length){el.innerHTML='<div style="font-size:11px;color:var(--muted2);padding:4px 2px">Aucun résultat</div>';return;}
+  el.innerHTML=filtered.map(a=>{
+    const rem=getStockRemaining(a);
+    const isOut=rem!==null&&rem<=0;
+    const isLow=rem!==null&&rem>0&&rem<=3;
+    const sHtml=rem===null
+      ?''
+      :(isOut
+        ?`<span class="qchip-stock out">0</span>`
+        :(isLow?`<span class="qchip-stock low">${rem}</span>`:`<span class="qchip-stock">${rem}</span>`));
+    return `<div class="qchip${isOut?' out-of-stock':''}" onclick="${isOut?"toast('Rupture de stock','err')":'addFromCat('+a.id+')'}">${a.emoji} ${a.name} <span class="qchip-price">${a.price}€</span>${sHtml}</div>`;
+  }).join('');
+}
+ 
+function filterMobileChips(query){
+  const el=g('mquick-chips');if(!el)return;
+  const q=(query||'').toLowerCase().trim();
+  const filtered=q
+    ?catalogue.filter(a=>
+        a.name.toLowerCase().includes(q)||
+        (a.emoji||'').includes(q)||
+        (a.cat||'').toLowerCase().includes(q)
+      )
+    :catalogue;
+  if(!filtered.length){el.innerHTML='<div style="font-size:11px;color:var(--muted2);padding:4px 2px">Aucun résultat</div>';return;}
+  el.innerHTML=filtered.map(a=>{
+    const rem=getStockRemaining(a);
+    const isOut=rem!==null&&rem<=0;
+    const isLow=rem!==null&&rem>0&&rem<=3;
+    const sHtml=rem===null
+      ?''
+      :(isOut
+        ?`<span class="qchip-stock out">0</span>`
+        :(isLow?`<span class="qchip-stock low">${rem}</span>`:`<span class="qchip-stock">${rem}</span>`));
+    return `<div class="qchip${isOut?' out-of-stock':''}" onclick="${isOut?"toast('Rupture de stock','err')":'mAddFromCat('+a.id+')'}">${a.emoji} ${a.name} <span class="qchip-price">${a.price}€</span>${sHtml}</div>`;
+  }).join('');
+}
 async function addFromCat(id){
   if(isPanierLocked(panierOf(selPanier)))return;
   const art=catalogue.find(a=>a.id===id),p=panierOf(selPanier);if(!art||!p)return;
