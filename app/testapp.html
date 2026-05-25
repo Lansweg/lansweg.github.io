@@ -674,6 +674,33 @@ select.finput option{background:var(--bg3)}
   </div>
 </div>
 
+<div class="overlay" id="modal-edit-resa">
+  <div class="modal">
+    <div class="modal-drag-handle"></div>
+    <div class="modal-title">✏️ Modifier la réservation <button class="modal-close" onclick="closeModal('modal-edit-resa')">✕</button></div>
+    <div class="fgroup"><label class="flabel">Nom du client *</label><input class="finput" id="er-name" placeholder="Marie Dupont"></div>
+    <div class="fgroup"><label class="flabel">Contact (tél / email / Facebook)</label><input class="finput" id="er-contact" placeholder="06 xx xx xx xx"></div>
+    <div class="fgroup">
+      <label class="flabel">Articles</label>
+      <div id="er-items-list" style="margin-bottom:8px"></div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <select class="finput" id="er-cat-select" style="flex:1;min-width:160px"></select>
+        <input class="finput" id="er-qty" type="number" value="1" min="1" style="width:65px" inputmode="numeric">
+        <button class="btn orange sm" onclick="addEditResaItem()">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="fgroup"><label class="flabel">Statut</label>
+      <select class="finput" id="er-status">
+        <option value="new">🆕 Nouvelle</option>
+        <option value="seen">👁 En cours</option>
+        <option value="done">✓ Traitée</option>
+      </select>
+    </div>
+    <div class="fgroup"><label class="flabel">Note / message</label><textarea class="note-area" id="er-message" placeholder="Précisions…" style="min-height:60px"></textarea></div>
+    <button class="btn orange" style="width:100%;justify-content:center;padding:12px;margin-top:4px" onclick="saveEditResa()">💾 Enregistrer les modifications</button>
+  </div>
+</div>
+  
 <!-- MODAL LIEN RÉSERVATION -->
 <div class="overlay" id="modal-resa-link">
   <div class="modal">
@@ -696,10 +723,11 @@ select.finput option{background:var(--bg3)}
     <div class="modal-title" id="resa-detail-title">Réservation <button class="modal-close" onclick="closeModal('modal-resa-detail')">✕</button></div>
     <div id="resa-detail-body"></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
-      <button class="btn blue sm" id="resa-btn-seen" onclick="setResaStatus(currentResaId,'seen')">👁 Marquer en cours</button>
-      <button class="btn green sm" id="resa-btn-done" onclick="setResaStatus(currentResaId,'done')">✓ Traiter</button>
-      <button class="btn red sm" onclick="deleteResa(currentResaId)">🗑 Supprimer</button>
-    </div>
+     <button class="btn ghost sm" id="resa-btn-edit" onclick="openEditResaModal(currentResaId)">✏️ Modifier</button>
+     <button class="btn blue sm" id="resa-btn-seen" onclick="setResaStatus(currentResaId,'seen')">👁 En cours</button>
+     <button class="btn green sm" id="resa-btn-done" onclick="setResaStatus(currentResaId,'done')">✓ Traiter</button>
+     <button class="btn red sm" onclick="deleteResa(currentResaId)">🗑 Supprimer</button>
+   </div>
   </div>
 </div>
 
@@ -1307,6 +1335,111 @@ async function submitManualResa(){
   syncSet('ok');toast('Réservation de '+name+' ajoutée ✓');
 }
 
+let editResaId=null;
+let editResaItems=[];
+ 
+function openEditResaModal(id){
+  const r=reservations.find(x=>x.id===id);if(!r)return;
+  editResaId=id;
+  editResaItems=JSON.parse(JSON.stringify(r.items||[]));
+ 
+  if(g('er-name'))g('er-name').value=r.client_name||'';
+  if(g('er-contact'))g('er-contact').value=r.client_contact||'';
+  if(g('er-message'))g('er-message').value=r.message||'';
+  if(g('er-status'))g('er-status').value=r.status||'new';
+ 
+  // Remplir le select catalogue
+  const sel=g('er-cat-select');
+  if(sel)sel.innerHTML=catalogue.length
+    ?catalogue.map(a=>`<option value="${a.id}">${a.emoji} ${a.name} — ${a.price}€</option>`).join('')
+    :'<option value="">Aucun article</option>';
+ 
+  renderEditResaItems();
+  closeModal('modal-resa-detail');
+  openModal('modal-edit-resa');
+}
+ 
+function addEditResaItem(){
+  const sel=g('er-cat-select');if(!sel||!sel.value)return;
+  const id=parseInt(sel.value);
+  const qty=Math.max(1,parseInt(g('er-qty')?.value)||1);
+  const art=catalogue.find(a=>a.id===id);if(!art)return;
+  const ex=editResaItems.find(i=>i.id===id);
+  if(ex)ex.qty+=qty;
+  else editResaItems.push({id:art.id,name:art.name,emoji:art.emoji,price:art.price,qty});
+  renderEditResaItems();
+}
+ 
+function removeEditResaItem(idx){
+  editResaItems.splice(idx,1);
+  renderEditResaItems();
+}
+ 
+function changeEditResaQty(idx,delta){
+  editResaItems[idx].qty=Math.max(1,editResaItems[idx].qty+delta);
+  renderEditResaItems();
+}
+ 
+function renderEditResaItems(){
+  const el=g('er-items-list');if(!el)return;
+  if(!editResaItems.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--muted2);padding:6px 0">Aucun article.</div>';
+    return;
+  }
+  const total=editResaItems.reduce((s,it)=>s+it.price*it.qty,0);
+  el.innerHTML=editResaItems.map((it,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px">
+      <span style="font-size:16px">${it.emoji||'📦'}</span>
+      <span style="flex:1;font-weight:600">${it.name}</span>
+      <div style="display:flex;align-items:center;gap:4px">
+        <button onclick="changeEditResaQty(${i},-1)" style="width:22px;height:22px;border-radius:50%;border:1px solid var(--border2);background:var(--bg4);color:var(--text);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center">−</button>
+        <span style="font-weight:700;min-width:20px;text-align:center">${it.qty}</span>
+        <button onclick="changeEditResaQty(${i},1)" style="width:22px;height:22px;border-radius:50%;border:1px solid var(--border2);background:var(--bg4);color:var(--text);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center">+</button>
+      </div>
+      <span style="font-weight:800;color:var(--orange);min-width:48px;text-align:right">${it.price*it.qty}€</span>
+      <button onclick="removeEditResaItem(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;padding:2px 4px;opacity:.6">✕</button>
+    </div>`).join('')
+  +`<div style="display:flex;justify-content:flex-end;padding:6px 0;font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--green)">${total} €</div>`;
+}
+ 
+async function saveEditResa(){
+  if(!editResaId)return;
+  const name=(g('er-name')?.value||'').trim();
+  if(!name){toast('Nom du client requis','err');return;}
+  const contact=(g('er-contact')?.value||'').trim();
+  const message=(g('er-message')?.value||'').trim();
+  const status=g('er-status')?.value||'new';
+ 
+  syncSet('syncing');
+  const {error}=await sb.from('reservations').update({
+    client_name:name,
+    client_contact:contact||null,
+    items:editResaItems,
+    message:message||null,
+    status,
+    updated_at:new Date().toISOString()
+  }).eq('id',editResaId);
+ 
+  if(error){toast('Erreur: '+error.message,'err');syncSet('err');return;}
+ 
+  // Mettre à jour localement
+  const r=reservations.find(x=>x.id===editResaId);
+  if(r){
+    r.client_name=name;
+    r.client_contact=contact||null;
+    r.items=editResaItems;
+    r.message=message||null;
+    r.status=status;
+  }
+ 
+  editResaId=null;
+  editResaItems=[];
+  closeModal('modal-edit-resa');
+  renderReservations();
+  syncSet('ok');
+  toast('Réservation mise à jour ✓');
+}
+  
 // ═══ SETTINGS ════════════════════════════════════════════════
 async function loadSettings(){
   const {data,error}=await sb.from('settings').select('*').single();
