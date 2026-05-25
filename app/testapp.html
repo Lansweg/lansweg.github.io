@@ -1153,7 +1153,7 @@ function renderCatalogue(){
             <span class="stock-num" title="Stock total">${a.stock}</span>
             <button class="stock-btn" onclick="updateStock(${a.id},+1)" title="Ajouter 1">+</button>
             <button class="stock-btn" onclick="setStockUnlimited(${a.id})" style="font-size:9px;width:18px" title="Illimité">∞</button>
-          </div>`:`<button class="stock-btn" onclick="promptSetStock(${a.id})" style="font-size:9px;padding:0 6px;width:auto;border-radius:6px">Définir stock</button>`}
+          </div>`:`<button class="stock-btn" onclick="promptSetStock(${a.id})" style="font-size:9px;padding:0 6px;width:auto;border-radius:6px">Stock</button>`}
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding-top:6px;border-top:1px solid var(--border);margin-top:2px">
           <button onclick="toggleResaVisible(${a.id})" title="${a.resa_visible?'Masquer du formulaire public':'Afficher dans formulaire public'}" style="background:${a.resa_visible?'var(--teal-dim)':'var(--bg4)'};border:1px solid ${a.resa_visible?'rgba(6,182,212,.3)':'var(--border2)'};color:${a.resa_visible?'var(--teal)':'var(--muted2)'};border-radius:6px;cursor:pointer;font-size:11px;padding:3px 8px;font-weight:700;transition:all .15s">
