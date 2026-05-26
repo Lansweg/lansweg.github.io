@@ -1015,6 +1015,7 @@ async function init(){
     g('dd').value=new Date().toISOString().split('T')[0];
     updateDocType();syncSet('ok');await checkActiveLive();
     subscribeReservations();
+    subscribePanierItems();
   }catch(err){
     setLoadingMsg('❌ Erreur: '+err.message);syncSet('err');
     setTimeout(()=>{g('loading-screen').style.display='none';g('app').style.display='grid';g('live-date').value=new Date().toISOString().split('T')[0];g('dd').value=new Date().toISOString().split('T')[0];updateDocType();},2000);
@@ -1197,24 +1198,74 @@ async function loadReservations(){
   if(error){console.warn('Table réservations manquante');reservations=[];return;}
   reservations=(data||[]).map(r=>({...r,items:r.items||[]}));
 }
-function subscribeReservations(){
+function subscribePanierItems(){
   try{
-    sb.channel('reservations-changes')
-      .on('postgres_changes',{event:'INSERT',schema:'public',table:'reservations'},payload=>{
-        const r={...payload.new,items:payload.new.items||[]};
-        reservations.unshift(r);renderReservations();
-        toast(`🛒 Nouvelle réservation de ${r.client_name||'?'}${r.items?.length?' — '+r.items.length+' article(s)':''}`,'info');
+    sb.channel('panier-items-rt')
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'panier_items'},payload=>{
+        applyPanierItemChange('insert',payload.new);
       })
-      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'reservations'},payload=>{
-        const idx=reservations.findIndex(r=>r.id===payload.new.id);
-        if(idx>=0)reservations[idx]={...reservations[idx],...payload.new,items:payload.new.items||[]};
-        renderReservations();
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'panier_items'},payload=>{
+        applyPanierItemChange('update',payload.new);
       })
-      .on('postgres_changes',{event:'DELETE',schema:'public',table:'reservations'},payload=>{
-        reservations=reservations.filter(r=>r.id!==payload.old.id);renderReservations();
+      .on('postgres_changes',{event:'DELETE',schema:'public',table:'panier_items'},payload=>{
+        applyPanierItemChange('delete',payload.old);
       })
       .subscribe();
-  }catch(e){console.warn('Realtime non disponible',e);}
+  }catch(e){console.warn('Realtime panier_items non disponible',e);}
+}
+
+function renderCatalogueIfVisible(){
+  // Ne re-rendre le catalogue que s'il est visible (évite du travail inutile)
+  const catView = g('view-catalogue');
+  if(catView && catView.classList.contains('active')) renderCatalogue();
+}
+  
+function applyPanierItemChange(type, row){
+  // Trouver le live concerné dans notre state
+  const targetLive = live && live.uid === row.live_uid ? live : null;
+  if(!targetLive) {
+    // C'est un live de l'historique ou un live d'un autre appareil
+    // On recalcule juste les chips de stock (getStockRemaining utilise live en mémoire)
+    renderQuickChips();
+    renderCatalogueIfVisible();
+    return;
+  }
+ 
+  // Mettre à jour le panier en mémoire
+  const p = targetLive.paniers.find(p => p.num === row.panier_num);
+  if(!p) return;
+ 
+  if(type === 'delete'){
+    p.items = p.items.filter(i => i.id !== row.id);
+  } else {
+    const existing = p.items.find(i => i.id === row.id);
+    if(existing){
+      existing.qty = row.qty;
+      existing.name = row.name;
+      existing.price = Number(row.price);
+    } else {
+      p.items.push({
+        id: row.id,
+        catId: row.cat_id,
+        name: row.name,
+        price: Number(row.price),
+        emoji: row.emoji || '📦',
+        qty: row.qty
+      });
+    }
+  }
+ 
+  // Rafraîchir l'affichage si c'est le live actif
+  renderGrid();
+  updateStats();
+  renderQuickChips();
+  renderCatalogueIfVisible();
+ 
+  // Si le panier modifié est celui ouvert, rafraîchir le panneau
+  if(selPanier === row.panier_num){
+    if(isMobile()) renderMobilePanierPanel();
+    else { renderArtsList(); }
+  }
 }
 function filterResa(status,btn){
   resaFilter=status;
