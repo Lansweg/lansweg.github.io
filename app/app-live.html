@@ -1923,7 +1923,7 @@ async function mChgQty(idx,delta){
   p.items[idx].qty=Math.max(1,p.items[idx].qty+delta);
   renderMobilePanierPanel();renderGrid();updateStats();renderQuickChips();await savePanierItems(p);
 }
-async function delItem(idx){if(isPanierLocked(panierOf(selPanier)))return;const p=panierOf(selPanier);if(!p)return;p.items.splice(idx,1);p.items.splice(idx,1);<<renderArtsList(); renderPanierFooter(); renderGrid(); updateStats(); renderQuickChips();await savePanierItems(p);}
+async function delItem(idx){if(isPanierLocked(panierOf(selPanier)))return;const p=panierOf(selPanier);if(!p)return;p.items.splice(idx,1);p.items.splice(idx,1);renderArtsList(); renderPanierFooter(); renderGrid(); updateStats(); renderQuickChips();await savePanierItems(p);}
 async function toggleClose(){const p=panierOf(selPanier);if(!p)return;if(liveIsReadonly&&p.closed&&!p.postLive)return;p.closed=!p.closed;showPanierPanel();renderGrid();updateStats();await savePanierMeta(p);toast(p.closed?`Panier ${p.num} clôturé`:`Panier ${p.num} réouvert`);}
 async function clearPanier(){
   if(isPanierLocked(panierOf(selPanier)))return;
