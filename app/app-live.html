@@ -1802,6 +1802,27 @@ function renderArtsList(){
   el.innerHTML=p.items.map((it,idx)=>`<div class="art-row"><div class="art-emoji">${it.emoji||'📦'}</div><div class="art-name">${it.name}</div>${locked?`<div style="margin-left:auto;font-size:12px;color:var(--muted)">${it.qty}×</div>`:`<div class="qty-ctrl"><button class="qty-btn" onclick="chgQty(${idx},-1)">−</button><div class="qty-num">${it.qty}</div><button class="qty-btn" onclick="chgQty(${idx},1)">+</button></div>`}<div class="art-price">${it.price*it.qty}€</div>${locked?'':`<button class="del-btn" onclick="delItem(${idx})">✕</button>`}</div>`).join('');
 }
 
+function renderPanierFooter(){
+  const p = panierOf(selPanier);
+  const footer = g('pp-footer-desktop');
+  if(!p || !footer) return;
+  const locked = isPanierLocked(p);
+  const tot = panierTotal(p);
+  const artCount = p.items.reduce((s,i) => s + i.qty, 0);
+  footer.innerHTML = `
+    <div class="pp-total">
+      <div><div class="pp-total-label">${artCount} article${artCount>1?'s':''}</div></div>
+      <div class="pp-total-amount">${tot} €</div>
+    </div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap">
+      ${locked ? '' : `<div style="display:flex;gap:7px;flex:1">
+        <button class="btn green" style="flex:1;justify-content:center" onclick="toggleClose()">${p.closed?'↩ Réouvrir':'✓ Clôturer'}</button>
+        <button class="btn ghost sm" onclick="clearPanier()" style="color:var(--red)">🗑 Vider</button>
+      </div>`}
+      <button class="btn purple sm" onclick="printPanier()">🖨️</button>
+    </div>`;
+}
+
 function renderQuickChips(){
   const el=g('quick-chips');if(!el)return;
   el.innerHTML=catalogue.map(a=>{
@@ -1867,14 +1888,14 @@ async function addFromCat(id){
   else p.items.push({catId:id,name:art.name,price:Number(art.price),emoji:art.emoji,qty:1});
   // ↓ Mise à jour locale du stock vendu
   if(art.stock!==null){if(!stockSoldTotal[id])stockSoldTotal[id]=0;stockSoldTotal[id]++;}
-  renderArtsList();renderGrid();updateStats();renderQuickChips();await savePanierItems(p);
+  renderArtsList(); renderPanierFooter(); renderGrid(); updateStats(); renderQuickChips();await savePanierItems(p);
 }
 async function addManual(){
   if(isPanierLocked(panierOf(selPanier)))return;
   const name=v('ma-name'),price=parseFloat(v('ma-price'))||0,p=panierOf(selPanier);
   if(!name||!p){if(!name)toast('Nom requis','err');return;}
   p.items.push({name,price,emoji:'📦',qty:1});g('ma-name').value='';g('ma-price').value='';
-  renderArtsList();renderGrid();updateStats();await savePanierItems(p);toast(name+' ajouté');
+  renderArtsList(); renderPanierFooter(); renderGrid(); updateStats();await savePanierItems(p);toast(name+' ajouté');
 }
 async function chgQty(idx,delta){
   if(isPanierLocked(panierOf(selPanier)))return;
@@ -1887,7 +1908,7 @@ async function chgQty(idx,delta){
     stockSoldTotal[it.catId]=Math.max(0,stockSoldTotal[it.catId]);
   }
   p.items[idx].qty=Math.max(1,p.items[idx].qty+delta);
-  renderArtsList();renderGrid();updateStats();renderQuickChips();await savePanierItems(p);
+  renderArtsList(); renderPanierFooter(); renderGrid(); updateStats(); renderQuickChips();await savePanierItems(p);
 }
 async function mChgQty(idx,delta){
   if(isPanierLocked(panierOf(selPanier)))return;
@@ -1902,7 +1923,7 @@ async function mChgQty(idx,delta){
   p.items[idx].qty=Math.max(1,p.items[idx].qty+delta);
   renderMobilePanierPanel();renderGrid();updateStats();renderQuickChips();await savePanierItems(p);
 }
-async function delItem(idx){if(isPanierLocked(panierOf(selPanier)))return;const p=panierOf(selPanier);if(!p)return;p.items.splice(idx,1);renderArtsList();renderGrid();updateStats();renderQuickChips();await savePanierItems(p);}
+async function delItem(idx){if(isPanierLocked(panierOf(selPanier)))return;const p=panierOf(selPanier);if(!p)return;p.items.splice(idx,1);p.items.splice(idx,1);<<renderArtsList(); renderPanierFooter(); renderGrid(); updateStats(); renderQuickChips();await savePanierItems(p);}
 async function toggleClose(){const p=panierOf(selPanier);if(!p)return;if(liveIsReadonly&&p.closed&&!p.postLive)return;p.closed=!p.closed;showPanierPanel();renderGrid();updateStats();await savePanierMeta(p);toast(p.closed?`Panier ${p.num} clôturé`:`Panier ${p.num} réouvert`);}
 async function clearPanier(){
   if(isPanierLocked(panierOf(selPanier)))return;
