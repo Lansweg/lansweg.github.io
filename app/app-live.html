@@ -1581,10 +1581,11 @@ async function saveEditResa(){
 }
   
 // ═══ SETTINGS ════════════════════════════════════════════════
+
 async function loadSettings(){
-  const {data,error}=await sb.from('settings').select('*').single();
-  if(error||!data)return;
-  const d=data.data||{};settings={...settings,...d};devNum=data.dev_num||1;facNum=data.fac_num||1;
+  const {data,error}=await sb.from('settings').select('*').limit(1);
+  if(error||!data||!data.length)return;
+  const d=data[0].data||{};settings={...settings,...d};devNum=data[0].dev_num||1;facNum=data[0].fac_num||1;
 }
 async function saveSettings(){
   settings.name=v('s-name');settings.type=v('s-type');settings.siret=v('s-siret');settings.tva=v('s-tva');
