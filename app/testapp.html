@@ -642,7 +642,7 @@ select.finput option{background:var(--bg3)}
       <div class="fgroup"><label class="flabel">Emoji</label><input class="finput" id="nc-emoji" placeholder="👕" style="text-align:center;font-size:20px"></div>
     </div>
     <div class="fgroup"><label class="flabel">Catégorie</label>
-      <select class="finput" id="nc-cat"><option>Vêtements</option><option>Accessoires</option><option>Chaussures</option><option>Sacs</option><option>Mascotte</option><option>Autre</option></select>
+      <select class="finput" id="nc-cat"><option>Maison</option><option>Linge</option><option>Vêtement</option><option>Sacs</option><option>Produit</option><option>Accesoire</option></select>
     </div>
     <div class="fgroup"><label class="flabel">Stock initial (vide = illimité)</label><input class="finput" id="nc-stock" type="number" placeholder="Ex: 10" min="0" inputmode="numeric"></div>
     <div class="fgroup"><label class="flabel">
@@ -850,6 +850,7 @@ let liveHistory=[],catalogue=[],documents=[],reservations=[];
 let docLines=[],docRemises=[],editingDocId=null;
 let devNum=1,facNum=1,currentDocId=null,panierSaveTimer=null;
 let currentResaId=null,resaFilter='all';
+let stockSoldTotal={};  // {catId: qty totale vendue tous lives confondus}
 let manualResaItems=[];
 let settings={name:'FC Événement',type:'Association loi 1901',siret:'',tva:'',addr:'',cp:'',city:'Dunkerque',tel:'',email:'',web:'',iban:'',mentions:'',logo:null,resaTitle:'',resaMsg:'',resaConfirm:''};
 
@@ -983,13 +984,18 @@ function isLiveEditable(){return!!live&&(live.status==='active'||live.status==='
 // Stock = catalogue − lives − réservations actives (new+seen)
 function getStockRemaining(art){
   if(art.stock==null||art.stock===undefined||art.stock===-1)return null;
-  const usedLives=live
-    ?live.paniers.reduce((sum,p)=>{const item=p.items.find(i=>i.catId===art.id);return sum+(item?item.qty:0);},0)
-    :0;
-  const usedResas=reservations
+ 
+  // Total vendu dans TOUS les lives (chargé depuis SQL au démarrage)
+  let sold = stockSoldTotal[art.id] || 0;
+ 
+  const usedResas = reservations
     .filter(r=>r.status==='new'||r.status==='seen')
-    .reduce((sum,r)=>{const it=(r.items||[]).find(i=>i.id===art.id);return sum+(it?Number(it.qty||1):0);},0);
-  return Math.max(0,art.stock-usedLives-usedResas);
+    .reduce((sum,r)=>{
+      const it=(r.items||[]).find(i=>i.id===art.id);
+      return sum+(it?Number(it.qty||1):0);
+    },0);
+ 
+  return Math.max(0, art.stock - sold - usedResas);
 }
 
 // ═══ INIT ════════════════════════════════════════════════════
@@ -998,6 +1004,7 @@ async function init(){
   if(isMobile()&&g('drawer-toggle'))g('drawer-toggle').style.display='flex';
   try{
     setLoadingMsg('Chargement du catalogue…');await loadCatalogue();
+    setLoadingMsg('Calcul des stocks…');await loadStockSold();
     setLoadingMsg('Chargement des paramètres…');await loadSettings();
     setLoadingMsg('Chargement des lives…');await loadLiveHistory();
     setLoadingMsg('Chargement des documents…');await loadDocuments();
@@ -1164,6 +1171,24 @@ function renderCatalogue(){
       </div>`;
     }).join('')}`
   ).join('');
+}
+
+async function loadStockSold(){
+  // Charger le total vendu par cat_id sur TOUS les panier_items
+  // (tous lives confondus, actifs + terminés)
+  stockSoldTotal={};
+  try{
+    const {data,error}=await sb
+      .from('panier_items')
+      .select('cat_id,qty')
+      .not('cat_id','is',null);
+    if(error){console.warn('loadStockSold error',error);return;}
+    (data||[]).forEach(row=>{
+      const id=row.cat_id;
+      if(!stockSoldTotal[id])stockSoldTotal[id]=0;
+      stockSoldTotal[id]+=Number(row.qty||0);
+    });
+  }catch(e){console.warn('loadStockSold exception',e);}
 }
 
 // ═══ RÉSERVATIONS ══════════════════════════════════════════════
