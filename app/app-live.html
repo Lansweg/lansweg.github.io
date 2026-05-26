@@ -974,6 +974,22 @@ async function addManualMobile(){
   p.items.push({name,price,emoji:'📦',qty:1});g('mma-name').value='';g('mma-price').value='';
   renderMobilePanierPanel();renderGrid();updateStats();await savePanierItems(p);toast(name+' ajouté');
 }
+async function chgQty(idx,delta){
+  if(isPanierLocked(panierOf(selPanier)))return;
+  const p=panierOf(selPanier);if(!p)return;
+  const it=p.items[idx];
+  if(it.catId&&catalogue.find(a=>a.id===it.catId)?.stock!==null){
+    if(!stockSoldTotal[it.catId])stockSoldTotal[it.catId]=0;
+    stockSoldTotal[it.catId]+=delta;
+    stockSoldTotal[it.catId]=Math.max(0,stockSoldTotal[it.catId]);
+  }
+  if(it.qty+delta<=0){
+    p.items.splice(idx,1);
+  } else {
+    p.items[idx].qty+=delta;
+  }
+  renderArtsList(); renderPanierFooter(); renderGrid(); updateStats(); renderQuickChips();await savePanierItems(p);
+}
 async function mDelItem(idx){
   if(isPanierLocked(panierOf(selPanier)))return;
   const p=panierOf(selPanier);if(!p)return;
