@@ -1905,13 +1905,16 @@ async function chgQty(idx,delta){
   if(isPanierLocked(panierOf(selPanier)))return;
   const p=panierOf(selPanier);if(!p)return;
   const it=p.items[idx];
-  // ↓ Mise à jour locale du stock vendu si article du catalogue
   if(it.catId&&catalogue.find(a=>a.id===it.catId)?.stock!==null){
     if(!stockSoldTotal[it.catId])stockSoldTotal[it.catId]=0;
     stockSoldTotal[it.catId]+=delta;
     stockSoldTotal[it.catId]=Math.max(0,stockSoldTotal[it.catId]);
   }
-  p.items[idx].qty=Math.max(1,p.items[idx].qty+delta);
+  if(it.qty+delta<=0){
+    p.items.splice(idx,1);
+  } else {
+    p.items[idx].qty+=delta;
+  }
   renderArtsList(); renderPanierFooter(); renderGrid(); updateStats(); renderQuickChips();await savePanierItems(p);
 }
 async function mChgQty(idx,delta){
