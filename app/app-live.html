@@ -850,6 +850,7 @@ let liveHistory=[],catalogue=[],documents=[],reservations=[];
 let docLines=[],docRemises=[],editingDocId=null;
 let devNum=1,facNum=1,currentDocId=null,panierSaveTimer=null;
 let currentResaId=null,resaFilter='all';
+let stockSoldTotal={};  // {catId: qty totale vendue tous lives confondus}
 let manualResaItems=[];
 let settings={name:'FC Événement',type:'Association loi 1901',siret:'',tva:'',addr:'',cp:'',city:'Dunkerque',tel:'',email:'',web:'',iban:'',mentions:'',logo:null,resaTitle:'',resaMsg:'',resaConfirm:''};
 
@@ -960,7 +961,10 @@ async function mAddFromCat(id){
   const art=catalogue.find(a=>a.id===id),p=panierOf(selPanier);if(!art||!p)return;
   const rem=getStockRemaining(art);if(rem!==null&&rem<=0){toast('Rupture de stock !','err');return;}
   const ex=p.items.find(i=>i.catId===id);
-  if(ex)ex.qty++;else p.items.push({catId:id,name:art.name,price:Number(art.price),emoji:art.emoji,qty:1});
+  if(ex) ex.qty++;
+  else p.items.push({catId:id,name:art.name,price:Number(art.price),emoji:art.emoji,qty:1});
+  // ↓ Mise à jour locale du stock vendu
+  if(art.stock!==null){if(!stockSoldTotal[id])stockSoldTotal[id]=0;stockSoldTotal[id]++;}
   renderMobilePanierPanel();renderGrid();updateStats();renderQuickChips();await savePanierItems(p);
 }
 async function addManualMobile(){
@@ -970,8 +974,31 @@ async function addManualMobile(){
   p.items.push({name,price,emoji:'📦',qty:1});g('mma-name').value='';g('mma-price').value='';
   renderMobilePanierPanel();renderGrid();updateStats();await savePanierItems(p);toast(name+' ajouté');
 }
-async function mChgQty(idx,delta){if(isPanierLocked(panierOf(selPanier)))return;const p=panierOf(selPanier);if(!p)return;p.items[idx].qty=Math.max(1,p.items[idx].qty+delta);renderMobilePanierPanel();renderGrid();updateStats();await savePanierItems(p);}
-async function mDelItem(idx){if(isPanierLocked(panierOf(selPanier)))return;const p=panierOf(selPanier);if(!p)return;p.items.splice(idx,1);renderMobilePanierPanel();renderGrid();updateStats();await savePanierItems(p);}
+async function chgQty(idx,delta){
+  if(isPanierLocked(panierOf(selPanier)))return;
+  const p=panierOf(selPanier);if(!p)return;
+  const it=p.items[idx];
+  // ↓ Mise à jour locale du stock vendu si article du catalogue
+  if(it.catId&&catalogue.find(a=>a.id===it.catId)?.stock!==null){
+    if(!stockSoldTotal[it.catId])stockSoldTotal[it.catId]=0;
+    stockSoldTotal[it.catId]+=delta;
+    stockSoldTotal[it.catId]=Math.max(0,stockSoldTotal[it.catId]);
+  }
+  p.items[idx].qty=Math.max(1,p.items[idx].qty+delta);
+  renderArtsList();renderGrid();updateStats();renderQuickChips();await savePanierItems(p);
+}
+async function mDelItem(idx){
+  if(isPanierLocked(panierOf(selPanier)))return;
+  const p=panierOf(selPanier);if(!p)return;
+  const it=p.items[idx];
+  // ↓ Mise à jour locale du stock vendu
+  if(it.catId&&catalogue.find(a=>a.id===it.catId)?.stock!==null){
+    stockSoldTotal[it.catId]=(stockSoldTotal[it.catId]||0)-it.qty;
+    stockSoldTotal[it.catId]=Math.max(0,stockSoldTotal[it.catId]);
+  }
+  p.items.splice(idx,1);
+  renderMobilePanierPanel();renderGrid();updateStats();renderQuickChips();await savePanierItems(p);
+}
 async function mToggleClose(){const p=panierOf(selPanier);if(!p)return;if(liveIsReadonly&&p.closed&&!p.postLive)return;p.closed=!p.closed;renderMobilePanierPanel();renderGrid();updateStats();await savePanierMeta(p);toast(p.closed?`Panier ${p.num} clôturé`:`Panier ${p.num} réouvert`);}
 async function mClearPanier(){if(isPanierLocked(panierOf(selPanier)))return;const p=panierOf(selPanier);if(!p||!confirm('Vider ce panier ?'))return;p.items=[];p.note='';p.name='';g('mpp-name').value='';renderMobilePanierPanel();renderGrid();updateStats();await savePanierMeta(p);await savePanierItems(p);toast('Panier vidé');}
 function debouncedSavePanierMobile(){const p=panierOf(selPanier);if(!p||isPanierLocked(p))return;p.name=g('mpp-name').value;p.note=g('mpp-note')?.value||'';renderGrid();clearTimeout(panierSaveTimer);panierSaveTimer=setTimeout(()=>savePanierMeta(p),800);}
@@ -983,13 +1010,18 @@ function isLiveEditable(){return!!live&&(live.status==='active'||live.status==='
 // Stock = catalogue − lives − réservations actives (new+seen)
 function getStockRemaining(art){
   if(art.stock==null||art.stock===undefined||art.stock===-1)return null;
-  const usedLives=live
-    ?live.paniers.reduce((sum,p)=>{const item=p.items.find(i=>i.catId===art.id);return sum+(item?item.qty:0);},0)
-    :0;
-  const usedResas=reservations
+ 
+  // Total vendu dans TOUS les lives (chargé depuis SQL au démarrage)
+  let sold = stockSoldTotal[art.id] || 0;
+ 
+  const usedResas = reservations
     .filter(r=>r.status==='new'||r.status==='seen')
-    .reduce((sum,r)=>{const it=(r.items||[]).find(i=>i.id===art.id);return sum+(it?Number(it.qty||1):0);},0);
-  return Math.max(0,art.stock-usedLives-usedResas);
+    .reduce((sum,r)=>{
+      const it=(r.items||[]).find(i=>i.id===art.id);
+      return sum+(it?Number(it.qty||1):0);
+    },0);
+ 
+  return Math.max(0, art.stock - sold - usedResas);
 }
 
 // ═══ INIT ════════════════════════════════════════════════════
@@ -998,6 +1030,7 @@ async function init(){
   if(isMobile()&&g('drawer-toggle'))g('drawer-toggle').style.display='flex';
   try{
     setLoadingMsg('Chargement du catalogue…');await loadCatalogue();
+    setLoadingMsg('Calcul des stocks…');await loadStockSold();
     setLoadingMsg('Chargement des paramètres…');await loadSettings();
     setLoadingMsg('Chargement des lives…');await loadLiveHistory();
     setLoadingMsg('Chargement des documents…');await loadDocuments();
@@ -1008,6 +1041,7 @@ async function init(){
     g('dd').value=new Date().toISOString().split('T')[0];
     updateDocType();syncSet('ok');await checkActiveLive();
     subscribeReservations();
+    subscribePanierItems();
   }catch(err){
     setLoadingMsg('❌ Erreur: '+err.message);syncSet('err');
     setTimeout(()=>{g('loading-screen').style.display='none';g('app').style.display='grid';g('live-date').value=new Date().toISOString().split('T')[0];g('dd').value=new Date().toISOString().split('T')[0];updateDocType();},2000);
@@ -1166,30 +1200,136 @@ function renderCatalogue(){
   ).join('');
 }
 
+async function loadStockSold(){
+  // Charger le total vendu par cat_id sur TOUS les panier_items
+  // (tous lives confondus, actifs + terminés)
+  stockSoldTotal={};
+  try{
+    const {data,error}=await sb
+      .from('panier_items')
+      .select('cat_id,qty')
+      .not('cat_id','is',null);
+    if(error){console.warn('loadStockSold error',error);return;}
+    (data||[]).forEach(row=>{
+      const id=row.cat_id;
+      if(!stockSoldTotal[id])stockSoldTotal[id]=0;
+      stockSoldTotal[id]+=Number(row.qty||0);
+    });
+  }catch(e){console.warn('loadStockSold exception',e);}
+}
+
 // ═══ RÉSERVATIONS ══════════════════════════════════════════════
 async function loadReservations(){
   const {data,error}=await sb.from('reservations').select('*').order('created_at',{ascending:false});
   if(error){console.warn('Table réservations manquante');reservations=[];return;}
   reservations=(data||[]).map(r=>({...r,items:r.items||[]}));
 }
-function subscribeReservations(){
+function subscribePanierItems(){
   try{
-    sb.channel('reservations-changes')
-      .on('postgres_changes',{event:'INSERT',schema:'public',table:'reservations'},payload=>{
-        const r={...payload.new,items:payload.new.items||[]};
-        reservations.unshift(r);renderReservations();
-        toast(`🛒 Nouvelle réservation de ${r.client_name||'?'}${r.items?.length?' — '+r.items.length+' article(s)':''}`,'info');
+    sb.channel('panier-items-rt')
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'panier_items'},payload=>{
+        applyPanierItemChange('insert',payload.new);
       })
-      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'reservations'},payload=>{
-        const idx=reservations.findIndex(r=>r.id===payload.new.id);
-        if(idx>=0)reservations[idx]={...reservations[idx],...payload.new,items:payload.new.items||[]};
-        renderReservations();
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'panier_items'},payload=>{
+        applyPanierItemChange('update',payload.new);
       })
-      .on('postgres_changes',{event:'DELETE',schema:'public',table:'reservations'},payload=>{
-        reservations=reservations.filter(r=>r.id!==payload.old.id);renderReservations();
+      .on('postgres_changes',{event:'DELETE',schema:'public',table:'panier_items'},payload=>{
+        applyPanierItemChange('delete',payload.old);
       })
       .subscribe();
-  }catch(e){console.warn('Realtime non disponible',e);}
+  }catch(e){console.warn('Realtime panier_items non disponible',e);}
+}
+
+function renderCatalogueIfVisible(){
+  // Ne re-rendre le catalogue que s'il est visible (évite du travail inutile)
+  const catView = g('view-catalogue');
+  if(catView && catView.classList.contains('active')) renderCatalogue();
+}
+  
+function applyPanierItemChange(type, row){
+  // Mettre à jour stockSoldTotal en temps réel
+  if(row.cat_id !== null && row.cat_id !== undefined) {
+    const catId = row.cat_id;
+    if(!stockSoldTotal[catId]) stockSoldTotal[catId] = 0;
+    if(type === 'insert') {
+      stockSoldTotal[catId] += Number(row.qty || 0);
+    } else if(type === 'update') {
+      // Trouver l'ancienne quantité dans le state local avant mise à jour
+      const targetLive = live && live.uid === row.live_uid ? live : null;
+      if(targetLive) {
+        const p = targetLive.paniers.find(p => p.num === row.panier_num);
+        const existing = p?.items.find(i => i.id === row.id);
+        const oldQty = existing ? existing.qty : 0;
+        stockSoldTotal[catId] += Number(row.qty || 0) - oldQty;
+      }
+    } else if(type === 'delete') {
+      const targetLive = live && live.uid === row.live_uid ? live : null;
+      if(targetLive) {
+        const p = targetLive.paniers.find(p => p.num === row.panier_num);
+        const existing = p?.items.find(i => i.id === row.id);
+        stockSoldTotal[catId] -= Number(existing?.qty || row.qty || 0);
+        stockSoldTotal[catId] = Math.max(0, stockSoldTotal[catId]);
+      }
+    }
+  }
+
+  const targetLive = live && live.uid === row.live_uid ? live : null;
+  if(!targetLive) {
+    renderQuickChips();
+    renderCatalogueIfVisible();
+    return;
+  }
+
+  const p = targetLive.paniers.find(p => p.num === row.panier_num);
+  if(!p) return;
+
+  if(type === 'delete'){
+    p.items = p.items.filter(i => i.id !== row.id);
+  } else {
+    const existing = p.items.find(i => i.id === row.id);
+    if(existing){
+      existing.qty = row.qty;
+      existing.name = row.name;
+      existing.price = Number(row.price);
+    } else {
+      p.items.push({
+        id: row.id,
+        catId: row.cat_id,
+        name: row.name,
+        price: Number(row.price),
+        emoji: row.emoji || '📦',
+        qty: row.qty
+      });
+    }
+  }
+
+  renderGrid();
+  updateStats();
+  renderQuickChips();
+  renderCatalogueIfVisible();
+
+  if(selPanier === row.panier_num){
+    if(isMobile()) renderMobilePanierPanel();
+    else {
+      renderArtsList();
+      // Rafraîchir le footer avec le nouveau total
+      const tot = panierTotal(p);
+      const artCount = p.items.reduce((s,i) => s + i.qty, 0);
+      const locked = isPanierLocked(p);
+      const footer = g('pp-footer-desktop');
+      if(footer) {
+        footer.innerHTML = `
+          <div class="pp-total">
+            <div><div class="pp-total-label">${artCount} article${artCount>1?'s':''}</div></div>
+            <div class="pp-total-amount">${tot} €</div>
+          </div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap">
+            ${locked ? '' : `<div style="display:flex;gap:7px;flex:1"><button class="btn green" style="flex:1;justify-content:center" onclick="toggleClose()">${p.closed?'↩ Réouvrir':'✓ Clôturer'}</button><button class="btn ghost sm" onclick="clearPanier()" style="color:var(--red)">🗑 Vider</button></div>`}
+            <button class="btn purple sm" onclick="printPanier()">🖨️</button>
+          </div>`;
+      }
+    }
+  }
 }
 function filterResa(status,btn){
   resaFilter=status;
@@ -1723,7 +1863,10 @@ async function addFromCat(id){
   const art=catalogue.find(a=>a.id===id),p=panierOf(selPanier);if(!art||!p)return;
   const rem=getStockRemaining(art);if(rem!==null&&rem<=0){toast('Rupture de stock !','err');return;}
   const ex=p.items.find(i=>i.catId===id);
-  if(ex)ex.qty++;else p.items.push({catId:id,name:art.name,price:Number(art.price),emoji:art.emoji,qty:1});
+  if(ex) ex.qty++;
+  else p.items.push({catId:id,name:art.name,price:Number(art.price),emoji:art.emoji,qty:1});
+  // ↓ Mise à jour locale du stock vendu
+  if(art.stock!==null){if(!stockSoldTotal[id])stockSoldTotal[id]=0;stockSoldTotal[id]++;}
   renderArtsList();renderGrid();updateStats();renderQuickChips();await savePanierItems(p);
 }
 async function addManual(){
@@ -1733,10 +1876,61 @@ async function addManual(){
   p.items.push({name,price,emoji:'📦',qty:1});g('ma-name').value='';g('ma-price').value='';
   renderArtsList();renderGrid();updateStats();await savePanierItems(p);toast(name+' ajouté');
 }
-async function chgQty(idx,delta){if(isPanierLocked(panierOf(selPanier)))return;const p=panierOf(selPanier);if(!p)return;p.items[idx].qty=Math.max(1,p.items[idx].qty+delta);renderArtsList();renderGrid();updateStats();renderQuickChips();await savePanierItems(p);}
+async function chgQty(idx,delta){
+  if(isPanierLocked(panierOf(selPanier)))return;
+  const p=panierOf(selPanier);if(!p)return;
+  const it=p.items[idx];
+  // ↓ Mise à jour locale du stock vendu si article du catalogue
+  if(it.catId&&catalogue.find(a=>a.id===it.catId)?.stock!==null){
+    if(!stockSoldTotal[it.catId])stockSoldTotal[it.catId]=0;
+    stockSoldTotal[it.catId]+=delta;
+    stockSoldTotal[it.catId]=Math.max(0,stockSoldTotal[it.catId]);
+  }
+  p.items[idx].qty=Math.max(1,p.items[idx].qty+delta);
+  renderArtsList();renderGrid();updateStats();renderQuickChips();await savePanierItems(p);
+}
+async function mChgQty(idx,delta){
+  if(isPanierLocked(panierOf(selPanier)))return;
+  const p=panierOf(selPanier);if(!p)return;
+  const it=p.items[idx];
+  // ↓ Mise à jour locale du stock vendu
+  if(it.catId&&catalogue.find(a=>a.id===it.catId)?.stock!==null){
+    if(!stockSoldTotal[it.catId])stockSoldTotal[it.catId]=0;
+    stockSoldTotal[it.catId]+=delta;
+    stockSoldTotal[it.catId]=Math.max(0,stockSoldTotal[it.catId]);
+  }
+  p.items[idx].qty=Math.max(1,p.items[idx].qty+delta);
+  renderMobilePanierPanel();renderGrid();updateStats();renderQuickChips();await savePanierItems(p);
+}
 async function delItem(idx){if(isPanierLocked(panierOf(selPanier)))return;const p=panierOf(selPanier);if(!p)return;p.items.splice(idx,1);renderArtsList();renderGrid();updateStats();renderQuickChips();await savePanierItems(p);}
 async function toggleClose(){const p=panierOf(selPanier);if(!p)return;if(liveIsReadonly&&p.closed&&!p.postLive)return;p.closed=!p.closed;showPanierPanel();renderGrid();updateStats();await savePanierMeta(p);toast(p.closed?`Panier ${p.num} clôturé`:`Panier ${p.num} réouvert`);}
-async function clearPanier(){if(isPanierLocked(panierOf(selPanier)))return;const p=panierOf(selPanier);if(!p||!confirm('Vider ce panier ?'))return;p.items=[];p.note='';p.name='';showPanierPanel();renderGrid();updateStats();renderQuickChips();await savePanierMeta(p);await savePanierItems(p);toast('Panier vidé');}
+async function clearPanier(){
+  if(isPanierLocked(panierOf(selPanier)))return;
+  const p=panierOf(selPanier);if(!p||!confirm('Vider ce panier ?'))return;
+  // ↓ Mise à jour locale du stock vendu pour chaque article catalogue
+  p.items.forEach(it=>{
+    if(it.catId&&catalogue.find(a=>a.id===it.catId)?.stock!==null){
+      stockSoldTotal[it.catId]=(stockSoldTotal[it.catId]||0)-it.qty;
+      stockSoldTotal[it.catId]=Math.max(0,stockSoldTotal[it.catId]);
+    }
+  });
+  p.items=[];p.note='';p.name='';
+  showPanierPanel();renderGrid();updateStats();renderQuickChips();
+  await savePanierMeta(p);await savePanierItems(p);toast('Panier vidé');
+}
+async function mClearPanier(){
+  if(isPanierLocked(panierOf(selPanier)))return;
+  const p=panierOf(selPanier);if(!p||!confirm('Vider ce panier ?'))return;
+  p.items.forEach(it=>{
+    if(it.catId&&catalogue.find(a=>a.id===it.catId)?.stock!==null){
+      stockSoldTotal[it.catId]=(stockSoldTotal[it.catId]||0)-it.qty;
+      stockSoldTotal[it.catId]=Math.max(0,stockSoldTotal[it.catId]);
+    }
+  });
+  p.items=[];p.note='';p.name='';g('mpp-name').value='';
+  renderMobilePanierPanel();renderGrid();updateStats();renderQuickChips();
+  await savePanierMeta(p);await savePanierItems(p);toast('Panier vidé');
+}
 function jumpTo(){const num=parseInt(v('jump-input'));if(!num||!live)return;if(num<1||num>live.paniers.length){toast('Panier introuvable','err');return;}g('jump-input').value='';selPanier=num;renderGrid();if(isMobile())openMobileSheet();else showPanierPanel();const btn=g('paniers-grid').querySelector(`[data-num="${num}"]`);if(btn)btn.scrollIntoView({behavior:'smooth',block:'center'});}
 function updateStats(){if(!live)return;const active=live.paniers.filter(p=>p.items.length||p.note).length;const closed=live.paniers.filter(p=>p.closed).length;const total=live.paniers.reduce((s,p)=>s+panierTotal(p),0);g('st-paniers').textContent=active;g('st-total').textContent=total+' €';g('st-clos').textContent=closed;}
 
