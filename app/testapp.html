@@ -1221,20 +1221,42 @@ function renderCatalogueIfVisible(){
 }
   
 function applyPanierItemChange(type, row){
-  // Trouver le live concerné dans notre state
+  // Mettre à jour stockSoldTotal en temps réel
+  if(row.cat_id !== null && row.cat_id !== undefined) {
+    const catId = row.cat_id;
+    if(!stockSoldTotal[catId]) stockSoldTotal[catId] = 0;
+    if(type === 'insert') {
+      stockSoldTotal[catId] += Number(row.qty || 0);
+    } else if(type === 'update') {
+      // Trouver l'ancienne quantité dans le state local avant mise à jour
+      const targetLive = live && live.uid === row.live_uid ? live : null;
+      if(targetLive) {
+        const p = targetLive.paniers.find(p => p.num === row.panier_num);
+        const existing = p?.items.find(i => i.id === row.id);
+        const oldQty = existing ? existing.qty : 0;
+        stockSoldTotal[catId] += Number(row.qty || 0) - oldQty;
+      }
+    } else if(type === 'delete') {
+      const targetLive = live && live.uid === row.live_uid ? live : null;
+      if(targetLive) {
+        const p = targetLive.paniers.find(p => p.num === row.panier_num);
+        const existing = p?.items.find(i => i.id === row.id);
+        stockSoldTotal[catId] -= Number(existing?.qty || row.qty || 0);
+        stockSoldTotal[catId] = Math.max(0, stockSoldTotal[catId]);
+      }
+    }
+  }
+
   const targetLive = live && live.uid === row.live_uid ? live : null;
   if(!targetLive) {
-    // C'est un live de l'historique ou un live d'un autre appareil
-    // On recalcule juste les chips de stock (getStockRemaining utilise live en mémoire)
     renderQuickChips();
     renderCatalogueIfVisible();
     return;
   }
- 
-  // Mettre à jour le panier en mémoire
+
   const p = targetLive.paniers.find(p => p.num === row.panier_num);
   if(!p) return;
- 
+
   if(type === 'delete'){
     p.items = p.items.filter(i => i.id !== row.id);
   } else {
@@ -1254,17 +1276,33 @@ function applyPanierItemChange(type, row){
       });
     }
   }
- 
-  // Rafraîchir l'affichage si c'est le live actif
+
   renderGrid();
   updateStats();
   renderQuickChips();
   renderCatalogueIfVisible();
- 
-  // Si le panier modifié est celui ouvert, rafraîchir le panneau
+
   if(selPanier === row.panier_num){
     if(isMobile()) renderMobilePanierPanel();
-    else { renderArtsList(); }
+    else {
+      renderArtsList();
+      // Rafraîchir le footer avec le nouveau total
+      const tot = panierTotal(p);
+      const artCount = p.items.reduce((s,i) => s + i.qty, 0);
+      const locked = isPanierLocked(p);
+      const footer = g('pp-footer-desktop');
+      if(footer) {
+        footer.innerHTML = `
+          <div class="pp-total">
+            <div><div class="pp-total-label">${artCount} article${artCount>1?'s':''}</div></div>
+            <div class="pp-total-amount">${tot} €</div>
+          </div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap">
+            ${locked ? '' : `<div style="display:flex;gap:7px;flex:1"><button class="btn green" style="flex:1;justify-content:center" onclick="toggleClose()">${p.closed?'↩ Réouvrir':'✓ Clôturer'}</button><button class="btn ghost sm" onclick="clearPanier()" style="color:var(--red)">🗑 Vider</button></div>`}
+            <button class="btn purple sm" onclick="printPanier()">🖨️</button>
+          </div>`;
+      }
+    }
   }
 }
 function filterResa(status,btn){
