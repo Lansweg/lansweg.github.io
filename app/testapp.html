@@ -64,12 +64,81 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);fon
 .sidebar-resize-handle:hover{background:var(--border2)}
 .sidebar-resize-handle::after{content:'';width:2px;height:40px;background:var(--muted2);border-radius:2px}
 .main{grid-column:3;grid-row:2;min-width:0;overflow:hidden;display:flex;flex-direction:column;}
-.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--bg2);border-top:1px solid var(--border);padding:0 0 env(safe-area-inset-bottom,0);height:calc(var(--mobile-nav-h) + env(safe-area-inset-bottom,0));}
-.mobile-nav-inner{display:flex;height:var(--mobile-nav-h)}
-.mobile-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;transition:color .15s;padding:0}
-.mobile-nav-btn.active{color:var(--orange)}
-.mobile-nav-icon{font-size:20px;line-height:1}
-.mobile-nav-btn.active .mobile-nav-icon{transform:scale(1.1)}
+.mobile-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+.mobile-nav-inner{
+  display:flex;
+  align-items:stretch;
+  height:60px;
+  padding:0 4px;
+  gap:2px;
+}
+.mobile-nav-btn{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  border:none;
+  background:transparent;
+  color:var(--muted);
+  cursor:pointer;
+  font-family:'Manrope',sans-serif;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.3px;
+  text-transform:uppercase;
+  transition:color .15s;
+  padding:0 2px;
+  border-radius:10px;
+  margin:6px 0;
+  min-width:0;
+  position:relative;
+}
+.mobile-nav-btn:active{
+  background:var(--bg4);
+}
+.mobile-nav-btn.active{
+  color:var(--orange);
+}
+.mobile-nav-icon{
+  font-size:18px;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:28px;
+  border-radius:8px;
+  transition:all .2s cubic-bezier(.34,1.56,.64,1);
+  background:transparent;
+}
+.mobile-nav-btn.active .mobile-nav-icon{
+  background:var(--orange-dim);
+  transform:scale(1.08);
+}
+.mobile-nav-label{
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.2px;
+  text-transform:uppercase;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:100%;
+  line-height:1;
+}
+@media(max-width:380px){
+  .mobile-nav-label{font-size:8px;}
+  .mobile-nav-icon{font-size:16px;width:32px;height:26px;}
+  .mobile-nav-inner{padding:0 2px;gap:1px;}
+}
 .sidebar-drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;backdrop-filter:blur(2px)}
 .sidebar-drawer-overlay.open{display:block}
 .sidebar-drawer{position:fixed;left:0;top:0;bottom:0;width:280px;z-index:151;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:20px 16px;transform:translateX(-100%);transition:transform .25s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;gap:12px;}
@@ -327,6 +396,20 @@ select.finput option{background:var(--bg3)}
   .frow3{grid-template-columns:1fr 1fr}
   .start-box{padding:20px 16px}
   .history-view-banner{font-size:11px;padding:8px 10px}
+  .paniers-zone{
+    padding-bottom:calc(60px + env(safe-area-inset-bottom,0) + 12px);
+  }
+  .toasts{
+    bottom:calc(60px + env(safe-area-inset-bottom,0) + 12px);
+  }
+  /* Toutes les vues scrollables ont besoin du padding */
+  .cat-view,
+  .resa-view,
+  .docs-view,
+  .settings-view{
+    padding-bottom:calc(60px + env(safe-area-inset-bottom,0) + 12px);
+  }
+}
 }
 @media (max-width: 420px) {
   .paniers-grid{grid-template-columns:repeat(4,1fr);gap:3px}
@@ -594,15 +677,33 @@ select.finput option{background:var(--bg3)}
   </div>
 
   <nav class="mobile-nav">
-    <div class="mobile-nav-inner">
-      <button class="mobile-nav-btn active" id="mnav-live" onclick="mobileTab('live',this)"><span class="mobile-nav-icon">🎥</span>Live</button>
-      <button class="mobile-nav-btn" id="mnav-history" onclick="openDrawer()"><span class="mobile-nav-icon">📼</span>Historique</button>
-      <button class="mobile-nav-btn" id="mnav-catalogue" onclick="mobileTab('catalogue',this)"><span class="mobile-nav-icon">📦</span>Catalogue</button>
-      <button class="mobile-nav-btn" id="mnav-reservations" onclick="mobileTab('reservations',this)"><span class="mobile-nav-icon">🛒</span>Resas</button>
-      <button class="mobile-nav-btn" id="mnav-docs" onclick="mobileTab('docs',this)"><span class="mobile-nav-icon">📄</span>Docs</button>
-      <button class="mobile-nav-btn" id="mnav-settings" onclick="mobileTab('settings',this)"><span class="mobile-nav-icon">⚙️</span>Réglages</button>
-    </div>
-  </nav>
+  <div class="mobile-nav-inner">
+    <button class="mobile-nav-btn active" id="mnav-live" onclick="mobileTab('live',this)">
+      <div class="mobile-nav-icon">🎥</div>
+      <span class="mobile-nav-label">Live</span>
+    </button>
+    <button class="mobile-nav-btn" id="mnav-history" onclick="openDrawer()">
+      <div class="mobile-nav-icon">📼</div>
+      <span class="mobile-nav-label">Historique</span>
+    </button>
+    <button class="mobile-nav-btn" id="mnav-catalogue" onclick="mobileTab('catalogue',this)">
+      <div class="mobile-nav-icon">📦</div>
+      <span class="mobile-nav-label">Catalogue</span>
+    </button>
+    <button class="mobile-nav-btn" id="mnav-reservations" onclick="mobileTab('reservations',this)">
+      <div class="mobile-nav-icon">🛒</div>
+      <span class="mobile-nav-label">Resas</span>
+    </button>
+    <button class="mobile-nav-btn" id="mnav-docs" onclick="mobileTab('docs',this)">
+      <div class="mobile-nav-icon">📄</div>
+      <span class="mobile-nav-label">Docs</span>
+    </button>
+    <button class="mobile-nav-btn" id="mnav-settings" onclick="mobileTab('settings',this)">
+      <div class="mobile-nav-icon">⚙️</div>
+      <span class="mobile-nav-label">Réglages</span>
+    </button>
+  </div>
+</nav>
 </div>
 
 <!-- MOBILE PANIER SHEET -->
