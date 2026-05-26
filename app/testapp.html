@@ -2077,9 +2077,14 @@
                 grid-row: 2
             }
 
+            
             .mobile-nav {
-                display: flex
+                display: flex;
+                justify-content: space-evenly;
+                /* flex-wrap: nowrap; */
+                flex-direction: column;
             }
+
 
             .toasts {
                 bottom: calc(var(--mobile-nav-h) + env(safe-area-inset-bottom, 0) + 12px)
