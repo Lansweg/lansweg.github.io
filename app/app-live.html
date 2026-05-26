@@ -301,7 +301,10 @@ select.finput option{background:var(--bg3)}
   .layout{grid-template-columns:1fr;grid-template-rows:var(--topbar-h) 1fr;}
   .sidebar,.sidebar-resize-handle{display:none}
   .main{grid-column:1;grid-row:2}
-  .mobile-nav{display:flex}
+  .mobile-nav {
+        display: flex;
+        flex-direction: column;
+    }
   .toasts{bottom:calc(var(--mobile-nav-h) + env(safe-area-inset-bottom,0) + 12px)}
   .topbar-nav{display:none}
   .logo{font-size:16px}
