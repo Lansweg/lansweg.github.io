@@ -1227,7 +1227,7 @@ select.finput option { background: var(--bg3); color: var(--text); }
     <div class="lock-logo">FC<span>ÉVÉNEMENT</span></div>
     <div class="lock-sub">Gestionnaire de lives</div>
     <div class="lock-icon">🔐</div>
-    <div style="font-size:14px;font-weight:700;margin-bottom:16px">Entrez votre code d'accès</div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:18px;color:var(--text2)">Entrez votre code d'accès</div>
     <div class="code-inputs">
       <input class="code-digit" id="d0" type="password" maxlength="1" inputmode="numeric" oninput="onDigit(this,0)" onkeydown="onKey(event,0)">
       <input class="code-digit" id="d1" type="password" maxlength="1" inputmode="numeric" oninput="onDigit(this,1)" onkeydown="onKey(event,1)">
@@ -1242,14 +1242,14 @@ select.finput option { background: var(--bg3); color: var(--text); }
 </div>
 
 <div id="loading-screen" style="display:none">
-  <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px">FC<span style="color:var(--orange)">ÉVÉNEMENT</span></div>
+  <div style="font-size:22px;font-weight:700;letter-spacing:-0.5px">FC<span style="color:var(--orange)">ÉVÉNEMENT</span></div>
   <div class="spinner"></div>
-  <div style="font-size:13px;color:var(--muted)" id="loading-msg">Connexion à Supabase…</div>
+  <div style="font-size:13px;color:var(--muted)" id="loading-msg">Connexion…</div>
 </div>
 
 <div class="layout" id="app" style="display:none">
   <div class="topbar">
-    <button id="drawer-toggle" onclick="openDrawer()" style="display:none;background:var(--bg4);border:1px solid var(--border2);color:var(--text);width:34px;height:34px;border-radius:var(--r);cursor:pointer;font-size:18px;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation">☰</button>
+    <button id="drawer-toggle" onclick="openDrawer()" style="display:none;background:var(--glass2);border:1px solid var(--glass-border);color:var(--text);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:18px;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation;backdrop-filter:blur(10px)">☰</button>
     <div class="logo">FC<span>ÉVÉNEMENT</span></div>
     <div class="live-indicator" id="live-ind"><div class="live-dot"></div><span>EN DIRECT</span></div>
     <div class="topbar-nav">
@@ -1262,22 +1262,22 @@ select.finput option { background: var(--bg3); color: var(--text); }
     <div class="topbar-right" id="topbar-right">
       <div class="theme-toggle" id="theme-toggle" onclick="cycleTheme()">
         <span class="theme-toggle-opt" id="tt-dark">🌙 Sombre</span>
-        <span class="theme-toggle-opt" id="tt-claire">📒 Claire</span>
+        <span class="theme-toggle-opt" id="tt-claire">☀️ Claire</span>
       </div>
       <div class="sync-dot" id="sync-dot"></div>
-      <span id="sync-label" style="font-size:11px;color:var(--muted)">Supabase</span>
+      <span id="sync-label" style="font-size:11px;color:var(--muted);font-weight:500">Supabase</span>
     </div>
   </div>
 
   <div class="sidebar-drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
   <div class="sidebar-drawer" id="sidebar-drawer">
     <button class="drawer-close" onclick="closeDrawer()">✕</button>
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:4px">Historique lives</div>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px">Historique lives</div>
     <div id="history-list-drawer"><div style="font-size:12px;color:var(--muted2);padding:8px 0">Chargement…</div></div>
   </div>
 
   <div class="sidebar">
-    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:2px">Historique lives</div>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px">Historique lives</div>
     <div id="history-list"><div style="font-size:12px;color:var(--muted2);padding:8px 0">Chargement…</div></div>
   </div>
   <div class="sidebar-resize-handle" id="sidebar-resize-handle"></div>
@@ -1288,22 +1288,22 @@ select.finput option { background: var(--bg3); color: var(--text); }
     <div class="view active" id="view-live">
       <div class="start-screen" id="start-screen">
         <div class="start-box">
-          <div style="font-size:40px;margin-bottom:12px">🎥</div>
-          <h2>Démarrer un live</h2>
-          <p>Données sauvegardées automatiquement. Paniers remis à 1 à chaque nouveau live.</p>
+          <div style="font-size:44px;margin-bottom:16px;filter:drop-shadow(0 4px 16px rgba(255,107,43,0.4))">🎥</div>
+          <h2 style="font-size:24px;font-weight:700;letter-spacing:-0.5px;margin-bottom:8px">Démarrer un live</h2>
+          <p style="color:var(--muted);font-size:13px;margin-bottom:24px;line-height:1.6">Données sauvegardées automatiquement. Paniers remis à 1 à chaque nouveau live.</p>
           <div class="fgroup"><label class="flabel">Nom du live</label><input class="finput" id="live-name" placeholder="Ex: Live mode — 16 mai"></div>
           <div class="frow">
             <div class="fgroup"><label class="flabel">Nombre de paniers</label><input class="finput" id="live-nb" type="number" value="80" min="1" max="500" inputmode="numeric"></div>
             <div class="fgroup"><label class="flabel">Date</label><input class="finput" id="live-date" type="date"></div>
           </div>
-          <button class="btn orange" style="width:100%;justify-content:center;padding:14px" onclick="startLive()">🚀 Lancer le live</button>
+          <button class="btn orange" style="width:100%;justify-content:center;padding:14px;font-size:14px;border-radius:14px" onclick="startLive()">🚀 Lancer le live</button>
         </div>
       </div>
       <div id="live-active" style="display:none;flex:1;overflow:hidden;flex-direction:column">
         <div class="live-layout">
           <div class="paniers-zone">
             <div id="history-banner" style="display:none" class="history-view-banner">
-              <span>📼 Live terminé · <strong style="color:var(--green)">ouverts = modifiables</strong> · <strong style="color:var(--blue)">clôturés = 🔒</strong></span>
+              <span>📼 Live terminé · <strong style="color:var(--green)">ouverts = modifiables</strong> · <strong style="color:var(--blue2)">clôturés = 🔒</strong></span>
               <button class="btn orange sm" style="margin-left:auto" onclick="goNewLive()">🚀 Nouveau</button>
             </div>
             <div class="live-stats-row">
@@ -1333,13 +1333,13 @@ select.finput option { background: var(--bg3); color: var(--text); }
           </div>
           <div class="resize-handle" id="panel-resize-handle"></div>
           <div class="panier-panel">
-            <div class="pp-empty" id="pp-empty"><div class="pp-empty-icon">🛒</div><div>Cliquez sur un panier</div></div>
+            <div class="pp-empty" id="pp-empty"><div class="pp-empty-icon">🛒</div><div style="color:var(--muted);font-size:13px">Cliquez sur un panier</div></div>
             <div id="pp-content" style="display:none;flex:1;flex-direction:column;overflow:hidden">
               <div class="pp-header">
                 <div class="pp-title">
                   <span id="pp-num">Panier 1</span>
-                  <span id="pp-status-badge" style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px"></span>
-                  <span id="pp-post-badge" style="display:none;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;background:var(--teal-dim);color:var(--teal)">Post-live</span>
+                  <span id="pp-status-badge" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px"></span>
+                  <span id="pp-post-badge" style="display:none;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--teal-dim);color:var(--teal);border:1px solid rgba(90,200,250,0.2)">Post-live</span>
                 </div>
                 <input class="finput" id="pp-name" placeholder="Nom Facebook / client" oninput="debouncedSavePanier()" style="font-size:13px">
               </div>
@@ -1351,17 +1351,17 @@ select.finput option { background: var(--bg3); color: var(--text); }
       </div>
     </div>
 
-    <!-- CATALOGUE VIEW — avec recherche -->
+    <!-- CATALOGUE VIEW -->
     <div class="view" id="view-catalogue">
       <div class="cat-view">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
           <div>
-            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:17px">Catalogue</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:1px">Stock = catalogue − lives − réservations actives</div>
+            <div style="font-size:20px;font-weight:700;letter-spacing:-0.5px">Catalogue</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:3px;font-weight:500">Stock = catalogue − lives − réservations actives</div>
           </div>
           <button class="btn orange sm" onclick="openModal('modal-cat')">+ Ajouter</button>
         </div>
-        <div style="margin-bottom:12px">
+        <div style="margin-bottom:14px">
           <input class="finput" id="cat-search" placeholder="🔍 Rechercher un article, catégorie…" oninput="renderCatalogue()" style="max-width:340px">
         </div>
         <div class="cat-grid" id="cat-grid"></div>
@@ -1371,12 +1371,12 @@ select.finput option { background: var(--bg3); color: var(--text); }
     <!-- RESERVATIONS VIEW -->
     <div class="view" id="view-reservations">
       <div class="resa-view">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
           <div>
-            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:17px">🛒 Réservations</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:1px">Commandes reçues via le formulaire public</div>
+            <div style="font-size:20px;font-weight:700;letter-spacing:-0.5px">🛒 Réservations</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:3px;font-weight:500">Commandes reçues via le formulaire public</div>
           </div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn ghost sm" onclick="openAddResaModal()">✏️ Ajouter</button>
             <button class="btn orange sm" onclick="showResaLinkModal()">🔗 Lien public</button>
           </div>
@@ -1399,8 +1399,8 @@ select.finput option { background: var(--bg3); color: var(--text); }
     <!-- DOCS VIEW -->
     <div class="view" id="view-docs">
       <div class="docs-view">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
-          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:17px">Devis & Factures</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div style="font-size:20px;font-weight:700;letter-spacing:-0.5px">Devis & Factures</div>
           <button class="btn orange sm" onclick="openNewDoc()">+ Nouveau</button>
         </div>
         <div id="docs-list"></div>
@@ -1410,11 +1410,11 @@ select.finput option { background: var(--bg3); color: var(--text); }
     <!-- SETTINGS VIEW -->
     <div class="view" id="view-settings">
       <div class="settings-view">
-        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:14px">⚙️ Mon entreprise</div>
+        <div style="font-size:20px;font-weight:700;letter-spacing:-0.5px;margin-bottom:16px">⚙️ Mon entreprise</div>
         <div class="settings-section">
           <h3>Logo</h3>
           <div class="logo-upload-zone" onclick="g('logo-file').click()">
-            <div id="logo-preview-wrap"><div style="font-size:28px">🖼️</div><div style="font-size:12px;color:var(--muted);margin-top:6px">Cliquer pour choisir</div></div>
+            <div id="logo-preview-wrap"><div style="font-size:32px;margin-bottom:8px">🖼️</div><div style="font-size:12px;color:var(--muted)">Cliquer pour choisir</div></div>
           </div>
           <input type="file" id="logo-file" accept="image/*" style="display:none" onchange="handleLogo(this)">
           <button class="btn ghost sm" id="del-logo-btn" style="display:none" onclick="deleteLogo()">✕ Supprimer le logo</button>
@@ -1449,7 +1449,7 @@ select.finput option { background: var(--bg3); color: var(--text); }
         </div>
         <div class="settings-section">
           <h3>🛒 Formulaire de réservation</h3>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Personnalisez le message affiché sur la page publique de réservation.</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Personnalisez le message affiché sur la page publique.</div>
           <div class="fgroup"><label class="flabel">Titre du formulaire</label><input class="finput" id="s-resa-title" placeholder="Réservez vos articles live FC Événement"></div>
           <div class="fgroup"><label class="flabel">Message d'accueil</label><textarea class="note-area" id="s-resa-msg" placeholder="Bienvenue ! Sélectionnez vos articles et envoyez votre réservation." style="min-height:72px"></textarea></div>
           <div class="fgroup"><label class="flabel">Message de confirmation</label><textarea class="note-area" id="s-resa-confirm" placeholder="Merci pour votre réservation ! Nous vous contacterons rapidement." style="min-height:56px"></textarea></div>
@@ -1457,12 +1457,12 @@ select.finput option { background: var(--bg3); color: var(--text); }
         </div>
         <div class="settings-section">
           <h3>🔐 Code d'accès</h3>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Le code est stocké hashé dans Supabase.</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Le code est stocké hashé dans Supabase.</div>
           <div class="frow">
             <div class="fgroup"><label class="flabel">Nouveau code (6 chiffres)</label><input class="finput" id="s-new-code" type="password" maxlength="6" inputmode="numeric" placeholder="••••••"></div>
             <div class="fgroup"><label class="flabel">Confirmer</label><input class="finput" id="s-confirm-code" type="password" maxlength="6" inputmode="numeric" placeholder="••••••"></div>
           </div>
-          <div id="code-change-msg" style="font-size:12px;margin-bottom:10px;min-height:18px"></div>
+          <div id="code-change-msg" style="font-size:12px;margin-bottom:12px;min-height:18px"></div>
           <button class="btn ghost" onclick="changeAccessCode()">🔑 Changer le code</button>
         </div>
       </div>
@@ -1485,17 +1485,17 @@ select.finput option { background: var(--bg3); color: var(--text); }
 <div class="mobile-panel-sheet" id="mobile-sheet" onclick="closeMobileSheet(event)">
   <div class="mobile-panel-inner" id="mobile-panel-inner">
     <div class="sheet-drag" id="sheet-drag" onclick="closeMobileSheetDirect()"></div>
-    <div class="pp-header" style="padding:0 14px 12px">
+    <div class="pp-header" style="padding:0 16px 14px">
       <div class="pp-title">
         <span id="mpp-num">Panier 1</span>
-        <span id="mpp-status-badge" style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px"></span>
-        <span id="mpp-post-badge" style="display:none;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;background:var(--teal-dim);color:var(--teal)">Post-live</span>
-        <button onclick="closeMobileSheetDirect()" style="margin-left:auto;background:var(--bg4);border:none;color:var(--muted);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center">✕</button>
+        <span id="mpp-status-badge" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px"></span>
+        <span id="mpp-post-badge" style="display:none;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--teal-dim);color:var(--teal);border:1px solid rgba(90,200,250,0.2)">Post-live</span>
+        <button onclick="closeMobileSheetDirect()" style="margin-left:auto;background:var(--glass2);border:1px solid var(--glass-border);color:var(--muted);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px)">✕</button>
       </div>
       <input class="finput" id="mpp-name" placeholder="Nom Facebook / client" oninput="debouncedSavePanierMobile()" style="font-size:13px">
     </div>
-    <div style="flex:1;overflow-y:auto;padding:0 14px 10px;-webkit-overflow-scrolling:touch" id="mpp-body"></div>
-    <div style="padding:10px 14px;border-top:1px solid var(--border);flex-shrink:0" id="mpp-footer"></div>
+    <div style="flex:1;overflow-y:auto;padding:0 16px 12px;-webkit-overflow-scrolling:touch" id="mpp-body"></div>
+    <div style="padding:12px 16px;border-top:1px solid var(--glass-border);flex-shrink:0;background:var(--glass)" id="mpp-footer"></div>
   </div>
 </div>
 
@@ -1518,14 +1518,14 @@ select.finput option { background: var(--bg3); color: var(--text); }
       <div class="fgroup"><label class="flabel">Emoji</label><input class="finput" id="nc-emoji" placeholder="👕" style="text-align:center;font-size:20px"></div>
     </div>
     <div class="fgroup"><label class="flabel">Catégorie</label>
-      <select class="finput" id="nc-cat"><option>Maison</option><option>Linge</option><option>Vêtement</option><option>Sacs</option><option>Produit</option><option>Accesoire</option></select>
+      <select class="finput" id="nc-cat"><option>Maison</option><option>Linge</option><option>Vêtement</option><option>Sacs</option><option>Produit</option><option>Accessoire</option></select>
     </div>
     <div class="fgroup"><label class="flabel">Stock initial (vide = illimité)</label><input class="finput" id="nc-stock" type="number" placeholder="Ex: 10" min="0" inputmode="numeric"></div>
-    <div class="fgroup"><label class="flabel">
-      <input type="checkbox" id="nc-resa" style="margin-right:6px;accent-color:var(--orange)">
+    <div class="fgroup"><label class="flabel" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+      <input type="checkbox" id="nc-resa" style="width:16px;height:16px;accent-color:var(--orange);cursor:pointer">
       Visible dans le formulaire de réservation
     </label></div>
-    <button class="btn orange" style="width:100%;justify-content:center;margin-top:4px;padding:12px" onclick="addCatItem()">✓ Ajouter</button>
+    <button class="btn orange" style="width:100%;justify-content:center;margin-top:6px;padding:13px;border-radius:14px" onclick="addCatItem()">✓ Ajouter</button>
   </div>
 </div>
 
@@ -1538,18 +1538,19 @@ select.finput option { background: var(--bg3); color: var(--text); }
     <div class="fgroup"><label class="flabel">Contact (tél / email / Facebook)</label><input class="finput" id="ar-contact" placeholder="06 xx xx xx xx"></div>
     <div class="fgroup">
       <label class="flabel">Articles</label>
-      <div id="ar-items-list" style="margin-bottom:8px"></div>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <div id="ar-items-list" style="margin-bottom:10px"></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <select class="finput" id="ar-cat-select" style="flex:1;min-width:160px"></select>
         <input class="finput" id="ar-qty" type="number" value="1" min="1" style="width:65px" inputmode="numeric">
         <button class="btn orange sm" onclick="addResaItem()">+ Ajouter</button>
       </div>
     </div>
     <div class="fgroup"><label class="flabel">Note / message</label><textarea class="note-area" id="ar-message" placeholder="Précisions, taille, couleur…" style="min-height:60px"></textarea></div>
-    <button class="btn orange" style="width:100%;justify-content:center;padding:12px;margin-top:4px" onclick="submitManualResa()">✓ Enregistrer la réservation</button>
+    <button class="btn orange" style="width:100%;justify-content:center;padding:13px;margin-top:6px;border-radius:14px" onclick="submitManualResa()">✓ Enregistrer la réservation</button>
   </div>
 </div>
 
+<!-- MODAL MODIFICATION RÉSERVATION -->
 <div class="overlay" id="modal-edit-resa">
   <div class="modal">
     <div class="modal-drag-handle"></div>
@@ -1558,8 +1559,8 @@ select.finput option { background: var(--bg3); color: var(--text); }
     <div class="fgroup"><label class="flabel">Contact (tél / email / Facebook)</label><input class="finput" id="er-contact" placeholder="06 xx xx xx xx"></div>
     <div class="fgroup">
       <label class="flabel">Articles</label>
-      <div id="er-items-list" style="margin-bottom:8px"></div>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <div id="er-items-list" style="margin-bottom:10px"></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <select class="finput" id="er-cat-select" style="flex:1;min-width:160px"></select>
         <input class="finput" id="er-qty" type="number" value="1" min="1" style="width:65px" inputmode="numeric">
         <button class="btn orange sm" onclick="addEditResaItem()">+ Ajouter</button>
@@ -1573,21 +1574,21 @@ select.finput option { background: var(--bg3); color: var(--text); }
       </select>
     </div>
     <div class="fgroup"><label class="flabel">Note / message</label><textarea class="note-area" id="er-message" placeholder="Précisions…" style="min-height:60px"></textarea></div>
-    <button class="btn orange" style="width:100%;justify-content:center;padding:12px;margin-top:4px" onclick="saveEditResa()">💾 Enregistrer les modifications</button>
+    <button class="btn orange" style="width:100%;justify-content:center;padding:13px;margin-top:6px;border-radius:14px" onclick="saveEditResa()">💾 Enregistrer les modifications</button>
   </div>
 </div>
-  
+
 <!-- MODAL LIEN RÉSERVATION -->
 <div class="overlay" id="modal-resa-link">
   <div class="modal">
     <div class="modal-drag-handle"></div>
     <div class="modal-title">🔗 Lien de réservation <button class="modal-close" onclick="closeModal('modal-resa-link')">✕</button></div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Partagez ce lien sur Facebook. Les clients pourront réserver directement.</div>
-    <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
-      <div id="modal-resa-url" style="flex:1;font-size:12px;font-weight:700;word-break:break-all;color:var(--orange2)"></div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">Partagez ce lien sur Facebook. Les clients pourront réserver directement.</div>
+    <div style="background:var(--glass2);border:1px solid var(--glass-border);border-radius:var(--r2);padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px;backdrop-filter:blur(10px)">
+      <div id="modal-resa-url" style="flex:1;font-size:12px;font-weight:600;word-break:break-all;color:var(--orange2)"></div>
       <button class="btn orange sm" onclick="copyResaLink()">📋 Copier</button>
     </div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Affiche uniquement les articles marqués 🛒 dans le catalogue.</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Affiche uniquement les articles marqués 🛒 dans le catalogue.</div>
     <button class="btn ghost" style="width:100%;justify-content:center" onclick="openResaForm()">👁 Prévisualiser</button>
   </div>
 </div>
@@ -1598,15 +1599,16 @@ select.finput option { background: var(--bg3); color: var(--text); }
     <div class="modal-drag-handle"></div>
     <div class="modal-title" id="resa-detail-title">Réservation <button class="modal-close" onclick="closeModal('modal-resa-detail')">✕</button></div>
     <div id="resa-detail-body"></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
-     <button class="btn ghost sm" id="resa-btn-edit" onclick="openEditResaModal(currentResaId)">✏️ Modifier</button>
-     <button class="btn blue sm" id="resa-btn-seen" onclick="setResaStatus(currentResaId,'seen')">👁 En cours</button>
-     <button class="btn green sm" id="resa-btn-done" onclick="setResaStatus(currentResaId,'done')">✓ Traiter</button>
-     <button class="btn red sm" onclick="deleteResa(currentResaId)">🗑 Supprimer</button>
-   </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--glass-border)">
+      <button class="btn ghost sm" id="resa-btn-edit" onclick="openEditResaModal(currentResaId)">✏️ Modifier</button>
+      <button class="btn blue sm" id="resa-btn-seen" onclick="setResaStatus(currentResaId,'seen')">👁 En cours</button>
+      <button class="btn green sm" id="resa-btn-done" onclick="setResaStatus(currentResaId,'done')">✓ Traiter</button>
+      <button class="btn red sm" onclick="deleteResa(currentResaId)">🗑 Supprimer</button>
+    </div>
   </div>
 </div>
 
+<!-- MODAL NOUVEAU DOCUMENT -->
 <div class="overlay" id="modal-new-doc">
   <div class="modal xl">
     <div class="modal-drag-handle"></div>
@@ -1615,7 +1617,7 @@ select.finput option { background: var(--bg3); color: var(--text); }
       <div class="fgroup"><label class="flabel">Type</label>
         <select class="finput" id="dt" onchange="updateDocType()"><option value="devis">📋 Devis</option><option value="facture">🧾 Facture</option></select>
       </div>
-      <div class="fgroup"><label class="flabel">Numéro (auto)</label><input class="finput" id="d-num-preview" readonly style="opacity:.6"></div>
+      <div class="fgroup"><label class="flabel">Numéro (auto)</label><input class="finput" id="d-num-preview" readonly style="opacity:.5"></div>
     </div>
     <div class="frow">
       <div class="fgroup"><label class="flabel">Date document</label><input class="finput" id="dd" type="date"></div>
@@ -1637,7 +1639,7 @@ select.finput option { background: var(--bg3); color: var(--text); }
       </div>
     </div>
     <div class="section-divider"></div>
-    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--orange);margin-bottom:10px">👤 Client</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--orange);margin-bottom:12px">👤 Client</div>
     <div class="frow">
       <div class="fgroup"><label class="flabel">Nom / Société *</label><input class="finput" id="dc" placeholder="Nom client"></div>
       <div class="fgroup"><label class="flabel">Téléphone</label><input class="finput" id="dtel" placeholder="06 ..."></div>
@@ -1647,21 +1649,21 @@ select.finput option { background: var(--bg3); color: var(--text); }
       <div class="fgroup"><label class="flabel">Adresse</label><input class="finput" id="d-addr" placeholder="Adresse de facturation"></div>
     </div>
     <div class="section-divider"></div>
-    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--orange);margin-bottom:10px">📋 Prestations</div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--orange);margin-bottom:12px">📋 Prestations</div>
     <div class="fgroup"><label class="flabel">Objet / Intitulé</label><input class="finput" id="dobj" placeholder="Ex: Location mascotte FC Dunkerque"></div>
-    <div style="display:grid;grid-template-columns:1fr 80px 50px 70px 80px 32px;gap:4px;margin-bottom:6px">
-      <div style="font-size:10px;color:var(--muted);text-transform:uppercase">Description</div>
-      <div style="font-size:10px;color:var(--muted);text-transform:uppercase">Type</div>
-      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;text-align:center">Qté</div>
-      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;text-align:right">PU HT</div>
-      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;text-align:right">Total</div>
+    <div style="display:grid;grid-template-columns:1fr 80px 50px 70px 80px 32px;gap:4px;margin-bottom:8px">
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:600">Description</div>
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:600">Type</div>
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:600;text-align:center">Qté</div>
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:600;text-align:right">PU HT</div>
+      <div style="font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:600;text-align:right">Total</div>
       <div></div>
     </div>
     <div id="doc-lines-wrap"></div>
-    <button class="btn ghost sm" style="margin-bottom:8px" onclick="addDocLine()">+ Ligne</button>
+    <button class="btn ghost sm" style="margin-bottom:10px" onclick="addDocLine()">+ Ligne</button>
     <div class="section-divider"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--yellow)">🏷️ Remises</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--yellow)">🏷️ Remises</div>
       <button class="btn yellow sm" onclick="addRemise()">+ Remise</button>
     </div>
     <div id="doc-remises-wrap"></div>
@@ -1685,7 +1687,7 @@ select.finput option { background: var(--bg3); color: var(--text); }
       <div class="fgroup"><label class="flabel">Acompte (%)</label><input class="finput" id="d-acompte" type="number" placeholder="0" min="0" max="100" inputmode="numeric"></div>
     </div>
     <div class="fgroup"><label class="flabel">Informations complémentaires</label><textarea class="note-area" id="dnotes" style="min-height:60px" placeholder="Articles live, conditions particulières…"></textarea></div>
-    <button class="btn orange" style="width:100%;justify-content:center;padding:12px;margin-top:4px" id="modal-doc-submit-btn" onclick="createOrUpdateDoc()">✓ Créer & sauvegarder</button>
+    <button class="btn orange" style="width:100%;justify-content:center;padding:13px;margin-top:6px;border-radius:14px" id="modal-doc-submit-btn" onclick="createOrUpdateDoc()">✓ Créer & sauvegarder</button>
   </div>
 </div>
 
